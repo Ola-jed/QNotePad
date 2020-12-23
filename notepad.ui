@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>799</width>
+    <height>580</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,6 +26,9 @@
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Nouveau Fichier&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(28, 49, 80);</string>
+    </property>
     <property name="text">
      <string>New</string>
     </property>
@@ -41,6 +44,9 @@
     </property>
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sauvegarder / Sauvegarder sous&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(28, 49, 80);</string>
     </property>
     <property name="text">
      <string>Save</string>
@@ -58,6 +64,9 @@
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ouvrir un fichier&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(28, 49, 80);</string>
+    </property>
     <property name="text">
      <string>Open</string>
     </property>
@@ -74,6 +83,9 @@
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quitter&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(28, 49, 80);</string>
+    </property>
     <property name="text">
      <string>Quit</string>
     </property>
@@ -87,6 +99,12 @@
       <height>521</height>
      </rect>
     </property>
+    <property name="maximumSize">
+     <size>
+      <width>801</width>
+      <height>16777215</height>
+     </size>
+    </property>
    </widget>
    <widget class="QLabel" name="label">
     <property name="geometry">
@@ -96,6 +114,9 @@
       <width>81</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:rgb(255, 85, 0);</string>
     </property>
     <property name="text">
      <string>Fichier</string>
@@ -107,7 +128,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>799</width>
      <height>21</height>
     </rect>
    </property>
