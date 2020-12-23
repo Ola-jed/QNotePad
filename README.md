@@ -11,6 +11,6 @@ make
 ```
 puis lancer l'exécutable.
 
-Si vous possédez l'ide Qt Creator, vous pouvez ouvrir le projet et le compiler
+Si vous possédez l'ide Qt Creator, vous pouvez ouvrir le projet, le compiler et l'exécuter
 
 Vous pouvez me contacter à l'adresse olabijed@gmail.com
