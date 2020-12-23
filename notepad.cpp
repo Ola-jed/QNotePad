@@ -14,7 +14,7 @@ Notepad::Notepad(QWidget *parent)
 
 void Notepad::onNewFile()
 {
-    fileName = QInputDialog::getText(this,"Nouveau Fichier","Nom du fichier");
+    fileName = QFileDialog::getSaveFileName(this);
     if(fileName.isEmpty())
     {
         QMessageBox::warning(this,"Nouveau Fichier","Entrer un nom valide");
@@ -84,7 +84,6 @@ void Notepad::onSaveFile()
             }
             else
             {
-                isSaved = true;
                 ui->label->setText(fileName);
                 fichier.close();
             }
@@ -96,7 +95,8 @@ void Notepad::onSaveFile()
         QTextStream out{&fich};
         out << ui->textEdit->toPlainText() << Qt::endl;
         fich.close();
-        QMessageBox::information(this,"Sauvegarde","Sauvagarde Réussie");
+        isSaved = true;
+        QMessageBox::information(this,"Sauvegarde","Sauvegarde Réussie");
     }
     else
     {
