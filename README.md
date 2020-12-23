@@ -8,5 +8,6 @@ qmake -project
 qmake
 make
 ```
-puis lancer l'exécutable
+puis lancer l'exécutable.
+
 Vous pouvez me contacter à l'adresse olabijed@gmail.com
