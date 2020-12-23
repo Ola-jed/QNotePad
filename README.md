@@ -1,5 +1,6 @@
 # QNotePad
 Bloc notes codé en C++ avec le framework Qt
+
 Exécuter les commandes suivantes pour compiler
 ```bash
 git clone https://github.com/Ola-jed/QNotePad
