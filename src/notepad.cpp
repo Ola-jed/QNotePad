@@ -10,6 +10,7 @@ Notepad::Notepad(QWidget *parent)
     connect(ui->openFile,&QPushButton::clicked,this,&Notepad::onOpenFile);
     connect(ui->saveFile,&QPushButton::clicked,this,&Notepad::onSaveFile);
     connect(ui->textEdit,&QTextEdit::textChanged,this,&Notepad::onTextChanged);
+    connect(ui->textEdit,&QTextEdit::textChanged,this,&Notepad::onAutoSave);
     connect(ui->colorText,&QPushButton::clicked,this,&Notepad::onColorChanged);
 }
 
@@ -62,8 +63,8 @@ void Notepad::onOpenFile()
                 tempLine = in.readLine();
                 ui->textEdit->append(tempLine);
             }
-            fichier.close();
         }
+        fichier.close();
     }
 }
 
@@ -133,6 +134,24 @@ void Notepad::onColorChanged() // Get the color and set the color in the textEdi
     QColor chosenColor = QColorDialog::getColor("Choisir une couleur");
     QString colorToSet = QString::number(chosenColor.red())+","+QString::number(chosenColor.green())+","+QString::number(chosenColor.blue());
     setStyleSheet("QTextEdit{color:rgb("+colorToSet+")}");
+}
+
+void Notepad::onAutoSave()
+{
+    if((ui->autoSaveCheckBox->isChecked()) && (!fileName.isEmpty()))
+    {
+        QFile fich{fileName};
+        if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
+        {
+            auto labelFont = ui->label->font();
+            labelFont.setWeight(QFont::Normal);
+            ui->label->setFont(labelFont);
+            QTextStream out{&fich};
+            out << ui->textEdit->toPlainText() << Qt::endl;
+            isSaved = true;
+        }
+        fich.close();
+    }
 }
 
 Notepad::~Notepad()
