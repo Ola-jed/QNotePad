@@ -74,7 +74,7 @@
    <widget class="QPushButton" name="quit">
     <property name="geometry">
      <rect>
-      <x>570</x>
+      <x>660</x>
       <y>0</y>
       <width>80</width>
       <height>24</height>
@@ -125,7 +125,7 @@
    <widget class="QPushButton" name="colorText">
     <property name="geometry">
      <rect>
-      <x>480</x>
+      <x>570</x>
       <y>0</y>
       <width>80</width>
       <height>24</height>
@@ -136,6 +136,19 @@
     </property>
     <property name="text">
      <string>Color</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="autoSaveCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>0</y>
+      <width>83</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>AutoSave</string>
     </property>
    </widget>
   </widget>
