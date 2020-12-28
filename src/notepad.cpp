@@ -27,12 +27,12 @@ void Notepad::onNewFile()
         if((!fichier.open(QIODevice::ReadWrite)))
         {
             QMessageBox::critical(this,"Nouveau Fichier","Impossible de créer le fichier");
+            return;
         }
         else
         {
             QMessageBox::information(this,"Nouveau Fichier","Le fichier a bien été créé");
             ui->label->setText(fileName);
-            fichier.close();
         }
     }
 }
@@ -43,6 +43,7 @@ void Notepad::onOpenFile()
     if(fileName.isEmpty())
     {
         QMessageBox::warning(this,"Nouveau Fichier","Choisir fichier valide");
+        return;
     }
     else
     {
@@ -50,6 +51,7 @@ void Notepad::onOpenFile()
         if((!fichier.open(QIODevice::ReadWrite)))
         {
             QMessageBox::critical(this,"Nouveau Fichier","Impossible d'ouvrir le fichier");
+            return;
         }
         else
         {
@@ -64,13 +66,12 @@ void Notepad::onOpenFile()
                 ui->textEdit->append(tempLine);
             }
         }
-        fichier.close();
     }
 }
 
 void Notepad::onSaveFile()
 {
-    if(fileName.isEmpty()) // If this is a new file
+    if(fileName.isEmpty() && !(ui->textEdit->toPlainText().isEmpty())) // If this is a new file
     {
         fileName = QFileDialog::getSaveFileName(this);
         if(fileName.isEmpty())
@@ -83,35 +84,38 @@ void Notepad::onSaveFile()
             if((!fichier.open(QIODevice::ReadWrite)))
             {
                 QMessageBox::critical(this,"Sauvegarder","Impossible de sauvegarder le fichier");
+                return;
             }
             else
             {
                 ui->label->setText(fileName);
-                fichier.close();
             }
         }
     }
-    QFile fich{fileName};
-    if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
+    else if((!fileName.isEmpty()) && !(ui->textEdit->toPlainText().isEmpty()))
     {
-        auto labelFont = ui->label->font();
-        labelFont.setWeight(QFont::Normal);
-        ui->label->setFont(labelFont);
-        QTextStream out{&fich};
-        out << ui->textEdit->toPlainText() << Qt::endl;
-        fich.close();
-        isSaved = true;
-        QMessageBox::information(this,"Sauvegarde","Sauvegarde Réussie");
-    }
-    else
-    {
-        QMessageBox::critical(this,"Sauvegarde","Impossible de sauvegarder");
+        QFile fich{fileName};
+        if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
+        {
+            auto labelFont = ui->label->font();
+            labelFont.setWeight(QFont::Normal);
+            ui->label->setFont(labelFont);
+            QTextStream out{&fich};
+            out << ui->textEdit->toPlainText() << Qt::endl;
+            isSaved = true;
+            QMessageBox::information(this,"Sauvegarde","Sauvegarde Réussie");
+        }
+        else
+        {
+            QMessageBox::critical(this,"Sauvegarde","Impossible de sauvegarder");
+            return;
+        }
     }
 }
 
 void Notepad::onQuit()
 {
-    if(((!fileName.isEmpty()) && !isSaved) || (fileName.isEmpty() && !(ui->textEdit->toPlainText().isEmpty())))
+    if(((!fileName.isEmpty()) && !isSaved && !(ui->textEdit->toPlainText().isEmpty()))||(fileName.isEmpty() && !(ui->textEdit->toPlainText().isEmpty())))
     {
         auto reply = QMessageBox::question(this, "Quitter", "Voulez vous sauvegarder ?",QMessageBox::Yes|QMessageBox::No);
         if(reply == QMessageBox::Yes)
@@ -150,7 +154,6 @@ void Notepad::onAutoSave()
             out << ui->textEdit->toPlainText() << Qt::endl;
             isSaved = true;
         }
-        fich.close();
     }
 }
 
