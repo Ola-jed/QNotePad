@@ -41,5 +41,6 @@ private slots:
     void onQuit();
     void onTextChanged();
     void onColorChanged();
+    void onAutoSave();
 };
 #endif // NOTEPAD_HPP
