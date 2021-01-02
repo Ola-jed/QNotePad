@@ -3,8 +3,9 @@
 
 #include <QMainWindow>
 #include <QString>
+#include <QCheckBox>
 #include <QPushButton>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QFile>
@@ -15,11 +16,9 @@
 #include <QFileDialog>
 #include <QColorDialog>
 #include <QColor>
-
-
-QT_BEGIN_NAMESPACE
-namespace Ui { class Notepad; }
-QT_END_NAMESPACE
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QApplication>
 
 class Notepad : public QMainWindow
 {
@@ -30,10 +29,16 @@ public:
     ~Notepad();
 
 private:
-    Ui::Notepad *ui;
     QString fileName = "";
     bool isSaved = false;
-
+    QPushButton *newFile;
+    QPushButton *openFile;
+    QPushButton *saveFile;
+    QPushButton *quit;
+    QPushButton *colorText;
+    QPlainTextEdit *textEdit;
+    QLabel *label;
+    QCheckBox *autoSaveCheckBox;
 private slots:
     void onNewFile();
     void onOpenFile();
