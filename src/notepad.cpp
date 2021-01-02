@@ -159,7 +159,7 @@ void Notepad::onColorChanged() // Get the color and set the color in the textEdi
 {
     QColor chosenColor = QColorDialog::getColor("Choisir une couleur");
     QString colorToSet = QString::number(chosenColor.red())+","+QString::number(chosenColor.green())+","+QString::number(chosenColor.blue());
-    setStyleSheet("QPlainTextEdit{color:rgb("+colorToSet+")}");
+    textEdit->setStyleSheet("color:rgb("+colorToSet+")");
 }
 
 void Notepad::onAutoSave()
