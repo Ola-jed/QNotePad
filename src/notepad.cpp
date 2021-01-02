@@ -1,17 +1,40 @@
 #include "notepad.hpp"
-#include "ui_notepad.h"
 
 Notepad::Notepad(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::Notepad)
+    : QMainWindow(parent)
 {
-    ui->setupUi(this);
-    connect(ui->quit,&QPushButton::clicked,this,&Notepad::onQuit);
-    connect(ui->newFile,&QPushButton::clicked,this,&Notepad::onNewFile);
-    connect(ui->openFile,&QPushButton::clicked,this,&Notepad::onOpenFile);
-    connect(ui->saveFile,&QPushButton::clicked,this,&Notepad::onSaveFile);
-    connect(ui->textEdit,&QTextEdit::textChanged,this,&Notepad::onTextChanged);
-    connect(ui->textEdit,&QTextEdit::textChanged,this,&Notepad::onAutoSave);
-    connect(ui->colorText,&QPushButton::clicked,this,&Notepad::onColorChanged);
+    newFile    = new QPushButton("New");
+    openFile   = new QPushButton("Open");
+    saveFile   = new QPushButton("Save");
+    quit       = new QPushButton("Quit");
+    colorText  = new QPushButton("Color");
+    openFile   = new QPushButton("Open");
+    label      = new QLabel("File");
+    textEdit   = new QPlainTextEdit(this);
+    autoSaveCheckBox        = new QCheckBox("AutoSave",this);
+    QHBoxLayout *hboxLayout = new QHBoxLayout();
+    hboxLayout->addWidget(label);
+    hboxLayout->addWidget(newFile);
+    hboxLayout->addWidget(openFile);
+    hboxLayout->addWidget(saveFile);
+    hboxLayout->addWidget(colorText);
+    hboxLayout->addWidget(quit);
+    hboxLayout->addWidget(autoSaveCheckBox);
+    QVBoxLayout *vboxLayout = new QVBoxLayout();
+    vboxLayout->addLayout(hboxLayout);
+    vboxLayout->addWidget(textEdit);
+    setLayout(vboxLayout);
+    auto central = new QWidget;
+    central->setLayout(vboxLayout);
+    setCentralWidget(central);
+    setStyleSheet("QPushButton{background-color: rgb(28, 49, 80);color:#f32e69;}QLabel{color:#27fff8;}");
+    connect(quit,&QPushButton::clicked,this,&Notepad::onQuit);
+    connect(newFile,&QPushButton::clicked,this,&Notepad::onNewFile);
+    connect(openFile,&QPushButton::clicked,this,&Notepad::onOpenFile);
+    connect(saveFile,&QPushButton::clicked,this,&Notepad::onSaveFile);
+    connect(textEdit,&QPlainTextEdit::textChanged,this,&Notepad::onTextChanged);
+    connect(textEdit,&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
+    connect(colorText,&QPushButton::clicked,this,&Notepad::onColorChanged);
 }
 
 void Notepad::onNewFile()
@@ -32,7 +55,7 @@ void Notepad::onNewFile()
         else
         {
             QMessageBox::information(this,"Nouveau Fichier","Le fichier a bien été créé");
-            ui->label->setText(fileName);
+            label->setText(fileName);
         }
     }
 }
@@ -55,15 +78,15 @@ void Notepad::onOpenFile()
         }
         else
         {
-            ui->label->setText(fileName);
-            ui->textEdit->setText(" ");
+            label->setText(fileName);
+            textEdit->setPlainText(" ");
             // Reading the file line by line and storing int the textEdit.
             QTextStream in{&fichier};
             QString tempLine;
             while(!in.atEnd())
             {
                 tempLine = in.readLine();
-                ui->textEdit->append(tempLine);
+                textEdit->appendPlainText(tempLine);
             }
         }
     }
@@ -71,7 +94,7 @@ void Notepad::onOpenFile()
 
 void Notepad::onSaveFile()
 {
-    if(fileName.isEmpty() && !(ui->textEdit->toPlainText().isEmpty())) // If this is a new file
+    if(fileName.isEmpty() && !(textEdit->toPlainText().isEmpty())) // If this is a new file
     {
         fileName = QFileDialog::getSaveFileName(this);
         if(fileName.isEmpty())
@@ -88,20 +111,20 @@ void Notepad::onSaveFile()
             }
             else
             {
-                ui->label->setText(fileName);
+                label->setText(fileName);
             }
         }
     }
-    else if((!fileName.isEmpty()) && !(ui->textEdit->toPlainText().isEmpty()))
+    else if((!fileName.isEmpty()) && !(textEdit->toPlainText().isEmpty()))
     {
         QFile fich{fileName};
         if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
         {
-            auto labelFont = ui->label->font();
+            auto labelFont = label->font();
             labelFont.setWeight(QFont::Normal);
-            ui->label->setFont(labelFont);
+            label->setFont(labelFont);
             QTextStream out{&fich};
-            out << ui->textEdit->toPlainText() << Qt::endl;
+            out << textEdit->toPlainText() << Qt::endl;
             isSaved = true;
             QMessageBox::information(this,"Sauvegarde","Sauvegarde Réussie");
         }
@@ -115,7 +138,7 @@ void Notepad::onSaveFile()
 
 void Notepad::onQuit()
 {
-    if(((!fileName.isEmpty()) && !isSaved && !(ui->textEdit->toPlainText().isEmpty()))||(fileName.isEmpty() && !(ui->textEdit->toPlainText().isEmpty())))
+    if(((!fileName.isEmpty()) && !isSaved && !(textEdit->toPlainText().isEmpty()))||(fileName.isEmpty() && !(textEdit->toPlainText().isEmpty())))
     {
         auto reply = QMessageBox::question(this, "Quitter", "Voulez vous sauvegarder ?",QMessageBox::Yes|QMessageBox::No);
         if(reply == QMessageBox::Yes)
@@ -128,30 +151,30 @@ void Notepad::onQuit()
 
 void Notepad::onTextChanged() // Set the weight of the filename to bold to show that the file isn't saved.
 {
-    auto labelFont = ui->label->font();
+    auto labelFont = label->font();
     labelFont.setWeight(99);
-    ui->label->setFont(labelFont);
+    label->setFont(labelFont);
 }
 
 void Notepad::onColorChanged() // Get the color and set the color in the textEdit.
 {
     QColor chosenColor = QColorDialog::getColor("Choisir une couleur");
     QString colorToSet = QString::number(chosenColor.red())+","+QString::number(chosenColor.green())+","+QString::number(chosenColor.blue());
-    setStyleSheet("QTextEdit{color:rgb("+colorToSet+")}");
+    setStyleSheet("QPlainTextEdit{color:rgb("+colorToSet+")}");
 }
 
 void Notepad::onAutoSave()
 {
-    if((ui->autoSaveCheckBox->isChecked()) && (!fileName.isEmpty()))
+    if((autoSaveCheckBox->isChecked()) && (!fileName.isEmpty()))
     {
         QFile fich{fileName};
         if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
         {
-            auto labelFont = ui->label->font();
+            auto labelFont = label->font();
             labelFont.setWeight(QFont::Normal);
-            ui->label->setFont(labelFont);
+            label->setFont(labelFont);
             QTextStream out{&fich};
-            out << ui->textEdit->toPlainText() << Qt::endl;
+            out << textEdit->toPlainText() << Qt::endl;
             isSaved = true;
         }
     }
@@ -159,5 +182,5 @@ void Notepad::onAutoSave()
 
 Notepad::~Notepad()
 {
-    delete ui;
+
 }
