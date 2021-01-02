@@ -23,7 +23,6 @@ Notepad::Notepad(QWidget *parent)
     QVBoxLayout *vboxLayout = new QVBoxLayout();
     vboxLayout->addLayout(hboxLayout);
     vboxLayout->addWidget(textEdit);
-    setLayout(vboxLayout);
     auto central = new QWidget;
     central->setLayout(vboxLayout);
     setCentralWidget(central);
