@@ -18,6 +18,7 @@
 #include <QColor>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QTabWidget>
 #include <QApplication>
 
 class Notepad : public QMainWindow
@@ -29,23 +30,24 @@ public:
     ~Notepad();
 
 private:
-    QString fileName = "";
+    QString fileName();
     bool isSaved = false;
     QPushButton *newFile;
+    QTabWidget *tabView;
     QPushButton *openFile;
     QPushButton *saveFile;
     QPushButton *quit;
     QPushButton *colorText;
-    QPlainTextEdit *textEdit;
-    QLabel *label;
+    int getIndex(const QString &tabName);
     QCheckBox *autoSaveCheckBox;
 private slots:
     void onNewFile();
     void onOpenFile();
     void onSaveFile();
+    void onCloseFile(const int &index);
     void onQuit();
-    void onTextChanged();
     void onColorChanged();
     void onAutoSave();
+    void onTextModified();
 };
 #endif // NOTEPAD_HPP
