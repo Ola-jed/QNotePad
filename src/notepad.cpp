@@ -26,7 +26,7 @@ Notepad::Notepad(QWidget *parent)
     auto central = new QWidget;
     central->setLayout(vboxLayout);
     setCentralWidget(central);
-    setStyleSheet("QPushButton{background-color: rgb(28, 49, 80);color:#f32e69;}QLabel{color:#27fff8;}");
+    setStyleSheet("QPushButton{background-color: rgb(28, 49, 80);color:#ff6;}QLabel{color:#27fff8;}");
     connect(quit,&QPushButton::clicked,this,&Notepad::onQuit);
     connect(newFile,&QPushButton::clicked,this,&Notepad::onNewFile);
     connect(openFile,&QPushButton::clicked,this,&Notepad::onOpenFile);
