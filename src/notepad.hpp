@@ -17,6 +17,7 @@
 #include <QColorDialog>
 #include <QColor>
 #include <QHBoxLayout>
+#include <QFont>
 #include <QVBoxLayout>
 #include <QTabWidget>
 #include <QApplication>
@@ -31,6 +32,7 @@ public:
 
 private:
     QString fileName();
+    bool isEmpty();
     bool isSaved = false;
     QPushButton *newFile;
     QTabWidget *tabView;
