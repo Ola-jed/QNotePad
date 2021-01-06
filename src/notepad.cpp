@@ -3,30 +3,30 @@
 Notepad::Notepad(QWidget *parent)
     : QMainWindow(parent)
 {
-    newFile    = new QPushButton("New");
-    openFile   = new QPushButton("Open");
-    saveFile   = new QPushButton("Save");
-    quit       = new QPushButton("Quit");
-    colorText  = new QPushButton("Color");
-    openFile   = new QPushButton("Open");
+    newFile    = new QPushButton("New",this);
+    openFile   = new QPushButton("Open",this);
+    saveFile   = new QPushButton("Save",this);
+    quit       = new QPushButton("Quit",this);
+    colorText  = new QPushButton("Color",this);
+    openFile   = new QPushButton("Open",this);
     tabView    = new QTabWidget(this);
     tabView->setTabsClosable(true);
     autoSaveCheckBox        = new QCheckBox("AutoSave",this);
-    QHBoxLayout *hboxLayout = new QHBoxLayout();
+    QHBoxLayout *hboxLayout = new QHBoxLayout(this);
     hboxLayout->addWidget(newFile);
     hboxLayout->addWidget(openFile);
     hboxLayout->addWidget(saveFile);
     hboxLayout->addWidget(colorText);
     hboxLayout->addWidget(quit);
     hboxLayout->addWidget(autoSaveCheckBox);
-    QVBoxLayout *vboxLayout = new QVBoxLayout();
+    QVBoxLayout *vboxLayout = new QVBoxLayout(this);
     vboxLayout->addLayout(hboxLayout,1);
     vboxLayout->addWidget(tabView,9);
     setLayout(vboxLayout);
-    auto central = new QWidget;
+    auto central = new QWidget(this);
     central->setLayout(vboxLayout);
     setCentralWidget(central);
-    setStyleSheet("QPushButton{background-color: rgb(28, 49, 80);color:#ff6;}QLabel{color:#27fff8;}");
+    setStyleSheet("QPushButton{background-color: rgb(28, 49, 80);color:#fff;}QLabel{color:#27fff8;}");
     connect(quit,&QPushButton::clicked,this,&Notepad::onQuit);
     connect(newFile,&QPushButton::clicked,this,&Notepad::onNewFile);
     connect(openFile,&QPushButton::clicked,this,&Notepad::onOpenFile);
@@ -176,9 +176,10 @@ void Notepad::onCloseFile(const int &index)
 
 void Notepad::onQuit()
 {
-    if(((!fileName().isEmpty()) && !isSaved &&
-        !(static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty()))||(fileName().isEmpty() &&
-        !(static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty())))
+    if(isEmpty())
+        qApp->quit();
+    else if(((!fileName().isEmpty()) && !isSaved && !(static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty()))
+            ||(fileName().isEmpty() &&!(static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty())))
     {
         auto reply = QMessageBox::question(this, "Quitter", "Voulez vous sauvegarder ?",QMessageBox::Yes|QMessageBox::No);
         if(reply == QMessageBox::Yes)
@@ -220,6 +221,8 @@ void Notepad::onTextModified()
 
 QString Notepad::fileName()
 {
+    if(tabView->count() == 0)
+        return " ";
     return tabView->tabText(tabView->currentIndex());
 }
 
@@ -231,6 +234,11 @@ int Notepad::getIndex(const QString &tabName)
             return i;
     }
     return 1;
+}
+
+bool Notepad::isEmpty()
+{
+    return (tabView->count() == 0);
 }
 
 Notepad::~Notepad()
