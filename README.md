@@ -1,5 +1,6 @@
 # QNotePad
-Notepad application written in c++ with QT
+Notepad application written in c++ with Qt
+
 Run the following commands to compile
 ```bash
 git clone https://github.com/Ola-jed/QNotePad
