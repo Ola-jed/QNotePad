@@ -3,15 +3,16 @@
 Notepad::Notepad(QWidget *parent)
     : QMainWindow(parent)
 {
-    newFile    = new QPushButton("New",this);
-    openFile   = new QPushButton("Open",this);
-    saveFile   = new QPushButton("Save",this);
-    quit       = new QPushButton("Quit",this);
-    colorText  = new QPushButton("Color",this);
-    openFile   = new QPushButton("Open",this);
+    newFile    = new QPushButton(this);
+    openFile   = new QPushButton(this);
+    saveFile   = new QPushButton(this);
+    quit       = new QPushButton(this);
+    colorText  = new QPushButton(this);
     tabView    = new QTabWidget(this);
+
     tabView->setTabsClosable(true);
     autoSaveCheckBox        = new QCheckBox("AutoSave",this);
+
     QHBoxLayout *hboxLayout = new QHBoxLayout(this);
     hboxLayout->addWidget(newFile);
     hboxLayout->addWidget(openFile);
@@ -25,8 +26,16 @@ Notepad::Notepad(QWidget *parent)
     setLayout(vboxLayout);
     auto central = new QWidget(this);
     central->setLayout(vboxLayout);
+
     setCentralWidget(central);
+    setWindowIcon(QIcon("assets/notepad.ico"));
+    newFile->setIcon(QIcon("assets/new.ico"));
+    saveFile->setIcon(QIcon("assets/save.ico"));
+    openFile->setIcon(QIcon("assets/open.ico"));
+    colorText->setIcon(QIcon("assets/color.ico"));
+    quit->setIcon(QIcon("assets/quit.ico"));
     setStyleSheet("QPushButton{background-color: rgb(28, 49, 80);color:#fff;}QLabel{color:#27fff8;}");
+
     connect(quit,&QPushButton::clicked,this,&Notepad::onQuit);
     connect(newFile,&QPushButton::clicked,this,&Notepad::onNewFile);
     connect(openFile,&QPushButton::clicked,this,&Notepad::onOpenFile);
