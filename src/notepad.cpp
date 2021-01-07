@@ -23,11 +23,10 @@ Notepad::Notepad(QWidget *parent)
     QVBoxLayout *vboxLayout = new QVBoxLayout(this);
     vboxLayout->addLayout(hboxLayout,1);
     vboxLayout->addWidget(tabView,9);
-    setLayout(vboxLayout);
     auto central = new QWidget(this);
     central->setLayout(vboxLayout);
-
     setCentralWidget(central);
+
     setWindowIcon(QIcon("assets/notepad.ico"));
     newFile->setIcon(QIcon("assets/new.ico"));
     saveFile->setIcon(QIcon("assets/save.ico"));
@@ -133,7 +132,7 @@ void Notepad::onSaveFile()
         if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
         {
             QTextStream out{&fich};
-            out << static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText() << Qt::endl;
+            out << static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText() << "\n";
             isSaved = true;
             QMessageBox::information(this,"Sauvegarde","Sauvegarde Réussie");
         }
@@ -171,7 +170,7 @@ void Notepad::onCloseFile(const int &index)
         if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
         {
             QTextStream out{&fich};
-            out << static_cast<QPlainTextEdit*>(tabView->widget(index))->toPlainText() << Qt::endl;
+            out << static_cast<QPlainTextEdit*>(tabView->widget(index))->toPlainText() << "\n";
         }
         else
         {
@@ -215,7 +214,7 @@ void Notepad::onAutoSave()
         if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
         {
             QTextStream out{&fich};
-            out << static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText() << Qt::endl;
+            out << static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText() << "\n";
             isSaved = true;
         }
     }
