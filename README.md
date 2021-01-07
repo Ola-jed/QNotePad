@@ -8,7 +8,7 @@ cd QNotePad/src
 qmake -project
 qmake
 make
+./Notepad
 ```
-puis lancer l'exécutable
 
 Si vous possédez l'ide Qt Creator, vous pouvez ouvrir le projet, le compiler et l'exécuter
