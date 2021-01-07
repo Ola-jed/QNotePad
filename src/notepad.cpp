@@ -201,6 +201,7 @@ void Notepad::onQuit()
 
 void Notepad::onColorChanged() // Get the color and set the color in the textEdit.
 {
+    if(tabView->count() == 0) return; // Do not try anything if the editor is empty
     QColor chosenColor = QColorDialog::getColor("Choisir une couleur");
     QString colorToSet = QString::number(chosenColor.red())+","+QString::number(chosenColor.green())+","+QString::number(chosenColor.blue());
     static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet("color:rgb("+colorToSet+")");
