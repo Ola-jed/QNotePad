@@ -1,7 +1,6 @@
 # QNotePad
-Bloc notes codé en C++ avec le framework Qt
-
-Exécuter les commandes suivantes pour compiler
+Notepad application written in c++ with QT
+Run the following commands to compile
 ```bash
 git clone https://github.com/Ola-jed/QNotePad
 cd QNotePad/src
@@ -10,5 +9,4 @@ qmake
 make
 ./Notepad
 ```
-
-Si vous possédez l'ide Qt Creator, vous pouvez ouvrir le projet, le compiler et l'exécuter
+If you use Qt creator or visual studio,you can import the project, build and run
