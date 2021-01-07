@@ -1,6 +1,7 @@
 #ifndef NOTEPAD_HPP
 #define NOTEPAD_HPP
 
+#include <QIcon>
 #include <QMainWindow>
 #include <QString>
 #include <QCheckBox>
