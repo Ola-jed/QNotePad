@@ -52,5 +52,6 @@ private slots:
     void onColorChanged();
     void onAutoSave();
     void onTextModified();
+    void updateTitle();
 };
 #endif // NOTEPAD_HPP
