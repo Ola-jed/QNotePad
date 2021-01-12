@@ -13,14 +13,14 @@ Notepad::Notepad(QWidget *parent)
     tabView->setTabsClosable(true);
     autoSaveCheckBox        = new QCheckBox("AutoSave",this);
 
-    QHBoxLayout *hboxLayout = new QHBoxLayout(this);
+    QHBoxLayout *hboxLayout = new QHBoxLayout();
     hboxLayout->addWidget(newFile);
     hboxLayout->addWidget(openFile);
     hboxLayout->addWidget(saveFile);
     hboxLayout->addWidget(colorText);
     hboxLayout->addWidget(quit);
     hboxLayout->addWidget(autoSaveCheckBox);
-    QVBoxLayout *vboxLayout = new QVBoxLayout(this);
+    QVBoxLayout *vboxLayout = new QVBoxLayout();
     vboxLayout->addLayout(hboxLayout,1);
     vboxLayout->addWidget(tabView,9);
     auto central = new QWidget(this);
@@ -34,14 +34,17 @@ Notepad::Notepad(QWidget *parent)
     colorText->setIcon(QIcon("assets/color.ico"));
     quit->setIcon(QIcon("assets/quit.ico"));
     setStyleSheet("QPushButton{background-color: rgb(28, 49, 80);color:#fff;}QLabel{color:#27fff8;}");
+    tabView->setStyleSheet("QTabBar::tab{width:100px;background:#0E3146;height:25px;border-style:solid;border-color:#898989;border-width:2px} QTabBar::tab:selected{background:#343435;}");
+    tabView->setElideMode(Qt::ElideRight);
 
     connect(quit,&QPushButton::clicked,this,&Notepad::onQuit);
     connect(newFile,&QPushButton::clicked,this,&Notepad::onNewFile);
     connect(openFile,&QPushButton::clicked,this,&Notepad::onOpenFile);
     connect(saveFile,&QPushButton::clicked,this,&Notepad::onSaveFile);
     connect(static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex())),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
+    connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateTitle);
     connect(colorText,&QPushButton::clicked,this,&Notepad::onColorChanged);
-    connect(tabView,SIGNAL(tabCloseRequested(int)),this,SLOT(onCloseFile(int)));
+    connect(tabView,&QTabWidget::tabCloseRequested,this,&Notepad::onCloseFile);
     connect(static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex())),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
 }
 
@@ -228,6 +231,11 @@ void Notepad::onTextModified()
     }
 }
 
+void Notepad::updateTitle()
+{
+    setWindowTitle(tabView->tabText(tabView->currentIndex()));
+}
+
 QString Notepad::fileName()
 {
     if(tabView->count() == 0)
@@ -251,6 +259,4 @@ bool Notepad::isEmpty()
 }
 
 Notepad::~Notepad()
-{
-
-}
+{}
