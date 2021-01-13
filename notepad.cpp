@@ -15,6 +15,7 @@ Notepad::Notepad(QWidget *parent)
     tabView          = new QTabWidget(this);
     menuBar          = new QMenuBar(this);
     autoSaveCheckBox = new QCheckBox("AutoSave",this);
+    positionBar      = new QStatusBar(this);
 
     // Shortcuts.
     newFile->setShortcut(QKeySequence::New);
@@ -22,7 +23,9 @@ Notepad::Notepad(QWidget *parent)
     saveFile->setShortcut(QKeySequence::Save);
     quit->setShortcut(QKeySequence::Quit);
 
+    // Creating a blank plaintextedit.
     tabView->setTabsClosable(true);
+    tabView->addTab(new QPlainTextEdit(this),"New File");
 
     file->addAction(newFile);
     file->addAction(openFile);
@@ -42,14 +45,27 @@ Notepad::Notepad(QWidget *parent)
 
     QVBoxLayout *vboxLayout = new QVBoxLayout();
     vboxLayout->addLayout(topLayout,1);
-    vboxLayout->addWidget(tabView,9);
+    vboxLayout->addWidget(tabView,18);
+    vboxLayout->addWidget(positionBar,1);
     auto central = new QWidget(this);
     central->setLayout(vboxLayout);
     setCentralWidget(central);
 
+    // Style.
     setWindowIcon(QIcon("assets/notepad.ico"));
-    setStyleSheet("QMenu{background-color: rgb(28, 49, 80);}QLabel{color:#27fff8;} QMenuBar {spacing: 3px;} QMenuBar::item {padding: 1px 4px;background: transparent;border-radius: 4px;} QMenuBar::item:selected {background: #a8a8a8;} QMenuBar::item:pressed {background: #888888;}");
-    tabView->setStyleSheet("QTabBar::tab{width:100px;background:#0E3146;height:25px;border-style:solid;border-color:#898989;border-width:2px} QTabBar::tab:selected{background:#343435;}");
+    setStyleSheet("QMenu{background-color: rgb(28, 49, 80);}QLabel{color:#27fff8;} QMenuBar{spacing: 3px;}"
+        "QMenuBar::item {padding: 1px 4px;background: transparent;border-radius: 4px;}"
+        "QMenuBar::item:selected {background: #a8a8a8;} QMenuBar::item:pressed {background: #888;}");
+    tabView->setStyleSheet("QTabWidget::pane{border-top: 2px solid #C2C7CB;}"
+        "QTabWidget::tab-bar {left: 5px;}"
+        "QTabBar::tab {background:#0E3146;border:2px solid #C4C4C3;border-bottom-color:#C2C7CB;border-top-left-radius:4px;border-top-right-radius:4px;min-width: 8ex;padding: 2px;}"
+        "QTabBar::tab:selected{background: #343435;} QTabBar::tab:hover{background: #626263;}"
+        "QTabBar::tab:selected{border-color: #9B9B9B;border-bottom-color: #C2C7CB;}"
+        "QTabBar::tab:!selected {margin-top: 2px;}"
+        "QTabBar::tab:selected {margin-left: -4px;margin-right: -4px;}"
+        "QTabBar::tab:first:selected{margin-left: 0;}"
+        "QTabBar::tab:last:selected{margin-right: 0;}"
+        "QTabBar::tab:only-one{margin: 0;}");
     tabView->setElideMode(Qt::ElideRight);
 
     connect(quit,&QAction::triggered,this,&Notepad::onQuit);
@@ -58,11 +74,13 @@ Notepad::Notepad(QWidget *parent)
     connect(saveFile,&QAction::triggered,this,&Notepad::onSaveFile);
     connect(terminal,&QAction::triggered,this,&Notepad::onTerminal);
     connect(fontChange,&QAction::triggered,this,&Notepad::onFont);
-    connect(static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex())),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateTitle);
     connect(colorText,&QAction::triggered,this,&Notepad::onColorChanged);
     connect(tabView,&QTabWidget::tabCloseRequested,this,&Notepad::onCloseFile);
-    connect(static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex())),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
+    connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateConnect);
+    connect(static_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
+    connect(static_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
+    connect(static_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
 }
 
 void Notepad::onNewFile()
@@ -142,6 +160,7 @@ void Notepad::onSaveFile()
             }
             else
             {
+                setWindowTitle("QNotePad");
                 tabView->setTabText(tabView->currentIndex(),filename);
             }
         }
@@ -153,6 +172,7 @@ void Notepad::onSaveFile()
         {
             QTextStream out{&fich};
             out << static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText() << "\n";
+            setWindowTitle("QNotePad");
             isSaved = true;
             QMessageBox::information(this,"Sauvegarde","Sauvegarde Réussie");
         }
@@ -246,6 +266,7 @@ void Notepad::onAutoSave()
             QTextStream out{&fich};
             out << static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText() << "\n";
             isSaved = true;
+            setWindowTitle("QNotePad");
         }
     }
 }
@@ -254,6 +275,7 @@ void Notepad::onTextModified()
 {
     if(!autoSaveCheckBox->isChecked())
     {
+        setWindowTitle("QNotePad (file modified)");
         isSaved = false;
     }
 }
@@ -284,6 +306,20 @@ void Notepad::updateTitle()
     setWindowTitle(tabView->tabText(tabView->currentIndex()));
 }
 
+void Notepad::updateCursorPosition()
+{
+    int line    = static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->textCursor().blockNumber();
+    int columnn = static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->textCursor().positionInBlock();
+    positionBar->showMessage("Line : "+QString::number(line)+" col : "+QString::number(columnn));
+}
+
+void Notepad::updateConnect()
+{
+    connect(static_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
+    connect(static_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
+    connect(static_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
+}
+
 QString Notepad::fileName()
 {
     if(tabView->count() == 0)
@@ -307,6 +343,4 @@ bool Notepad::isEmpty()
 }
 
 Notepad::~Notepad()
-{
-
-}
+{}
