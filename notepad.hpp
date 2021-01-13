@@ -5,7 +5,8 @@
 #include <QMainWindow>
 #include <QString>
 #include <QCheckBox>
-#include <QPushButton>
+#include <QProcess>
+#include <QFontDialog>
 #include <QPlainTextEdit>
 #include <QMessageBox>
 #include <QInputDialog>
@@ -21,6 +22,9 @@
 #include <QFont>
 #include <QVBoxLayout>
 #include <QTabWidget>
+#include <QMenu>
+#include <QMenuBar>
+#include <QAction>
 #include <QApplication>
 
 class Notepad : public QMainWindow
@@ -35,12 +39,17 @@ private:
     QString fileName();
     bool isEmpty();
     bool isSaved = false;
-    QPushButton *newFile;
+    QMenuBar *menuBar;
+    QMenu *file;
+    QMenu *custom;
+    QAction *newFile;
+    QAction *openFile;
+    QAction *saveFile;
+    QAction *quit;
+    QAction *colorText;
+    QAction *fontChange;
+    QAction *terminal;
     QTabWidget *tabView;
-    QPushButton *openFile;
-    QPushButton *saveFile;
-    QPushButton *quit;
-    QPushButton *colorText;
     int getIndex(const QString &tabName);
     QCheckBox *autoSaveCheckBox;
 private slots:
@@ -52,6 +61,8 @@ private slots:
     void onColorChanged();
     void onAutoSave();
     void onTextModified();
+    void onTerminal();
+    void onFont();
     void updateTitle();
 };
 #endif // NOTEPAD_HPP

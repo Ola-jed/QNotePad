@@ -3,47 +3,64 @@
 Notepad::Notepad(QWidget *parent)
     : QMainWindow(parent)
 {
-    newFile    = new QPushButton(this);
-    openFile   = new QPushButton(this);
-    saveFile   = new QPushButton(this);
-    quit       = new QPushButton(this);
-    colorText  = new QPushButton(this);
-    tabView    = new QTabWidget(this);
+    file             = new QMenu("File",this);
+    custom           = new QMenu("Customize",this);
+    newFile          = new QAction(QIcon("assets/new.ico"),"New",this);
+    openFile         = new QAction(QIcon("assets/open.ico"),"Open",this);
+    saveFile         = new QAction(QIcon("assets/save.ico"),"Save",this);
+    quit             = new QAction(QIcon("assets/quit.ico"),"Quit",this);
+    colorText        = new QAction(QIcon("assets/new.ico"),"Color",this);
+    fontChange       = new QAction(QIcon("assets/font.ico"),"Font",this);
+    terminal         = new QAction(QIcon("assets/terminal.ico"),"",this);
+    tabView          = new QTabWidget(this);
+    menuBar          = new QMenuBar(this);
+    autoSaveCheckBox = new QCheckBox("AutoSave",this);
+
+    // Shortcuts.
+    newFile->setShortcut(QKeySequence::New);
+    openFile->setShortcut(QKeySequence::Open);
+    saveFile->setShortcut(QKeySequence::Save);
+    quit->setShortcut(QKeySequence::Quit);
 
     tabView->setTabsClosable(true);
-    autoSaveCheckBox        = new QCheckBox("AutoSave",this);
 
-    QHBoxLayout *hboxLayout = new QHBoxLayout();
-    hboxLayout->addWidget(newFile);
-    hboxLayout->addWidget(openFile);
-    hboxLayout->addWidget(saveFile);
-    hboxLayout->addWidget(colorText);
-    hboxLayout->addWidget(quit);
-    hboxLayout->addWidget(autoSaveCheckBox);
+    file->addAction(newFile);
+    file->addAction(openFile);
+    file->addAction(saveFile);
+    file->addAction(quit);
+    custom->addAction(colorText);
+    custom->addAction(fontChange);
+    menuBar->addMenu(file);
+    menuBar->addSeparator();
+    menuBar->addMenu(custom);
+    menuBar->addSeparator();
+    menuBar->addAction(terminal);
+
+    QHBoxLayout *topLayout = new QHBoxLayout();
+    topLayout->addWidget(menuBar,5);
+    topLayout->addWidget(autoSaveCheckBox,2);
+
     QVBoxLayout *vboxLayout = new QVBoxLayout();
-    vboxLayout->addLayout(hboxLayout,1);
+    vboxLayout->addLayout(topLayout,1);
     vboxLayout->addWidget(tabView,9);
     auto central = new QWidget(this);
     central->setLayout(vboxLayout);
     setCentralWidget(central);
 
     setWindowIcon(QIcon("assets/notepad.ico"));
-    newFile->setIcon(QIcon("assets/new.ico"));
-    saveFile->setIcon(QIcon("assets/save.ico"));
-    openFile->setIcon(QIcon("assets/open.ico"));
-    colorText->setIcon(QIcon("assets/color.ico"));
-    quit->setIcon(QIcon("assets/quit.ico"));
-    setStyleSheet("QPushButton{background-color: rgb(28, 49, 80);color:#fff;}QLabel{color:#27fff8;}");
+    setStyleSheet("QMenu{background-color: rgb(28, 49, 80);}QLabel{color:#27fff8;} QMenuBar {spacing: 3px;} QMenuBar::item {padding: 1px 4px;background: transparent;border-radius: 4px;} QMenuBar::item:selected {background: #a8a8a8;} QMenuBar::item:pressed {background: #888888;}");
     tabView->setStyleSheet("QTabBar::tab{width:100px;background:#0E3146;height:25px;border-style:solid;border-color:#898989;border-width:2px} QTabBar::tab:selected{background:#343435;}");
     tabView->setElideMode(Qt::ElideRight);
 
-    connect(quit,&QPushButton::clicked,this,&Notepad::onQuit);
-    connect(newFile,&QPushButton::clicked,this,&Notepad::onNewFile);
-    connect(openFile,&QPushButton::clicked,this,&Notepad::onOpenFile);
-    connect(saveFile,&QPushButton::clicked,this,&Notepad::onSaveFile);
+    connect(quit,&QAction::triggered,this,&Notepad::onQuit);
+    connect(newFile,&QAction::triggered,this,&Notepad::onNewFile);
+    connect(openFile,&QAction::triggered,this,&Notepad::onOpenFile);
+    connect(saveFile,&QAction::triggered,this,&Notepad::onSaveFile);
+    connect(terminal,&QAction::triggered,this,&Notepad::onTerminal);
+    connect(fontChange,&QAction::triggered,this,&Notepad::onFont);
     connect(static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex())),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateTitle);
-    connect(colorText,&QPushButton::clicked,this,&Notepad::onColorChanged);
+    connect(colorText,&QAction::triggered,this,&Notepad::onColorChanged);
     connect(tabView,&QTabWidget::tabCloseRequested,this,&Notepad::onCloseFile);
     connect(static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex())),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
 }
@@ -209,6 +226,16 @@ void Notepad::onColorChanged() // Get the color and set the color in the textEdi
     static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet("color:rgb("+colorToSet+")");
 }
 
+void Notepad::onFont()
+{
+    bool ok;
+    QFont font = QFontDialog::getFont(&ok, QFont("Times", 12), this);
+    if(ok)
+    {
+        static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setFont(font);
+    }
+}
+
 void Notepad::onAutoSave()
 {
     if((autoSaveCheckBox->isChecked()) && (!fileName().isEmpty()))
@@ -228,6 +255,27 @@ void Notepad::onTextModified()
     if(!autoSaveCheckBox->isChecked())
     {
         isSaved = false;
+    }
+}
+
+void Notepad::onTerminal()
+{
+//    QProcess *term = new QProcess(this);
+    if((tabView->count() > 0) && (tabView->currentIndex() >= 0))
+    {
+        QDir fileDir{QFileInfo(fileName()).absoluteDir()};
+        QString path      = fileDir.absolutePath();
+        QProcess *process = new QProcess(this);
+        QString exec      = "gnome-terminal";
+        process->setWorkingDirectory(path);
+        process->start(exec,QStringList{});
+    }
+    else
+    {
+        QProcess *process = new QProcess(this);
+        QString exec = "gnome-terminal";
+        process->setWorkingDirectory(QDir::home().absolutePath());
+        process->start(exec,QStringList{});
     }
 }
 
@@ -259,4 +307,6 @@ bool Notepad::isEmpty()
 }
 
 Notepad::~Notepad()
-{}
+{
+
+}
