@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QFile>
+#include <QStatusBar>
 #include <QFont>
 #include <QLabel>
 #include <QTextStream>
@@ -49,6 +50,7 @@ private:
     QAction *colorText;
     QAction *fontChange;
     QAction *terminal;
+    QStatusBar *positionBar;
     QTabWidget *tabView;
     int getIndex(const QString &tabName);
     QCheckBox *autoSaveCheckBox;
@@ -64,5 +66,7 @@ private slots:
     void onTerminal();
     void onFont();
     void updateTitle();
+    void updateCursorPosition();
+    void updateConnect();
 };
 #endif // NOTEPAD_HPP
