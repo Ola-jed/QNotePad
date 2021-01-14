@@ -9,7 +9,8 @@ Notepad::Notepad(QWidget *parent)
     openFile         = new QAction(QIcon("assets/open.ico"),"Open",this);
     saveFile         = new QAction(QIcon("assets/save.ico"),"Save",this);
     quit             = new QAction(QIcon("assets/quit.ico"),"Quit",this);
-    colorText        = new QAction(QIcon("assets/new.ico"),"Color",this);
+    colorText        = new QAction(QIcon("assets/color.ico"),"Color",this);
+    colorBackground  = new QAction(QIcon("assets/background-color"),"Background Color",this);
     fontChange       = new QAction(QIcon("assets/font.ico"),"Font",this);
     terminal         = new QAction(QIcon("assets/terminal.ico"),"",this);
     tabView          = new QTabWidget(this);
@@ -32,6 +33,7 @@ Notepad::Notepad(QWidget *parent)
     file->addAction(saveFile);
     file->addAction(quit);
     custom->addAction(colorText);
+    custom->addAction(colorBackground);
     custom->addAction(fontChange);
     menuBar->addMenu(file);
     menuBar->addSeparator();
@@ -76,6 +78,7 @@ Notepad::Notepad(QWidget *parent)
     connect(fontChange,&QAction::triggered,this,&Notepad::onFont);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateTitle);
     connect(colorText,&QAction::triggered,this,&Notepad::onColorChanged);
+    connect(colorBackground,&QAction::triggered,this,&Notepad::onBackgroundColorChanged);
     connect(tabView,&QTabWidget::tabCloseRequested,this,&Notepad::onCloseFile);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateConnect);
     connect(static_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
@@ -238,12 +241,21 @@ void Notepad::onQuit()
     qApp->quit();
 }
 
+// Color.
 void Notepad::onColorChanged() // Get the color and set the color in the textEdit.
 {
     if(isEmpty()) return; // Do not try anything if the editor is empty
     QColor chosenColor = QColorDialog::getColor("Choisir une couleur");
     QString colorToSet = QString::number(chosenColor.red())+","+QString::number(chosenColor.green())+","+QString::number(chosenColor.blue());
-    static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet("color:rgb("+colorToSet+")");
+    static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet("color:rgb("+colorToSet+");");
+}
+
+void Notepad::onBackgroundColorChanged()
+{
+    if(isEmpty()) return; // Do not try anything if the editor is empty
+    QColor chosenColor = QColorDialog::getColor("Choisir une couleur");
+    QString colorToSet = QString::number(chosenColor.red())+","+QString::number(chosenColor.green())+","+QString::number(chosenColor.blue());
+    static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet(static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->styleSheet()+" background:rgb("+colorToSet+");");
 }
 
 void Notepad::onFont()

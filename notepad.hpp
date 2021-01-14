@@ -48,6 +48,7 @@ private:
     QAction *saveFile;
     QAction *quit;
     QAction *colorText;
+    QAction *colorBackground;
     QAction *fontChange;
     QAction *terminal;
     QStatusBar *positionBar;
@@ -61,6 +62,7 @@ private slots:
     void onCloseFile(const int &index);
     void onQuit();
     void onColorChanged();
+    void onBackgroundColorChanged();
     void onAutoSave();
     void onTextModified();
     void onTerminal();
