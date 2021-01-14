@@ -247,7 +247,7 @@ void Notepad::onColorChanged() // Get the color and set the color in the textEdi
     if(isEmpty()) return; // Do not try anything if the editor is empty
     QColor chosenColor = QColorDialog::getColor("Choisir une couleur");
     QString colorToSet = QString::number(chosenColor.red())+","+QString::number(chosenColor.green())+","+QString::number(chosenColor.blue());
-    static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet("color:rgb("+colorToSet+");");
+    static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet(static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->styleSheet()+" color:rgb("+colorToSet+");");
 }
 
 void Notepad::onBackgroundColorChanged()
@@ -294,20 +294,23 @@ void Notepad::onTextModified()
 
 void Notepad::onTerminal()
 {
-//    QProcess *term = new QProcess(this);
+    QString exec;
+    #if (defined (_WIN32) || defined (_WIN64))
+        exec = "cmd.exe";
+    #elif (defined (LINUX) || defined (__linux__))
+        exec = "gnome-terminal";
+    #endif
     if((tabView->count() > 0) && (tabView->currentIndex() >= 0))
     {
         QDir fileDir{QFileInfo(fileName()).absoluteDir()};
         QString path      = fileDir.absolutePath();
         QProcess *process = new QProcess(this);
-        QString exec      = "gnome-terminal";
         process->setWorkingDirectory(path);
         process->start(exec,QStringList{});
     }
     else
     {
         QProcess *process = new QProcess(this);
-        QString exec = "gnome-terminal";
         process->setWorkingDirectory(QDir::home().absolutePath());
         process->start(exec,QStringList{});
     }
