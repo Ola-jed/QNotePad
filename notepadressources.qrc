@@ -1,10 +1,14 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource>
-    <file>assets/notepad.ico</file>
-    <file>assets/new.ico</file>
-    <file>assets/save.ico</file>
-    <file>assets/open.ico</file>
-    <file>assets/color.ico</file>
-    <file>assets/quit.ico</file>
-</qresource>
+<RCC>
+    <qresource prefix="/">
+        <file>assets/notepad.ico</file>
+        <file>assets/new.ico</file>
+        <file>assets/save.ico</file>
+        <file>assets/open.ico</file>
+        <file>assets/color.ico</file>
+        <file>assets/quit.ico</file>
+        <file>assets/autosave.ico</file>
+        <file>assets/background-color.ico</file>
+        <file>assets/font.ico</file>
+        <file>assets/terminal.ico</file>
+    </qresource>
 </RCC>
