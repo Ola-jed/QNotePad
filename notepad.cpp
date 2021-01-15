@@ -313,9 +313,9 @@ void Notepad::synthaxicHighlighting()
         {
             QList<QTextEdit::ExtraSelection> extraSelections {qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->extraSelections()};
             QString text = block.text();
-            int p;
             foreach(auto highlight,keywordsList)
             {
+                int p;
                 if(((p = text.indexOf(highlight)) != -1) && (text.mid(p,highlight.length()+1) == highlight+" "))
                 {
                     qDebug() << (highlight.length());
