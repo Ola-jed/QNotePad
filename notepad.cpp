@@ -70,7 +70,7 @@ Notepad::Notepad(QWidget *parent)
         "QTabWidget::tab-bar {left: 5px;}"
         "QTabBar::tab {background:#0E3146;border:2px solid #C4C4C3;border-bottom-color:#C2C7CB;border-top-left-radius:4px;border-top-right-radius:4px;min-width: 8ex;padding: 2px;}"
         "QTabBar::tab:selected{background: #343435;} QTabBar::tab:hover{background: #626263;}"
-        "QTabBar::tab:selected{border-color: #9B9B9B;border-bottom-color: #C2C7CB;}"
+        "QTabBar::tab:selected{border-color: #9B9B9B;border-bottom-color:#C2C7CB;}"
         "QTabBar::tab:!selected {margin-top: 2px;}"
         "QTabBar::tab:selected {margin-left: -4px;margin-right: -4px;}"
         "QTabBar::tab:first:selected{margin-left: 0;}"
