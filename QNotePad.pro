@@ -13,6 +13,7 @@ SOURCES += \
     notepad.cpp
 
 HEADERS += \
+    keywords.hpp \
     notepad.hpp
 
 # Default rules for deployment.

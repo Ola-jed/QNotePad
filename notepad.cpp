@@ -12,7 +12,7 @@ Notepad::Notepad(QWidget *parent)
     quit             = new QAction(QIcon("assets/quit.ico"),"Quit",this);
     colorText        = new QAction(QIcon("assets/color.ico"),"Color",this);
     colorBackground  = new QAction(QIcon("assets/background-color"),"Background Color",this);
-    highlightLine    = new QAction(QIcon("assets/highlight.ico"),"Highlight current line",this);
+    highlightSynthax = new QAction(QIcon("assets/highlight.ico"),"Synthax Highlighting",this);
     fontChange       = new QAction(QIcon("assets/font.ico"),"Font",this);
     terminal         = new QAction(QIcon("assets/terminal.ico"),"",this);
     tabView          = new QTabWidget(this);
@@ -20,8 +20,8 @@ Notepad::Notepad(QWidget *parent)
     autoSaveCheckBox = new QCheckBox("AutoSave",this);
     positionBar      = new QStatusBar(this);
 
-    highlightLine->setCheckable(true);
-    highlightLine->setChecked(false);
+    highlightSynthax->setCheckable(true);
+    highlightSynthax->setChecked(true);
 
     // Shortcuts.
     newFile->setShortcut(QKeySequence::New);
@@ -39,7 +39,7 @@ Notepad::Notepad(QWidget *parent)
     file->addAction(quit);
     custom->addAction(colorText);
     custom->addAction(colorBackground);
-    custom->addAction(highlightLine);
+    custom->addAction(highlightSynthax);
     custom->addAction(fontChange);
     menuBar->addMenu(file);
     menuBar->addSeparator();
@@ -70,7 +70,7 @@ Notepad::Notepad(QWidget *parent)
         "QTabWidget::tab-bar {left: 5px;}"
         "QTabBar::tab {background:#0E3146;border:2px solid #C4C4C3;border-bottom-color:#C2C7CB;border-top-left-radius:4px;border-top-right-radius:4px;min-width: 8ex;padding: 2px;}"
         "QTabBar::tab:selected{background: #343435;} QTabBar::tab:hover{background: #626263;}"
-        "QTabBar::tab:selected{border-color: #9B9B9B;border-bottom-color:#C2C7CB;}"
+        "QTabBar::tab:selected{border-color: #9B9B9B;border-bottom-color: #C2C7CB;}"
         "QTabBar::tab:!selected {margin-top: 2px;}"
         "QTabBar::tab:selected {margin-left: -4px;margin-right: -4px;}"
         "QTabBar::tab:first:selected{margin-left: 0;}"
@@ -90,11 +90,12 @@ Notepad::Notepad(QWidget *parent)
     connect(tabView,&QTabWidget::tabCloseRequested,this,&Notepad::onCloseFile);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateConnect);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
-    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::highlightCurrentLine);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
+    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::synthaxicHighlighting);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
 }
 
+// File gestion.
 void Notepad::onNewFile()
 {
     auto filename = QFileDialog::getSaveFileName(this);
@@ -196,6 +197,21 @@ void Notepad::onSaveFile()
     }
 }
 
+void Notepad::onAutoSave()
+{
+    if((autoSaveCheckBox->isChecked()) && (!fileName().isEmpty()))
+    {
+        QFile fich{fileName()};
+        if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
+        {
+            QTextStream out{&fich};
+            out << qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText() << "\n";
+            isSaved = true;
+            setWindowTitle("QNotePad");
+        }
+    }
+}
+
 void Notepad::onCloseFile(const int &index)
 {
     if(index < 0) return;
@@ -234,6 +250,15 @@ void Notepad::onCloseFile(const int &index)
     tabItem = nullptr;
 }
 
+void Notepad::onTextModified()
+{
+    if(!autoSaveCheckBox->isChecked())
+    {
+        setWindowTitle("QNotePad (file modified)");
+        isSaved = false;
+    }
+}
+
 void Notepad::onQuit()
 {
     if(isEmpty())
@@ -267,6 +292,7 @@ void Notepad::onBackgroundColorChanged()
     qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->styleSheet()+" background:rgb("+colorToSet+");");
 }
 
+// Font customization
 void Notepad::onFont()
 {
     bool ok;
@@ -277,27 +303,33 @@ void Notepad::onFont()
     }
 }
 
-void Notepad::onAutoSave()
+// Synthax Highlighting module
+void Notepad::synthaxicHighlighting()
 {
-    if((autoSaveCheckBox->isChecked()) && (!fileName().isEmpty()))
+    for(auto i = 0; i != qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->blockCount(); i++)
     {
-        QFile fich{fileName()};
-        if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
+        QTextBlock block = qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->document()->findBlockByLineNumber(i);
+        if(block.isValid())
         {
-            QTextStream out{&fich};
-            out << qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText() << "\n";
-            isSaved = true;
-            setWindowTitle("QNotePad");
+            QList<QTextEdit::ExtraSelection> extraSelections {qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->extraSelections()};
+            QString text = block.text();
+            int p;
+            foreach(auto highlight,keywordsList)
+            {
+                if(((p = text.indexOf(highlight)) != -1) && (text.mid(p,highlight.length()+1) == highlight+" "))
+                {
+                    qDebug() << (highlight.length());
+                    int pos = block.position() + p;
+                    QTextEdit::ExtraSelection selection{};
+                    selection.cursor = QTextCursor(qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->document());
+                    selection.cursor.setPosition( pos );
+                    selection.cursor.setPosition( pos+highlight.length(), QTextCursor::KeepAnchor );
+                    selection.format.setForeground(Qt::darkCyan);
+                    extraSelections.append(selection);
+                    qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->setExtraSelections(extraSelections);
+                }
+            }
         }
-    }
-}
-
-void Notepad::onTextModified()
-{
-    if(!autoSaveCheckBox->isChecked())
-    {
-        setWindowTitle("QNotePad (file modified)");
-        isSaved = false;
     }
 }
 
@@ -338,32 +370,11 @@ void Notepad::updateCursorPosition()
     positionBar->showMessage("Line : "+QString::number(line)+" col : "+QString::number(columnn));
 }
 
-// Highlighting the line during a 1s to show the current line
-void Notepad::highlightCurrentLine()
-{
-    if ((!qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->isReadOnly()) && highlightLine->isChecked())
-    {
-        QList<QTextEdit::ExtraSelection> extraSelections;
-        QTextEdit::ExtraSelection selection;
-        QColor lineColor = QColor(34, 57, 71).lighter(160);
-        selection.format.setBackground(lineColor);
-        selection.format.setProperty(QTextFormat::FullWidthSelection, true);
-        selection.cursor = qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->textCursor();
-        selection.cursor.clearSelection();
-        extraSelections.append(selection);
-        qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setExtraSelections(extraSelections);
-    }
-    else
-    {
-        qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setExtraSelections({});
-    }
-}
-
 // Update the slots connexion when the tab is changed
 void Notepad::updateConnect()
 {
+    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::synthaxicHighlighting);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
-    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::highlightCurrentLine);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
 }

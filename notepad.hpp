@@ -1,11 +1,11 @@
 #ifndef NOTEPAD_HPP
 #define NOTEPAD_HPP
 
+#include "keywords.hpp"
 #include <QScreen>
 #include <QStyle>
 #include <QIcon>
 #include <QMainWindow>
-#include <QString>
 #include <QCheckBox>
 #include <QProcess>
 #include <QFontDialog>
@@ -23,7 +23,10 @@
 #include <QColor>
 #include <QHBoxLayout>
 #include <QFont>
+#include <QDebug>
+#include <QTextDocument>
 #include <QVBoxLayout>
+#include <QTextBlock>
 #include <QTabWidget>
 #include <QMenu>
 #include <QMenuBar>
@@ -51,7 +54,7 @@ private:
     QAction *quit;
     QAction *colorText;
     QAction *colorBackground;
-    QAction *highlightLine;
+    QAction *highlightSynthax;
     QAction *fontChange;
     QAction *terminal;
     QStatusBar *positionBar;
@@ -73,6 +76,6 @@ private slots:
     void updateTitle();
     void updateCursorPosition();
     void updateConnect();
-    void highlightCurrentLine();
+    void synthaxicHighlighting();
 };
 #endif // NOTEPAD_HPP
