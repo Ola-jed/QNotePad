@@ -10,5 +10,6 @@
         <file>assets/background-color.ico</file>
         <file>assets/font.ico</file>
         <file>assets/terminal.ico</file>
+        <file>assets/highlight.ico</file>
     </qresource>
 </RCC>

@@ -51,6 +51,7 @@ private:
     QAction *quit;
     QAction *colorText;
     QAction *colorBackground;
+    QAction *highlightLine;
     QAction *fontChange;
     QAction *terminal;
     QStatusBar *positionBar;
@@ -72,5 +73,6 @@ private slots:
     void updateTitle();
     void updateCursorPosition();
     void updateConnect();
+    void highlightCurrentLine();
 };
 #endif // NOTEPAD_HPP

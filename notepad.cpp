@@ -3,6 +3,7 @@
 Notepad::Notepad(QWidget *parent)
     : QMainWindow(parent)
 {
+    // Creationg the items.
     file             = new QMenu("File",this);
     custom           = new QMenu("Customize",this);
     newFile          = new QAction(QIcon("assets/new.ico"),"New",this);
@@ -11,12 +12,16 @@ Notepad::Notepad(QWidget *parent)
     quit             = new QAction(QIcon("assets/quit.ico"),"Quit",this);
     colorText        = new QAction(QIcon("assets/color.ico"),"Color",this);
     colorBackground  = new QAction(QIcon("assets/background-color"),"Background Color",this);
+    highlightLine    = new QAction(QIcon("assets/highlight.ico"),"Highlight current line",this);
     fontChange       = new QAction(QIcon("assets/font.ico"),"Font",this);
     terminal         = new QAction(QIcon("assets/terminal.ico"),"",this);
     tabView          = new QTabWidget(this);
     menuBar          = new QMenuBar(this);
     autoSaveCheckBox = new QCheckBox("AutoSave",this);
     positionBar      = new QStatusBar(this);
+
+    highlightLine->setCheckable(true);
+    highlightLine->setChecked(false);
 
     // Shortcuts.
     newFile->setShortcut(QKeySequence::New);
@@ -34,6 +39,7 @@ Notepad::Notepad(QWidget *parent)
     file->addAction(quit);
     custom->addAction(colorText);
     custom->addAction(colorBackground);
+    custom->addAction(highlightLine);
     custom->addAction(fontChange);
     menuBar->addMenu(file);
     menuBar->addSeparator();
@@ -47,7 +53,7 @@ Notepad::Notepad(QWidget *parent)
 
     QVBoxLayout *vboxLayout = new QVBoxLayout();
     vboxLayout->addLayout(topLayout,1);
-    vboxLayout->addWidget(tabView,18);
+    vboxLayout->addWidget(tabView,28);
     vboxLayout->addWidget(positionBar,1);
     auto central = new QWidget(this);
     central->setLayout(vboxLayout);
@@ -56,7 +62,8 @@ Notepad::Notepad(QWidget *parent)
     // Style.
     setGeometry(QStyle::alignedRect(Qt::LeftToRight,Qt::AlignCenter,size(),QGuiApplication::primaryScreen()->availableGeometry()));
     setWindowIcon(QIcon("assets/notepad.ico"));
-    setStyleSheet("QMenu{background-color: rgb(28, 49, 80);}QLabel{color:#27fff8;} QMenuBar{spacing: 3px;}"
+    setStyleSheet("QMenu{background-color: rgb(28, 49, 80);}"
+        "QLabel{color:#27fff8;} QMenuBar{spacing: 3px;}"
         "QMenuBar::item {padding: 1px 4px;background: transparent;border-radius: 4px;}"
         "QMenuBar::item:selected {background: #a8a8a8;} QMenuBar::item:pressed {background: #888;}");
     tabView->setStyleSheet("QTabWidget::pane{border-top: 2px solid #C2C7CB;}"
@@ -83,6 +90,7 @@ Notepad::Notepad(QWidget *parent)
     connect(tabView,&QTabWidget::tabCloseRequested,this,&Notepad::onCloseFile);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateConnect);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
+    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::highlightCurrentLine);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
 }
@@ -293,6 +301,7 @@ void Notepad::onTextModified()
     }
 }
 
+// Open a terminal in the current directory, it depends on the os
 void Notepad::onTerminal()
 {
     QString exec;
@@ -329,9 +338,32 @@ void Notepad::updateCursorPosition()
     positionBar->showMessage("Line : "+QString::number(line)+" col : "+QString::number(columnn));
 }
 
+// Highlighting the line during a 1s to show the current line
+void Notepad::highlightCurrentLine()
+{
+    if ((!qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->isReadOnly()) && highlightLine->isChecked())
+    {
+        QList<QTextEdit::ExtraSelection> extraSelections;
+        QTextEdit::ExtraSelection selection;
+        QColor lineColor = QColor(34, 57, 71).lighter(160);
+        selection.format.setBackground(lineColor);
+        selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+        selection.cursor = qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->textCursor();
+        selection.cursor.clearSelection();
+        extraSelections.append(selection);
+        qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setExtraSelections(extraSelections);
+    }
+    else
+    {
+        qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setExtraSelections({});
+    }
+}
+
+// Update the slots connexion when the tab is changed
 void Notepad::updateConnect()
 {
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
+    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::highlightCurrentLine);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
 }
@@ -343,9 +375,10 @@ QString Notepad::fileName()
     return tabView->tabText(tabView->currentIndex());
 }
 
+// Get the index with the current filename
 int Notepad::getIndex(const QString &tabName)
 {
-    for(auto i =0;i<= tabView->count();i++)
+    for(auto i = 0;i <= tabView->count();i++)
     {
         if(tabView->tabText(i) == tabName)
             return i;
