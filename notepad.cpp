@@ -54,6 +54,7 @@ Notepad::Notepad(QWidget *parent)
     setCentralWidget(central);
 
     // Style.
+    setGeometry(QStyle::alignedRect(Qt::LeftToRight,Qt::AlignCenter,size(),QGuiApplication::primaryScreen()->availableGeometry()));
     setWindowIcon(QIcon("assets/notepad.ico"));
     setStyleSheet("QMenu{background-color: rgb(28, 49, 80);}QLabel{color:#27fff8;} QMenuBar{spacing: 3px;}"
         "QMenuBar::item {padding: 1px 4px;background: transparent;border-radius: 4px;}"
@@ -81,9 +82,9 @@ Notepad::Notepad(QWidget *parent)
     connect(colorBackground,&QAction::triggered,this,&Notepad::onBackgroundColorChanged);
     connect(tabView,&QTabWidget::tabCloseRequested,this,&Notepad::onCloseFile);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateConnect);
-    connect(static_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
-    connect(static_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
-    connect(static_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
+    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
+    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
+    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
 }
 
 void Notepad::onNewFile()
@@ -131,14 +132,14 @@ void Notepad::onOpenFile()
         {
             auto tab = new QPlainTextEdit(this);
             tabView->addTab(tab,filename);
-            static_cast<QPlainTextEdit*>(tabView->widget(getIndex(filename)))->setPlainText(" ");
+            qobject_cast<QPlainTextEdit*>(tabView->widget(getIndex(filename)))->setPlainText(" ");
             // Reading the file line by line and storing int the textEdit.
             QTextStream in{&fichier};
             QString tempLine;
             while(!in.atEnd())
             {
                 tempLine = in.readLine();
-                static_cast<QPlainTextEdit*>(tabView->widget(getIndex(filename)))->appendPlainText(tempLine);
+                qobject_cast<QPlainTextEdit*>(tabView->widget(getIndex(filename)))->appendPlainText(tempLine);
             }
         }
     }
@@ -146,7 +147,7 @@ void Notepad::onOpenFile()
 
 void Notepad::onSaveFile()
 {
-    if(fileName().isEmpty() && !(static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty())) // If this is a new file
+    if(fileName().isEmpty() && !(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty())) // If this is a new file
     {
         auto filename = QFileDialog::getSaveFileName(this);
         if(filename.isEmpty())
@@ -168,13 +169,13 @@ void Notepad::onSaveFile()
             }
         }
     }
-    else if((!fileName().isEmpty()) && !(static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty()))
+    else if((!fileName().isEmpty()) && !(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty()))
     {
         QFile fich{fileName()};
         if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
         {
             QTextStream out{&fich};
-            out << static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText() << "\n";
+            out << qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText() << "\n";
             setWindowTitle("QNotePad");
             isSaved = true;
             QMessageBox::information(this,"Sauvegarde","Sauvegarde Réussie");
@@ -191,7 +192,7 @@ void Notepad::onCloseFile(const int &index)
 {
     if(index < 0) return;
     QWidget* tabItem = tabView->widget(index);
-    if(tabView->tabText(index).isEmpty() && !(static_cast<QPlainTextEdit*>(tabView->widget(index))->toPlainText().isEmpty())) // If this is a new file
+    if(tabView->tabText(index).isEmpty() && !(qobject_cast<QPlainTextEdit*>(tabView->widget(index))->toPlainText().isEmpty())) // If this is a new file
     {
         auto filename = QFileDialog::getSaveFileName(this);
         if(filename.isEmpty())
@@ -207,13 +208,13 @@ void Notepad::onCloseFile(const int &index)
             }
         }
     }
-    else if((!tabView->tabText(index).isEmpty()) && !(static_cast<QPlainTextEdit*>(tabView->widget(index))->toPlainText().isEmpty()))
+    else if((!tabView->tabText(index).isEmpty()) && !(qobject_cast<QPlainTextEdit*>(tabView->widget(index))->toPlainText().isEmpty()))
     {
         QFile fich{tabView->tabText(index)};
         if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
         {
             QTextStream out{&fich};
-            out << static_cast<QPlainTextEdit*>(tabView->widget(index))->toPlainText() << "\n";
+            out << qobject_cast<QPlainTextEdit*>(tabView->widget(index))->toPlainText() << "\n";
         }
         else
         {
@@ -229,8 +230,8 @@ void Notepad::onQuit()
 {
     if(isEmpty())
         qApp->quit();
-    else if(((!fileName().isEmpty()) && !isSaved && !(static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty()))
-            ||(fileName().isEmpty() &&!(static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty())))
+    else if(((!fileName().isEmpty()) && !isSaved && !(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty()))
+            ||(fileName().isEmpty() &&!(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty())))
     {
         auto reply = QMessageBox::question(this, "Quitter", "Voulez vous sauvegarder ?",QMessageBox::Yes|QMessageBox::No);
         if(reply == QMessageBox::Yes)
@@ -247,7 +248,7 @@ void Notepad::onColorChanged() // Get the color and set the color in the textEdi
     if(isEmpty()) return; // Do not try anything if the editor is empty
     QColor chosenColor = QColorDialog::getColor("Choisir une couleur");
     QString colorToSet = QString::number(chosenColor.red())+","+QString::number(chosenColor.green())+","+QString::number(chosenColor.blue());
-    static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet(static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->styleSheet()+" color:rgb("+colorToSet+");");
+    qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->styleSheet()+" color:rgb("+colorToSet+");");
 }
 
 void Notepad::onBackgroundColorChanged()
@@ -255,7 +256,7 @@ void Notepad::onBackgroundColorChanged()
     if(isEmpty()) return; // Do not try anything if the editor is empty
     QColor chosenColor = QColorDialog::getColor("Choisir une couleur");
     QString colorToSet = QString::number(chosenColor.red())+","+QString::number(chosenColor.green())+","+QString::number(chosenColor.blue());
-    static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet(static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->styleSheet()+" background:rgb("+colorToSet+");");
+    qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->styleSheet()+" background:rgb("+colorToSet+");");
 }
 
 void Notepad::onFont()
@@ -264,7 +265,7 @@ void Notepad::onFont()
     QFont font = QFontDialog::getFont(&ok, QFont("Times", 12), this);
     if(ok)
     {
-        static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setFont(font);
+        qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setFont(font);
     }
 }
 
@@ -276,7 +277,7 @@ void Notepad::onAutoSave()
         if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
         {
             QTextStream out{&fich};
-            out << static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText() << "\n";
+            out << qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText() << "\n";
             isSaved = true;
             setWindowTitle("QNotePad");
         }
@@ -323,16 +324,16 @@ void Notepad::updateTitle()
 
 void Notepad::updateCursorPosition()
 {
-    int line    = static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->textCursor().blockNumber();
-    int columnn = static_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->textCursor().positionInBlock();
+    int line    = qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->textCursor().blockNumber() + 1 ;
+    int columnn = qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->textCursor().positionInBlock();
     positionBar->showMessage("Line : "+QString::number(line)+" col : "+QString::number(columnn));
 }
 
 void Notepad::updateConnect()
 {
-    connect(static_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
-    connect(static_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
-    connect(static_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
+    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
+    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
+    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
 }
 
 QString Notepad::fileName()
