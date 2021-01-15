@@ -13,3 +13,4 @@ make
 ./Notepad
 ```
 If you use Qt creator or visual studio,you can import the project, build and run
+(don't forget to copy the images in the build directory)
