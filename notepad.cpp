@@ -62,8 +62,7 @@ Notepad::Notepad(QWidget *parent)
     // Style.
     setGeometry(QStyle::alignedRect(Qt::LeftToRight,Qt::AlignCenter,size(),QGuiApplication::primaryScreen()->availableGeometry()));
     setWindowIcon(QIcon("assets/notepad.ico"));
-    setStyleSheet("QMenu{background-color: rgb(28, 49, 80);}"
-        "QLabel{color:#27fff8;} QMenuBar{spacing: 3px;}"
+    setStyleSheet("QLabel{color:#27fff8;} QMenuBar{spacing: 3px;}"
         "QMenuBar::item {padding: 1px 4px;background: transparent;border-radius: 4px;}"
         "QMenuBar::item:selected {background: #a8a8a8;} QMenuBar::item:pressed {background: #888;}");
     tabView->setStyleSheet("QTabWidget::pane{border-top: 2px solid #C2C7CB;}"
