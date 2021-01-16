@@ -279,17 +279,20 @@ void Notepad::onQuit()
 void Notepad::onColorChanged() // Get the color and set the color in the textEdit.
 {
     if(isEmpty()) return; // Do not try anything if the editor is empty
-    QColor chosenColor = QColorDialog::getColor("Choisir une couleur");
-    QString colorToSet = QString::number(chosenColor.red())+","+QString::number(chosenColor.green())+","+QString::number(chosenColor.blue());
-    qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->styleSheet()+" color:rgb("+colorToSet+");");
+    qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->styleSheet()+" color:rgb("+colorDialog()+");");
 }
 
 void Notepad::onBackgroundColorChanged()
 {
     if(isEmpty()) return; // Do not try anything if the editor is empty
+    qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->styleSheet()+" background:rgb("+colorDialog()+");");
+}
+
+QString Notepad::colorDialog()
+{
     QColor chosenColor = QColorDialog::getColor("Choisir une couleur");
     QString colorToSet = QString::number(chosenColor.red())+","+QString::number(chosenColor.green())+","+QString::number(chosenColor.blue());
-    qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->styleSheet()+" background:rgb("+colorToSet+");");
+    return colorToSet;
 }
 
 // Font customization
