@@ -23,7 +23,6 @@
 #include <QColor>
 #include <QHBoxLayout>
 #include <QFont>
-#include <QDebug>
 #include <QTextDocument>
 #include <QVBoxLayout>
 #include <QTextBlock>

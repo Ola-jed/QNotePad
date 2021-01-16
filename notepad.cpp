@@ -321,7 +321,6 @@ void Notepad::synthaxicHighlighting()
                 int p;
                 if(((p = text.indexOf(highlight)) != -1) && (text.mid(p,highlight.length()+1) == highlight+" "))
                 {
-                    qDebug() << (highlight.length());
                     int pos = block.position() + p;
                     QTextEdit::ExtraSelection selection{};
                     selection.cursor = QTextCursor(qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->document());
