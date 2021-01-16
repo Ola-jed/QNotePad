@@ -61,6 +61,7 @@ private:
     QTabWidget *tabView;
     int getIndex(const QString &tabName);
     QCheckBox *autoSaveCheckBox;
+    QString colorDialog();
 private slots:
     void onNewFile();
     void onOpenFile();
