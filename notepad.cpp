@@ -49,7 +49,6 @@ void Notepad::buildComponents()
     menuBar          = new QMenuBar(this);
     autoSaveCheckBox = new QCheckBox("AutoSave",this);
     positionBar      = new QStatusBar(this);
-
 }
 
 // Building the menu
