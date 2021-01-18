@@ -3,7 +3,36 @@
 Notepad::Notepad(QWidget *parent)
     : QMainWindow(parent)
 {
-    // Creationg the items.
+    buildComponents();
+    buildMenu();
+
+    // Creating a blank plaintextedit.
+    tabView->setTabsClosable(true);
+    tabView->addTab(new QPlainTextEdit(this),"New File");
+
+    applyLayout();
+    applyStyle();
+    // Connecting signals - slots .
+    connect(quit,&QAction::triggered,this,&Notepad::onQuit);
+    connect(newFile,&QAction::triggered,this,&Notepad::onNewFile);
+    connect(openFile,&QAction::triggered,this,&Notepad::onOpenFile);
+    connect(saveFile,&QAction::triggered,this,&Notepad::onSaveFile);
+    connect(terminal,&QAction::triggered,this,&Notepad::onTerminal);
+    connect(fontChange,&QAction::triggered,this,&Notepad::onFont);
+    connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateTitle);
+    connect(colorText,&QAction::triggered,this,&Notepad::onColorChanged);
+    connect(colorBackground,&QAction::triggered,this,&Notepad::onBackgroundColorChanged);
+    connect(tabView,&QTabWidget::tabCloseRequested,this,&Notepad::onCloseFile);
+    connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateConnect);
+    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
+    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
+    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::synthaxicHighlighting);
+    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
+}
+
+// Creationg the items.
+void Notepad::buildComponents()
+{
     file             = new QMenu("File",this);
     custom           = new QMenu("Customize",this);
     newFile          = new QAction(QIcon("assets/new.ico"),"New",this);
@@ -20,19 +49,16 @@ Notepad::Notepad(QWidget *parent)
     autoSaveCheckBox = new QCheckBox("AutoSave",this);
     positionBar      = new QStatusBar(this);
 
-    highlightSynthax->setCheckable(true);
-    highlightSynthax->setChecked(true);
+}
 
+// Building the menu
+void Notepad::buildMenu()
+{
     // Shortcuts.
     newFile->setShortcut(QKeySequence::New);
     openFile->setShortcut(QKeySequence::Open);
     saveFile->setShortcut(QKeySequence::Save);
     quit->setShortcut(QKeySequence::Quit);
-
-    // Creating a blank plaintextedit.
-    tabView->setTabsClosable(true);
-    tabView->addTab(new QPlainTextEdit(this),"New File");
-
     file->addAction(newFile);
     file->addAction(openFile);
     file->addAction(saveFile);
@@ -46,11 +72,16 @@ Notepad::Notepad(QWidget *parent)
     menuBar->addMenu(custom);
     menuBar->addSeparator();
     menuBar->addAction(terminal);
+    highlightSynthax->setCheckable(true);
+    highlightSynthax->setChecked(true);
+}
 
+// Setup the layout
+void Notepad::applyLayout()
+{
     QHBoxLayout *topLayout = new QHBoxLayout();
     topLayout->addWidget(menuBar,5);
     topLayout->addWidget(autoSaveCheckBox,2);
-
     QVBoxLayout *vboxLayout = new QVBoxLayout();
     vboxLayout->addLayout(topLayout,1);
     vboxLayout->addWidget(tabView,28);
@@ -58,8 +89,11 @@ Notepad::Notepad(QWidget *parent)
     auto central = new QWidget(this);
     central->setLayout(vboxLayout);
     setCentralWidget(central);
+}
 
-    // Style.
+// Style.
+void Notepad::applyStyle()
+{
     setGeometry(QStyle::alignedRect(Qt::LeftToRight,Qt::AlignCenter,size(),QGuiApplication::primaryScreen()->availableGeometry()));
     setWindowIcon(QIcon("assets/notepad.ico"));
     setStyleSheet("QLabel{color:#27fff8;} QMenuBar{spacing: 3px;}"
@@ -76,22 +110,6 @@ Notepad::Notepad(QWidget *parent)
         "QTabBar::tab:last:selected{margin-right: 0;}"
         "QTabBar::tab:only-one{margin: 0;}");
     tabView->setElideMode(Qt::ElideRight);
-
-    connect(quit,&QAction::triggered,this,&Notepad::onQuit);
-    connect(newFile,&QAction::triggered,this,&Notepad::onNewFile);
-    connect(openFile,&QAction::triggered,this,&Notepad::onOpenFile);
-    connect(saveFile,&QAction::triggered,this,&Notepad::onSaveFile);
-    connect(terminal,&QAction::triggered,this,&Notepad::onTerminal);
-    connect(fontChange,&QAction::triggered,this,&Notepad::onFont);
-    connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateTitle);
-    connect(colorText,&QAction::triggered,this,&Notepad::onColorChanged);
-    connect(colorBackground,&QAction::triggered,this,&Notepad::onBackgroundColorChanged);
-    connect(tabView,&QTabWidget::tabCloseRequested,this,&Notepad::onCloseFile);
-    connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateConnect);
-    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
-    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
-    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::synthaxicHighlighting);
-    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
 }
 
 // File gestion.
@@ -120,6 +138,7 @@ void Notepad::onNewFile()
     }
 }
 
+// Opening a file.
 void Notepad::onOpenFile()
 {
     auto filename = QFileDialog::getOpenFileName(this);
@@ -141,61 +160,75 @@ void Notepad::onOpenFile()
             auto tab = new QPlainTextEdit(this);
             tabView->addTab(tab,filename);
             qobject_cast<QPlainTextEdit*>(tabView->widget(getIndex(filename)))->setPlainText(" ");
-            // Reading the file line by line and storing int the textEdit.
+            // Reading the file line by line and storing in the textEdit.
             QTextStream in{&fichier};
             QString tempLine;
-            while(!in.atEnd())
-            {
-                tempLine = in.readLine();
-                qobject_cast<QPlainTextEdit*>(tabView->widget(getIndex(filename)))->appendPlainText(tempLine);
-            }
+            tempLine = in.readAll();
+            fichier.close();
+            qobject_cast<QPlainTextEdit*>(tabView->widget(getIndex(filename)))->appendPlainText(tempLine);
         }
     }
 }
 
+// Saving the current file.
 void Notepad::onSaveFile()
 {
-    if(fileName().isEmpty() && !(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty())) // If this is a new file
+    if((fileName() == "New File") && !(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty())) // If this is a new file
     {
-        auto filename = QFileDialog::getSaveFileName(this);
-        if(filename.isEmpty())
-        {
-            QMessageBox::warning(this,"Nouveau Fichier","Entrer un nom valide");
-        }
-        else
-        {
-            QFile fichier{filename};
-            if((!fichier.open(QIODevice::ReadWrite)))
-            {
-                QMessageBox::critical(this,"Sauvegarder","Impossible de sauvegarder le fichier");
-                return;
-            }
-            else
-            {
-                setWindowTitle("QNotePad");
-                tabView->setTabText(tabView->currentIndex(),filename);
-            }
-        }
+        onNewFileSave();
     }
     else if((!fileName().isEmpty()) && !(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty()))
     {
-        QFile fich{fileName()};
-        if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
+        onExistingFileSave();
+    }
+}
+
+// Saving a new file.
+void Notepad::onNewFileSave()
+{
+    auto filename = QFileDialog::getSaveFileName(this);
+    if(filename.isEmpty())
+    {
+        QMessageBox::warning(this,"Nouveau Fichier","Entrer un nom valide");
+    }
+    else
+    {
+        QFile fichier{filename};
+        if((!fichier.open(QIODevice::ReadWrite)))
         {
-            QTextStream out{&fich};
-            out << qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText() << "\n";
-            setWindowTitle("QNotePad");
-            isSaved = true;
-            QMessageBox::information(this,"Sauvegarde","Sauvegarde Réussie");
+            QMessageBox::critical(this,"Sauvegarder","Impossible de sauvegarder le fichier");
+            return;
         }
         else
         {
-            QMessageBox::critical(this,"Sauvegarde","Impossible de sauvegarder");
-            return;
+            QTextStream out{&fichier};
+            out << qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText();
+            setWindowTitle("QNotePad");
+            tabView->setTabText(tabView->currentIndex(),filename);
         }
     }
 }
 
+// Saving an existing file.
+void Notepad::onExistingFileSave()
+{
+    QFile fich{fileName()};
+    if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
+    {
+        QTextStream out{&fich};
+        out << qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText();
+        setWindowTitle("QNotePad");
+        isSaved = true;
+        QMessageBox::information(this,"Sauvegarde","Sauvegarde Réussie");
+    }
+    else
+    {
+        QMessageBox::critical(this,"Sauvegarde","Impossible de sauvegarder");
+        return;
+    }
+}
+
+// AutoSave of the file
 void Notepad::onAutoSave()
 {
     if((autoSaveCheckBox->isChecked()) && (!fileName().isEmpty()))
@@ -217,32 +250,11 @@ void Notepad::onCloseFile(const int &index)
     QWidget* tabItem = tabView->widget(index);
     if(tabView->tabText(index).isEmpty() && !(qobject_cast<QPlainTextEdit*>(tabView->widget(index))->toPlainText().isEmpty())) // If this is a new file
     {
-        auto filename = QFileDialog::getSaveFileName(this);
-        if(filename.isEmpty())
-        {
-            QMessageBox::warning(this,"Nouveau Fichier","Entrer un nom valide");
-        }
-        else
-        {
-            QFile fichier{filename};
-            if((!fichier.open(QIODevice::ReadWrite)))
-            {
-                QMessageBox::critical(this,"Sauvegarder","Impossible de sauvegarder le fichier");
-            }
-        }
+        onNewFileSave();
     }
     else if((!tabView->tabText(index).isEmpty()) && !(qobject_cast<QPlainTextEdit*>(tabView->widget(index))->toPlainText().isEmpty()))
     {
-        QFile fich{tabView->tabText(index)};
-        if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
-        {
-            QTextStream out{&fich};
-            out << qobject_cast<QPlainTextEdit*>(tabView->widget(index))->toPlainText() << "\n";
-        }
-        else
-        {
-            QMessageBox::critical(this,"Sauvegarde","Impossible de sauvegarder");
-        }
+        onExistingFileSave();
     }
     tabView->removeTab(index);
     delete(tabItem);
@@ -393,7 +405,9 @@ int Notepad::getIndex(const QString &tabName)
     for(auto i = 0;i <= tabView->count();i++)
     {
         if(tabView->tabText(i) == tabName)
+        {
             return i;
+        }
     }
     return 1;
 }
