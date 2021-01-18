@@ -5,6 +5,7 @@
 #include <QScreen>
 #include <QStyle>
 #include <QIcon>
+#include <QDebug>
 #include <QMainWindow>
 #include <QCheckBox>
 #include <QProcess>
@@ -61,10 +62,17 @@ private:
     int getIndex(const QString &tabName);
     QCheckBox *autoSaveCheckBox;
     QString colorDialog();
+
+    void buildComponents();
+    void buildMenu();
+    void applyLayout();
+    void applyStyle();
 private slots:
     void onNewFile();
     void onOpenFile();
     void onSaveFile();
+    void onNewFileSave();
+    void onExistingFileSave();
     void onCloseFile(const int &index);
     void onQuit();
     void onColorChanged();
