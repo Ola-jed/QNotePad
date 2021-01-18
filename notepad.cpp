@@ -422,7 +422,7 @@ void Notepad::dragEnterEvent(QDragEnterEvent *e)
     }
 }
 
-// Drop event to open Images.
+// Drop event to open files.
 void Notepad::dropEvent(QDropEvent *event)
 {
     const QMimeData* mimeData = event->mimeData();
