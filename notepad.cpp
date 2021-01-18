@@ -12,10 +12,11 @@ Notepad::Notepad(QWidget *parent)
 
     applyLayout();
     applyStyle();
+    setAcceptDrops(true);
     // Connecting signals - slots .
     connect(quit,&QAction::triggered,this,&Notepad::onQuit);
     connect(newFile,&QAction::triggered,this,&Notepad::onNewFile);
-    connect(openFile,&QAction::triggered,this,&Notepad::onOpenFile);
+    connect(openFile,&QAction::triggered,this,&Notepad::openFileDialog);
     connect(saveFile,&QAction::triggered,this,&Notepad::onSaveFile);
     connect(terminal,&QAction::triggered,this,&Notepad::onTerminal);
     connect(fontChange,&QAction::triggered,this,&Notepad::onFont);
@@ -83,6 +84,7 @@ void Notepad::applyLayout()
     topLayout->addWidget(menuBar,5);
     topLayout->addWidget(autoSaveCheckBox,2);
     QVBoxLayout *vboxLayout = new QVBoxLayout();
+    vboxLayout->setContentsMargins(10,0,10,0);
     vboxLayout->addLayout(topLayout,1);
     vboxLayout->addWidget(tabView,28);
     vboxLayout->addWidget(positionBar,1);
@@ -96,19 +98,7 @@ void Notepad::applyStyle()
 {
     setGeometry(QStyle::alignedRect(Qt::LeftToRight,Qt::AlignCenter,size(),QGuiApplication::primaryScreen()->availableGeometry()));
     setWindowIcon(QIcon("assets/notepad.ico"));
-    setStyleSheet("QLabel{color:#27fff8;} QMenuBar{spacing: 3px;}"
-        "QMenuBar::item {padding: 1px 4px;background: transparent;border-radius: 4px;}"
-        "QMenuBar::item:selected {background: #a8a8a8;} QMenuBar::item:pressed {background: #888;}");
-    tabView->setStyleSheet("QTabWidget::pane{border-top: 2px solid #C2C7CB;}"
-        "QTabWidget::tab-bar {left: 5px;}"
-        "QTabBar::tab {background:#0E3146;border:2px solid #C4C4C3;border-bottom-color:#C2C7CB;border-top-left-radius:4px;border-top-right-radius:4px;min-width: 8ex;padding: 2px;}"
-        "QTabBar::tab:selected{background: #343435;} QTabBar::tab:hover{background: #626263;}"
-        "QTabBar::tab:selected{border-color: #9B9B9B;border-bottom-color: #C2C7CB;}"
-        "QTabBar::tab:!selected {margin-top: 2px;}"
-        "QTabBar::tab:selected {margin-left: -4px;margin-right: -4px;}"
-        "QTabBar::tab:first:selected{margin-left: 0;}"
-        "QTabBar::tab:last:selected{margin-right: 0;}"
-        "QTabBar::tab:only-one{margin: 0;}");
+    setStyleSheet(STYLE);
     tabView->setElideMode(Qt::ElideRight);
 }
 
@@ -138,8 +128,8 @@ void Notepad::onNewFile()
     }
 }
 
-// Opening a file.
-void Notepad::onOpenFile()
+// Dialog for opening a file
+void Notepad::openFileDialog()
 {
     auto filename = QFileDialog::getOpenFileName(this);
     if(filename.isEmpty())
@@ -149,23 +139,29 @@ void Notepad::onOpenFile()
     }
     else
     {
-        QFile fichier{filename};
-        if((!fichier.open(QIODevice::ReadWrite)))
-        {
-            QMessageBox::critical(this,"Nouveau Fichier","Impossible d'ouvrir le fichier");
-            return;
-        }
-        else
-        {
-            auto tab = new QPlainTextEdit(this);
-            tabView->addTab(tab,filename);
-            // Reading the file line by line and storing in the textEdit.
-            QTextStream in{&fichier};
-            QString fileContent;
-            fileContent = in.readAll();
-            fichier.close();
-            qobject_cast<QPlainTextEdit*>(tabView->widget(getIndex(filename)))->setPlainText(fileContent);
-        }
+        onOpenFile(filename);
+    }
+}
+
+// Opening a file.
+void Notepad::onOpenFile(const QString &filename)
+{
+    QFile fichier{filename};
+    if((!fichier.open(QIODevice::ReadWrite)))
+    {
+        QMessageBox::critical(this,"Nouveau Fichier","Impossible d'ouvrir le fichier");
+        return;
+    }
+    else
+    {
+        auto tab = new QPlainTextEdit(this);
+        tabView->addTab(tab,filename);
+        // Reading the file line by line and storing in the textEdit.
+        QTextStream in{&fichier};
+        QString fileContent;
+        fileContent = in.readAll();
+        fichier.close();
+        qobject_cast<QPlainTextEdit*>(tabView->widget(getIndex(filename)))->setPlainText(fileContent);
     }
 }
 
@@ -243,6 +239,7 @@ void Notepad::onAutoSave()
     }
 }
 
+// Close the current file.
 void Notepad::onCloseFile(const int &index)
 {
     if(index < 0) return;
@@ -336,7 +333,7 @@ void Notepad::synthaxicHighlighting()
                     selection.cursor = QTextCursor(qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->document());
                     selection.cursor.setPosition( pos );
                     selection.cursor.setPosition( pos+highlight.length(), QTextCursor::KeepAnchor );
-                    selection.format.setForeground(Qt::darkCyan);
+                    selection.format.setForeground(Qt::red);
                     extraSelections.append(selection);
                     qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->setExtraSelections(extraSelections);
                 }
@@ -414,6 +411,31 @@ int Notepad::getIndex(const QString &tabName)
 bool Notepad::isEmpty()
 {
     return (tabView->count() == 0);
+}
+
+// Drag event to open files.
+void Notepad::dragEnterEvent(QDragEnterEvent *e)
+{
+    if (e->mimeData()->hasUrls())
+    {
+        e->acceptProposedAction();
+    }
+}
+
+// Drop event to open Images.
+void Notepad::dropEvent(QDropEvent *event)
+{
+    const QMimeData* mimeData = event->mimeData();
+    // Check for our needed mime type, here a file or a list of files
+    if (mimeData->hasUrls())
+    {
+        QString filename;
+        QList<QUrl> urlList = mimeData->urls();
+        // Extract the local paths of the files.
+        // This code is only valid in linux because of the path . Needs to be adapted on windows
+        filename = urlList[0].toString().right(urlList[0].toString().length() - 7);
+        onOpenFile(filename);
+    }
 }
 
 Notepad::~Notepad()

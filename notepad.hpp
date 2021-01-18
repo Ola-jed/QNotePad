@@ -1,6 +1,7 @@
 #ifndef NOTEPAD_HPP
 #define NOTEPAD_HPP
 
+#include "style.hpp"
 #include "keywords.hpp"
 #include <QScreen>
 #include <QStyle>
@@ -30,6 +31,8 @@
 #include <QTabWidget>
 #include <QMenu>
 #include <QMenuBar>
+#include <QMimeData>
+#include <QList>
 #include <QAction>
 #include <QApplication>
 
@@ -40,7 +43,9 @@ class Notepad : public QMainWindow
 public:
     Notepad(QWidget *parent = nullptr);
     ~Notepad();
-
+protected:
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
 private:
     QString fileName();
     bool isEmpty();
@@ -69,7 +74,8 @@ private:
     void applyStyle();
 private slots:
     void onNewFile();
-    void onOpenFile();
+    void openFileDialog();
+    void onOpenFile(const QString &filename);
     void onSaveFile();
     void onNewFileSave();
     void onExistingFileSave();

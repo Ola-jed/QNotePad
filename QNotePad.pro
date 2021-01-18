@@ -14,7 +14,8 @@ SOURCES += \
 
 HEADERS += \
     keywords.hpp \
-    notepad.hpp
+    notepad.hpp \
+    style.hpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
