@@ -375,7 +375,7 @@ void Notepad::updateTitle()
 void Notepad::updateCursorPosition()
 {
     int line    = qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->textCursor().blockNumber() + 1 ;
-    int columnn = qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->textCursor().positionInBlock();
+    int columnn = qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->textCursor().positionInBlock() + 1;
     positionBar->showMessage("Line : "+QString::number(line)+" col : "+QString::number(columnn));
 }
 
