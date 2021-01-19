@@ -4,16 +4,17 @@ Notepad::Notepad(QWidget *parent)
     : QMainWindow(parent)
 {
     buildComponents();
+    buildThemeList();
     buildMenu();
-
     // Creating a blank plaintextedit.
     tabView->setTabsClosable(true);
+    tabView->setAcceptDrops(true);
     tabView->addTab(new QPlainTextEdit(this),"New File");
-
     applyLayout();
     applyStyle();
     setAcceptDrops(true);
     // Connecting signals - slots .
+    connect(themeChoice,&QComboBox::currentTextChanged,this,&Notepad::onApplyOtherTheme);
     connect(quit,&QAction::triggered,this,&Notepad::onQuit);
     connect(newFile,&QAction::triggered,this,&Notepad::onNewFile);
     connect(openFile,&QAction::triggered,this,&Notepad::openFileDialog);
@@ -48,6 +49,7 @@ void Notepad::buildComponents()
     tabView          = new QTabWidget(this);
     menuBar          = new QMenuBar(this);
     autoSaveCheckBox = new QCheckBox("AutoSave",this);
+    themeChoice      = new QComboBox(this);
     positionBar      = new QStatusBar(this);
 }
 
@@ -76,11 +78,25 @@ void Notepad::buildMenu()
     highlightSynthax->setChecked(true);
 }
 
+// Building the qcombobox theme list.
+void Notepad::buildThemeList()
+{
+    themeChoice->addItem("Aqua");
+    themeChoice->addItem("Amoled");
+    themeChoice->addItem("Console");
+    themeChoice->addItem("Elegant");
+    themeChoice->addItem("Manjaro");
+    themeChoice->addItem("Material Dark");
+    themeChoice->addItem("Obit");
+    themeChoice->setCurrentIndex(0);
+}
+
 // Setup the layout
 void Notepad::applyLayout()
 {
     QHBoxLayout *topLayout = new QHBoxLayout();
     topLayout->addWidget(menuBar,5);
+    topLayout->addWidget(themeChoice,1);
     topLayout->addWidget(autoSaveCheckBox,2);
     QVBoxLayout *vboxLayout = new QVBoxLayout();
     vboxLayout->setContentsMargins(10,0,10,0);
@@ -97,7 +113,7 @@ void Notepad::applyStyle()
 {
     setGeometry(QStyle::alignedRect(Qt::LeftToRight,Qt::AlignCenter,size(),QGuiApplication::primaryScreen()->availableGeometry()));
     setWindowIcon(QIcon("assets/notepad.ico"));
-    setStyleSheet(STYLE);
+    setStyleSheet(Aqua);
     tabView->setElideMode(Qt::ElideRight);
 }
 
@@ -298,6 +314,39 @@ QString Notepad::colorDialog()
     QColor chosenColor = QColorDialog::getColor("Choisir une couleur");
     QString colorToSet = QString::number(chosenColor.red())+","+QString::number(chosenColor.green())+","+QString::number(chosenColor.blue());
     return colorToSet;
+}
+
+// Applying the new theme withn the name
+void Notepad::onApplyOtherTheme(QString theme)
+{
+    if(theme == "Amoled")
+    {
+        setStyleSheet(Amoled);
+    }
+    if(theme == "Aqua")
+    {
+        setStyleSheet(Aqua);
+    }
+    if(theme == "Console")
+    {
+        setStyleSheet(Console);
+    }
+    if(theme == "Elegant")
+    {
+        setStyleSheet(ElegantDark);
+    }
+    if(theme == "Manjaro")
+    {
+        setStyleSheet(Manjaro);
+    }
+    if(theme == "Material Dark")
+    {
+        setStyleSheet(Material);
+    }
+    if(theme == "Obit")
+    {
+        setStyleSheet(Obit);
+    }
 }
 
 // Font customization

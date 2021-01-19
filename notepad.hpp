@@ -17,6 +17,7 @@
 #include <QFile>
 #include <QStatusBar>
 #include <QFont>
+#include <QComboBox>
 #include <QLabel>
 #include <QTextStream>
 #include <QStringList>
@@ -66,10 +67,12 @@ private:
     QTabWidget *tabView;
     int getIndex(const QString &tabName);
     QCheckBox *autoSaveCheckBox;
+    QComboBox *themeChoice;
     QString colorDialog();
 
     void buildComponents();
     void buildMenu();
+    void buildThemeList();
     void applyLayout();
     void applyStyle();
 private slots:
@@ -83,6 +86,7 @@ private slots:
     void onQuit();
     void onColorChanged();
     void onBackgroundColorChanged();
+    void onApplyOtherTheme(QString theme);
     void onAutoSave();
     void onTextModified();
     void onTerminal();
