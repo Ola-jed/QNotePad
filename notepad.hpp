@@ -91,6 +91,7 @@ private:
     void buildThemeList();
     void applyLayout();
     void applyStyle();
+    void makeConnections();
     void createFile(const QString &fileToCreate);
 private slots:
     void onNewFile();
