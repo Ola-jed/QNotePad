@@ -10,6 +10,7 @@ Notepad::Notepad(QWidget *parent)
     tabView->setTabsClosable(true);
     tabView->setAcceptDrops(true);
     tabView->addTab(new QPlainTextEdit(this),"New File");
+    setTabSpace();
     applyLayout();
     applyStyle();
     setAcceptDrops(true);
@@ -21,11 +22,12 @@ Notepad::Notepad(QWidget *parent)
     connect(saveFile,&QAction::triggered,this,&Notepad::onSaveFile);
     connect(terminal,&QAction::triggered,this,&Notepad::onTerminal);
     connect(fontChange,&QAction::triggered,this,&Notepad::onFont);
-    connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateTitle);
     connect(colorText,&QAction::triggered,this,&Notepad::onColorChanged);
     connect(colorBackground,&QAction::triggered,this,&Notepad::onBackgroundColorChanged);
     connect(tabView,&QTabWidget::tabCloseRequested,this,&Notepad::onCloseFile);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateConnect);
+    connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateTitle);
+    connect(tabView,&QTabWidget::currentChanged,this,&Notepad::setTabSpace);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::synthaxicHighlighting);
@@ -84,10 +86,13 @@ void Notepad::buildThemeList()
     themeChoice->addItem("Aqua");
     themeChoice->addItem("Amoled");
     themeChoice->addItem("Console");
-    themeChoice->addItem("Elegant");
+    themeChoice->addItem("Diffness");
+    themeChoice->addItem("Elegant Dark");
+    themeChoice->addItem("Mac");
     themeChoice->addItem("Manjaro");
     themeChoice->addItem("Material Dark");
     themeChoice->addItem("Obit");
+    themeChoice->addItem("Ubuntu");
     themeChoice->setCurrentIndex(0);
 }
 
@@ -117,7 +122,7 @@ void Notepad::applyStyle()
     tabView->setElideMode(Qt::ElideRight);
 }
 
-// File gestion.
+// New File
 void Notepad::onNewFile()
 {
     auto filename = QFileDialog::getSaveFileName(this);
@@ -127,19 +132,25 @@ void Notepad::onNewFile()
     }
     else
     {
-        QFile fichier{filename};
-        if((!fichier.open(QIODevice::ReadWrite)))
-        {
-            QMessageBox::critical(this,"Nouveau Fichier","Impossible de créer le fichier");
-            return;
-        }
-        else
-        {
-            QMessageBox::information(this,"Nouveau Fichier","Le fichier a bien été créé");
-            auto fileContent = new QPlainTextEdit(this);
-            tabView->addTab(fileContent,filename);
-            tabView->setTabText(getIndex(filename),filename);
-        }
+        createFile(filename);
+    }
+}
+
+// Create  new file
+void Notepad::createFile(const QString &fileToCreate)
+{
+    QFile fichier{fileToCreate};
+    if((!fichier.open(QIODevice::ReadWrite)))
+    {
+        QMessageBox::critical(this,"Nouveau Fichier","Impossible de créer le fichier");
+        return;
+    }
+    else
+    {
+        QMessageBox::information(this,"Nouveau Fichier","Le fichier a bien été créé");
+        auto fileContent = new QPlainTextEdit(this);
+        tabView->addTab(fileContent,fileToCreate);
+        tabView->setTabText(getIndex(fileToCreate),fileToCreate);
     }
 }
 
@@ -319,34 +330,7 @@ QString Notepad::colorDialog()
 // Applying the new theme withn the name
 void Notepad::onApplyOtherTheme(QString theme)
 {
-    if(theme == "Amoled")
-    {
-        setStyleSheet(Amoled);
-    }
-    if(theme == "Aqua")
-    {
-        setStyleSheet(Aqua);
-    }
-    if(theme == "Console")
-    {
-        setStyleSheet(Console);
-    }
-    if(theme == "Elegant")
-    {
-        setStyleSheet(ElegantDark);
-    }
-    if(theme == "Manjaro")
-    {
-        setStyleSheet(Manjaro);
-    }
-    if(theme == "Material Dark")
-    {
-        setStyleSheet(Material);
-    }
-    if(theme == "Obit")
-    {
-        setStyleSheet(Obit);
-    }
+    setStyleSheet(THEME_NAMES[theme]);
 }
 
 // Font customization
@@ -414,11 +398,20 @@ void Notepad::onTerminal()
     }
 }
 
+// Set the tab space of the QPlainTextEdit
+void Notepad::setTabSpace()
+{
+    QFontMetrics metrics(qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->font());
+    qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->setTabStopDistance(TAB_SPACE * metrics.horizontalAdvance(' '));
+}
+
+// Update the window title
 void Notepad::updateTitle()
 {
     setWindowTitle(tabView->tabText(tabView->currentIndex()));
 }
 
+// Update and show the cursor position in the status bar
 void Notepad::updateCursorPosition()
 {
     int line    = qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->textCursor().blockNumber() + 1 ;

@@ -4,9 +4,11 @@
 #include "style.hpp"
 #include "keywords.hpp"
 #include <QScreen>
+#include <QFontMetrics>
 #include <QStyle>
 #include <QIcon>
 #include <QDebug>
+#include <QMap>
 #include <QMainWindow>
 #include <QCheckBox>
 #include <QProcess>
@@ -40,7 +42,6 @@
 class Notepad : public QMainWindow
 {
     Q_OBJECT
-
 public:
     Notepad(QWidget *parent = nullptr);
     ~Notepad();
@@ -48,8 +49,21 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
 private:
-    QString fileName();
-    bool isEmpty();
+    // Constants.
+    const QMap<QString,QString> THEME_NAMES{
+        {"Amoled",Amoled},
+        {"Aqua",Aqua},
+        {"Console",Console},
+        {"Difness",Diffness},
+        {"Elegant Dark",ElegantDark},
+        {"Mac",Mac},
+        {"Manjaro",Manjaro},
+        {"Material Dark",Material},
+        {"Obit",Obit},
+        {"Ubuntu",Ubuntu}
+    };
+    const int TAB_SPACE = 4;
+    // Member variables.
     bool isSaved = false;
     QMenuBar *menuBar;
     QMenu *file;
@@ -65,16 +79,19 @@ private:
     QAction *terminal;
     QStatusBar *positionBar;
     QTabWidget *tabView;
-    int getIndex(const QString &tabName);
     QCheckBox *autoSaveCheckBox;
     QComboBox *themeChoice;
+    // Methods.
+    QString fileName();
+    bool isEmpty();
     QString colorDialog();
-
+    int getIndex(const QString &tabName);
     void buildComponents();
     void buildMenu();
     void buildThemeList();
     void applyLayout();
     void applyStyle();
+    void createFile(const QString &fileToCreate);
 private slots:
     void onNewFile();
     void openFileDialog();
@@ -95,5 +112,6 @@ private slots:
     void updateCursorPosition();
     void updateConnect();
     void synthaxicHighlighting();
+    void setTabSpace();
 };
 #endif // NOTEPAD_HPP
