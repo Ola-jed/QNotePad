@@ -6,15 +6,20 @@ Notepad::Notepad(QWidget *parent)
     buildComponents();
     buildThemeList();
     buildMenu();
-    // Creating a blank plaintextedit.
     tabView->setTabsClosable(true);
     tabView->setAcceptDrops(true);
+    // Creating a blank plaintextedit.
     tabView->addTab(new QPlainTextEdit(this),"New File");
     setTabSpace();
     applyLayout();
     applyStyle();
     setAcceptDrops(true);
-    // Connecting signals - slots .
+    makeConnections();
+}
+
+// Connections.
+void Notepad::makeConnections()
+{
     connect(themeChoice,&QComboBox::currentTextChanged,this,&Notepad::onApplyOtherTheme);
     connect(quit,&QAction::triggered,this,&Notepad::onQuit);
     connect(newFile,&QAction::triggered,this,&Notepad::onNewFile);
@@ -268,18 +273,22 @@ void Notepad::onAutoSave()
 void Notepad::onCloseFile(const int &index)
 {
     if(index < 0) return;
-    QWidget* tabItem = tabView->widget(index);
-    if(tabView->tabText(index).isEmpty() && !(qobject_cast<QPlainTextEdit*>(tabView->widget(index))->toPlainText().isEmpty())) // If this is a new file
+    if(tabView->count() == 1) qApp->quit();
+    else
     {
-        onNewFileSave();
+        QWidget* tabItem = tabView->widget(index);
+        if(tabView->tabText(index).isEmpty() && !(qobject_cast<QPlainTextEdit*>(tabView->widget(index))->toPlainText().isEmpty())) // If this is a new file
+        {
+            onNewFileSave();
+        }
+        else if((!tabView->tabText(index).isEmpty()) && !(qobject_cast<QPlainTextEdit*>(tabView->widget(index))->toPlainText().isEmpty()))
+        {
+            onExistingFileSave();
+        }
+        tabView->removeTab(index);
+        delete(tabItem);
+        tabItem = nullptr;
     }
-    else if((!tabView->tabText(index).isEmpty()) && !(qobject_cast<QPlainTextEdit*>(tabView->widget(index))->toPlainText().isEmpty()))
-    {
-        onExistingFileSave();
-    }
-    tabView->removeTab(index);
-    delete(tabItem);
-    tabItem = nullptr;
 }
 
 void Notepad::onTextModified()
