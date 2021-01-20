@@ -14,3 +14,5 @@ make
 ```
 If you use Qt creator or visual studio,you can import the project, build and run
 (don't forget to copy the images in the build directory)
+
+[![CodeFactor](https://www.codefactor.io/repository/github/ola-jed/qnotepad/badge)](https://www.codefactor.io/repository/github/ola-jed/qnotepad)
