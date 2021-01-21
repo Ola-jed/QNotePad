@@ -13,6 +13,7 @@ Notepad::Notepad(QWidget *parent)
     setTabSpace();
     applyLayout();
     applyStyle();
+    checkFileLanguage();
     setAcceptDrops(true);
     makeConnections();
 }
@@ -33,6 +34,7 @@ void Notepad::makeConnections()
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateConnect);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateTitle);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::setTabSpace);
+    connect(tabView,&QTabWidget::currentChanged,this,&Notepad::checkFileLanguage);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::synthaxicHighlighting);
@@ -42,6 +44,7 @@ void Notepad::makeConnections()
 // Creationg the items.
 void Notepad::buildComponents()
 {
+    fileType         = new QLabel("",this);
     file             = new QMenu("File",this);
     custom           = new QMenu("Customize",this);
     newFile          = new QAction(QIcon("assets/new.ico"),"New",this);
@@ -88,17 +91,9 @@ void Notepad::buildMenu()
 // Building the qcombobox theme list.
 void Notepad::buildThemeList()
 {
-    themeChoice->addItem("Aqua");
-    themeChoice->addItem("Amoled");
-    themeChoice->addItem("Console");
-    themeChoice->addItem("Diffness");
-    themeChoice->addItem("Elegant Dark");
-    themeChoice->addItem("Mac");
-    themeChoice->addItem("Manjaro");
-    themeChoice->addItem("Material Dark");
-    themeChoice->addItem("Obit");
-    themeChoice->addItem("Ubuntu");
-    themeChoice->setCurrentIndex(0);
+    themeChoice->addItems({"Adaptic","Amoled","Aqua","Console",
+        "Diffness","Elegant Dark","Mac","Manjaro","Material Dark","Obit","Ubuntu","World"});
+    themeChoice->setCurrentIndex(2);
 }
 
 // Setup the layout
@@ -108,11 +103,15 @@ void Notepad::applyLayout()
     topLayout->addWidget(menuBar,5);
     topLayout->addWidget(themeChoice,1);
     topLayout->addWidget(autoSaveCheckBox,2);
+    QHBoxLayout *bottomLayout = new QHBoxLayout();
+    bottomLayout->setContentsMargins(0,0,0,0);
+    bottomLayout->addWidget(positionBar,8);
+    bottomLayout->addWidget(fileType,2);
     QVBoxLayout *vboxLayout = new QVBoxLayout();
-    vboxLayout->setContentsMargins(10,0,10,0);
+    vboxLayout->setContentsMargins(5,0,5,0);
     vboxLayout->addLayout(topLayout,1);
     vboxLayout->addWidget(tabView,28);
-    vboxLayout->addWidget(positionBar,1);
+    vboxLayout->addLayout(bottomLayout,1);
     auto central = new QWidget(this);
     central->setLayout(vboxLayout);
     setCentralWidget(central);
@@ -336,7 +335,22 @@ QString Notepad::colorDialog()
     return colorToSet;
 }
 
-// Applying the new theme withn the name
+// Check the language type
+void Notepad::checkFileLanguage()
+{
+    auto currentFileExtension  = QFileInfo(fileName()).completeSuffix();
+    QString currentFileType    = "Plain Text";
+    QMapIterator<QString,QStringList> iteratorMap{FILE_EXTENSIONS};
+    while (iteratorMap.hasNext())
+    {
+        auto elmt    = iteratorMap.next();
+        auto content = elmt.value();
+        if(content.contains(currentFileExtension)) currentFileType = iteratorMap.key();
+    }
+    fileType->setText(currentFileType);
+}
+
+// Applying the new theme with the name
 void Notepad::onApplyOtherTheme(QString theme)
 {
     setStyleSheet(THEME_NAMES[theme]);
