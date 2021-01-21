@@ -422,10 +422,11 @@ void Notepad::onTerminal()
 }
 
 // Set the tab space of the QPlainTextEdit
-void Notepad::setTabSpace()
+void Notepad::setTabSpace(uint8_t space)
 {
+    tabSpace = space;
     QFontMetrics metrics(qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->font());
-    qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->setTabStopDistance(TAB_SPACE * metrics.horizontalAdvance(' '));
+    qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->setTabStopDistance(tabSpace * metrics.horizontalAdvance(' '));
 }
 
 // Update the window title
