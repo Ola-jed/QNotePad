@@ -3,6 +3,7 @@
 
 #include "style.hpp"
 #include "keywords.hpp"
+#include "settings.hpp"
 #include <QApplication>
 #include <QMainWindow>
 #include <QScreen>
@@ -18,8 +19,8 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QStatusBar>
-#include <QComboBox>
-#include <QLabel>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QTextStream>
 #include <QMessageBox>
 #include <QFont>
@@ -29,8 +30,6 @@
 #include <QFileDialog>
 #include <QColorDialog>
 #include <QColor>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
 #include <QTextDocument>
 #include <QTextBlock>
 #include <QTabWidget>
@@ -38,7 +37,6 @@
 #include <QMenuBar>
 #include <QMimeData>
 #include <QAction>
-#include <QDebug>
 
 class Notepad : public QMainWindow
 {
@@ -150,11 +148,11 @@ private:
     QAction *colorBackground;
     QAction *highlightSynthax;
     QAction *fontChange;
+    QAction *settings;
     QAction *terminal;
     QStatusBar *positionBar;
     QTabWidget *tabView;
     QCheckBox *autoSaveCheckBox;
-    QComboBox *themeChoice;
     QString currentFileLanguage;
     // Methods.
     QString fileName();
@@ -163,7 +161,6 @@ private:
     int getIndex(const QString &tabName);
     void buildComponents();
     void buildMenu();
-    void buildThemeList();
     void applyLayout();
     void applyStyle();
     void makeConnections();
@@ -183,6 +180,7 @@ private slots:
     void onAutoSave();
     void onTextModified();
     void onTerminal();
+    void onSettings();
     void onFont();
     void updateTitle();
     void updateCursorPosition();

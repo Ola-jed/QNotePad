@@ -11,5 +11,6 @@
         <file>assets/font.ico</file>
         <file>assets/terminal.ico</file>
         <file>assets/highlight.ico</file>
+        <file>assets/settings.ico</file>
     </qresource>
 </RCC>

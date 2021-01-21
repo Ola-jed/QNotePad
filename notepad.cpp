@@ -4,7 +4,6 @@ Notepad::Notepad(QWidget *parent)
     : QMainWindow(parent)
 {
     buildComponents();
-    buildThemeList();
     buildMenu();
     tabView->setTabsClosable(true);
     tabView->setAcceptDrops(true);
@@ -21,7 +20,7 @@ Notepad::Notepad(QWidget *parent)
 // Connections.
 void Notepad::makeConnections()
 {
-    connect(themeChoice,&QComboBox::currentTextChanged,this,&Notepad::onApplyOtherTheme);
+    connect(settings,&QAction::triggered,this,&Notepad::onSettings);
     connect(quit,&QAction::triggered,this,&Notepad::onQuit);
     connect(newFile,&QAction::triggered,this,&Notepad::onNewFile);
     connect(openFile,&QAction::triggered,this,&Notepad::openFileDialog);
@@ -55,11 +54,11 @@ void Notepad::buildComponents()
     colorBackground  = new QAction(QIcon("assets/background-color"),"Background Color",this);
     highlightSynthax = new QAction(QIcon("assets/highlight.ico"),"Synthax Highlighting",this);
     fontChange       = new QAction(QIcon("assets/font.ico"),"Font",this);
+    settings         = new QAction(QIcon("assets/settings.ico"),"Settings",this);
     terminal         = new QAction(QIcon("assets/terminal.ico"),"",this);
     tabView          = new QTabWidget(this);
     menuBar          = new QMenuBar(this);
     autoSaveCheckBox = new QCheckBox("AutoSave",this);
-    themeChoice      = new QComboBox(this);
     positionBar      = new QStatusBar(this);
 }
 
@@ -77,6 +76,7 @@ void Notepad::buildMenu()
     file->addAction(quit);
     custom->addAction(colorText);
     custom->addAction(colorBackground);
+    custom->addAction(settings);
     custom->addAction(highlightSynthax);
     custom->addAction(fontChange);
     menuBar->addMenu(file);
@@ -88,20 +88,11 @@ void Notepad::buildMenu()
     highlightSynthax->setChecked(true);
 }
 
-// Building the qcombobox theme list.
-void Notepad::buildThemeList()
-{
-    themeChoice->addItems({"Adaptic","Amoled","Aqua","Console",
-        "Diffness","Elegant Dark","Mac","Manjaro","Material Dark","Obit","Ubuntu","World"});
-    themeChoice->setCurrentIndex(2);
-}
-
 // Setup the layout
 void Notepad::applyLayout()
 {
     QHBoxLayout *topLayout = new QHBoxLayout();
     topLayout->addWidget(menuBar,5);
-    topLayout->addWidget(themeChoice,1);
     topLayout->addWidget(autoSaveCheckBox,2);
     QHBoxLayout *bottomLayout = new QHBoxLayout();
     bottomLayout->setContentsMargins(0,0,0,0);
@@ -365,6 +356,15 @@ void Notepad::onFont()
     {
         qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setFont(font);
     }
+}
+
+// Settings
+void Notepad::onSettings()
+{
+    Settings *s = new Settings(this);
+    connect(s,&Settings::themeChanged,this,&Notepad::onApplyOtherTheme);
+    connect(s,&Settings::changeTabWidth,this,&Notepad::setTabSpace);
+    s->show();
 }
 
 // Synthax Highlighting module

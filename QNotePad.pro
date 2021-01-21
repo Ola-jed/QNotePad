@@ -10,11 +10,13 @@ CONFIG += c++11
 
 SOURCES += \
     main.cpp \
-    notepad.cpp
+    notepad.cpp \
+    settings.cpp
 
 HEADERS += \
     keywords.hpp \
     notepad.hpp \
+    settings.hpp \
     style.hpp
 
 # Default rules for deployment.
