@@ -1,0 +1,195 @@
+QMainWindow {
+    background-color:#ececec;
+}
+QLabel {color:#027f7f;}
+QPushButton{
+    padding: 0 5px 0 5px;
+    border-style: solid;
+    border-top-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #c1c9cf, stop:1 #d2d8dd);
+    border-right-color: qlineargradient(spread:pad, x1:1, y1:0, x2:0, y2:0, stop:0 #c1c9cf, stop:1 #d2d8dd);
+    border-bottom-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 #c1c9cf, stop:1 #d2d8dd);
+    border-left-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #c1c9cf, stop:1 #d2d8dd);
+    border-width: 2px;
+    border-radius: 8px;
+    color: #616161;
+    font-weight: bold;
+    background-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 #fbfdfd, stop:0.5 #ffffff, stop:1 #fbfdfd);
+}
+QPushButton::default{
+    border: 2px solid transparent;
+    color: #FFFFFF;
+    background-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 #84afe5, stop:1 #1168e4);
+}
+QPushButton:hover{color: #3d3d3d;}
+QPushButton:pressed{
+    color: #aeaeae;
+    background-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 #ffffff, stop:0.5 #fbfdfd, stop:1 #ffffff);
+}
+QPushButton:disabled{
+    color: #616161;
+    background-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 #dce7eb, stop:0.5 #e0e8eb, stop:1 #dee7ec);
+}
+QPlainTextEdit{
+    border-width: 2px;
+    border-radius: 8px;
+    border-style: solid;
+    border-top-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 #c1c9cf, stop:1 #d2d8dd);
+    border-right-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #c1c9cf, stop:1 #d2d8dd);
+    border-bottom-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 #c1c9cf, stop:1 #d2d8dd);
+    border-left-color: qlineargradient(spread:pad, x1:1, y1:0, x2:0, y2:0, stop:0 #c1c9cf, stop:1 #d2d8dd);
+    background-color: #f4f4f4;
+    color: #3d3d3d;
+}
+QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus, QTimeEdit:focus, QDateEdit:focus, QDateTimeEdit:focus {
+    border-width: 2px;
+    border-radius: 8px;
+    border-style: solid;
+    border-top-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 #85b7e3, stop:1 #9ec1db);
+    border-right-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #85b7e3, stop:1 #9ec1db);
+    border-bottom-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 #85b7e3, stop:1 #9ec1db);
+    border-left-color: qlineargradient(spread:pad, x1:1, y1:0, x2:0, y2:0, stop:0 #85b7e3, stop:1 #9ec1db);
+    background-color: #f4f4f4;
+    color: #3d3d3d;
+}
+QComboBox, QFontComboBox {
+    border-width: 2px;
+    border-radius: 8px;
+    border-style: solid;
+    border-top-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 #c1c9cf, stop:1 #d2d8dd);
+    border-right-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #c1c9cf, stop:1 #d2d8dd);
+    border-bottom-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 #c1c9cf, stop:1 #d2d8dd);
+    border-left-color: qlineargradient(spread:pad, x1:1, y1:0, x2:0, y2:0, stop:0 #c1c9cf, stop:1 #d2d8dd);
+    background-color: #f4f4f4;
+    color: #272727;
+    padding-left: 5px;
+}
+QComboBox:editable, QComboBox:!editable, QComboBox::drop-down:editable, QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+    background: #ffffff;
+}
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+    color: #272727;
+    border-left-width: 1px;
+    border-left-color: darkgray;
+    border-left-style: solid;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+QComboBox::down-arrow:on {
+    top: 1px;
+    left: 1px;
+}
+QComboBox QAbstractItemView {
+    border: 1px solid darkgray;
+    border-radius: 8px;
+    selection-background-color: #dadada;
+    selection-color: #272727;
+    color: #272727;
+    background: white;
+}
+QCheckBox {
+    padding: 2px;
+}
+QCheckBox:disabled, QRadioButton:disabled {
+    color: #808086;
+    padding: 2px;
+}
+QCheckBox:hover {
+    border-radius:4px;
+    border-style:solid;
+    padding-left: 1px;
+    padding-right: 1px;
+    padding-bottom: 1px;
+    padding-top: 1px;
+    border-width:1px;
+    border-color: transparent;
+}
+QCheckBox::indicator:checked {
+    image: url(/usr/share/icons/Adwaita/16x16/actions/object-select-symbolic.symbolic.png);
+    height: 15px;
+    width: 15px;
+    border-style:solid;
+    border-width: 1px;
+    border-color: #48a5fd;
+    color: #ffffff;
+    border-radius: 3px;
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #48a5fd, stop:0.5 #329cfb, stop:1 #48a5fd);
+}
+QCheckBox::indicator:unchecked {
+    
+    height: 15px;
+    width: 15px;
+    border-style:solid;
+    border-width: 1px;
+    border-color: #48a5fd;
+    border-radius: 3px;
+    background-color: #fbfdfa;
+}
+QMenuBar {
+    background-color: #ececec;
+}
+QMenuBar::item {
+    color: #616161;
+    spacing: 3px;
+    padding: 1px 4px;
+    background-color: #ececec;
+}
+
+QMenuBar::item:selected {
+    background-color: #dadada;
+    color: #3d3d3d;
+}
+QMenu {
+    background-color: #ececec;
+}
+QMenu::item:selected {
+    background-color: #dadada;
+    color: #3d3d3d;
+}
+QMenu::item {
+    color: #616161;;
+    background-color: #e0e0e0;
+}
+QTabWidget {
+    color:rgb(0,0,0);
+    background-color:#000000;
+}
+QTabWidget::pane {
+    border-color: #050a0e;
+    background-color: #e0e0e0;
+    border-width: 1px;
+    border-radius: 4px;
+    position: absolute;
+    top: -0.5em;
+    padding-top: 0.5em;
+}
+QTabWidget::tab-bar {
+    alignment: center;
+}
+QTabBar::tab {
+    border-bottom: 1px solid #c0c0c0;
+    padding: 3px;
+    color: #272727;
+    background-color: #fefefc;
+    margin-left:0px;
+}
+QTabBar::tab:!last {
+    border-right: 1px solid;
+    border-right-color: #c0c0c0;
+    border-bottom-color: #c0c0c0;
+}
+QTabBar::tab:first {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+QTabBar::tab:last {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+QTabBar::tab:selected, QTabBar::tab:last:selected, QTabBar::tab:hover {
+    color: #FFFFFF;
+    background-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 #84afe5, stop:1 #1168e4);
+}
+QStatusBar {color:#027f7f;}

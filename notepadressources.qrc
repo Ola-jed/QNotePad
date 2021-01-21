@@ -12,5 +12,17 @@
         <file>assets/terminal.ico</file>
         <file>assets/highlight.ico</file>
         <file>assets/settings.ico</file>
+        <file>style/Adaptic.qss</file>
+        <file>style/Amoled.qss</file>
+        <file>style/Aqua.qss</file>
+        <file>style/Console.qss</file>
+        <file>style/Diffness.qss</file>
+        <file>style/ElegantDark.qss</file>
+        <file>style/Mac.qss</file>
+        <file>style/Manjaro.qss</file>
+        <file>style/Material.qss</file>
+        <file>style/Obit.qss</file>
+        <file>style/Ubuntu.qss</file>
+        <file>style/World.qss</file>
     </qresource>
 </RCC>

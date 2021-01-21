@@ -16,7 +16,6 @@
 #include <QCheckBox>
 #include <QProcess>
 #include <QPlainTextEdit>
-#include <QFile>
 #include <QFileInfo>
 #include <QStatusBar>
 #include <QHBoxLayout>
@@ -49,6 +48,18 @@ protected:
     void dropEvent(QDropEvent *event);
 private:
     // Constants.
+    const QString Adaptic      = loadStyleFromFile("style/Adaptic.qss");
+    const QString Amoled       = loadStyleFromFile("style/Amoled.qss");
+    const QString Aqua         = loadStyleFromFile("style/Aqua.qss");
+    const QString Console      = loadStyleFromFile("style/Console.qss");
+    const QString Diffness     = loadStyleFromFile("style/Diffness.qss");
+    const QString ElegantDark  = loadStyleFromFile("style/ElegantDark.qss");
+    const QString Mac          = loadStyleFromFile("style/Mac.qss");
+    const QString Manjaro      = loadStyleFromFile("style/Manjaro.qss");
+    const QString Material     = loadStyleFromFile("style/Material.qss");
+    const QString Obit         = loadStyleFromFile("style/Obit.qss");
+    const QString Ubuntu       = loadStyleFromFile("style/Ubuntu.qss");
+    const QString World        = loadStyleFromFile("style/World.qss");
     const QMap<QString,QStringList> FILE_EXTENSIONS{
         {"Asp",{"asp","asax","ascx","ashx","asmx","aspx","axd"}},
         {"Ada",{"adb","ada","ads"}},

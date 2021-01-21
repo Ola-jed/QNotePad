@@ -501,6 +501,5 @@ void Notepad::dropEvent(QDropEvent *event)
         onOpenFile(filename);
     }
 }
-
 Notepad::~Notepad()
 {}
