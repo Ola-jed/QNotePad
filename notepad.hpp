@@ -135,9 +135,9 @@ private:
         {"Ubuntu",Ubuntu},
         {"World",World}
     };
-    const int TAB_SPACE = 4;
     // Member variables.
     bool isSaved = false;
+    uint8_t tabSpace = 4;
     QLabel *fileType;
     QMenuBar *menuBar;
     QMenu *file;
@@ -189,6 +189,6 @@ private slots:
     void updateConnect();
     void synthaxicHighlighting();
     void checkFileLanguage();
-    void setTabSpace();
+    void setTabSpace(uint8_t space = 4);
 };
 #endif // NOTEPAD_HPP
