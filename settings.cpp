@@ -32,7 +32,6 @@ void Settings::buildElements()
     themeChange->addItems({"Adaptic","Amoled","Aqua","Console",
         "Diffness","Elegant Dark","Mac","Manjaro","Material Dark","Obit","Ubuntu","World"});
     themeChange->setCurrentIndex(2);
-
 }
 
 void Settings::applyLayout()
