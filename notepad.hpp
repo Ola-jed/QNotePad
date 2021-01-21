@@ -120,7 +120,6 @@ private:
         {"Vue",{"vue"}},
         {"XML",{"xml","axml","ccxml","fxml"}},
         {"Yaml",{"yaml","yml","yaml-tmlanguage"}},
-
     };
     const QMap<QString,QString> THEME_NAMES{
         {"Adaptic",Adaptic},
