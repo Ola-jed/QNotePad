@@ -58,7 +58,7 @@ void Notepad::buildComponents()
     colorBackground  = new QAction(QIcon(":assets/background-color"),"Background Color",this);
     highlightSynthax = new QAction(QIcon(":assets/highlight.ico"),"Synthax Highlighting",this);
     fontChange       = new QAction(QIcon(":assets/font.ico"),"Font",this);
-    settings         = new QAction(QIcon(":assets/settings.ico"),"Settings",this);
+    settings         = new QAction(QIcon(":assets/settings.ico"),"Preferences",this);
     terminal         = new QAction(QIcon(":assets/terminal.ico"),"",this);
     tabView          = new QTabWidget(this);
     menuBar          = new QMenuBar(this);
@@ -109,11 +109,11 @@ void Notepad::fileRenamed(const QString &path,const QString &oldName,const QStri
 // Building the menu
 void Notepad::buildMenu()
 {
-    // Shortcuts.
     newFile->setShortcut(QKeySequence::New);
     openFile->setShortcut(QKeySequence::Open);
     saveFile->setShortcut(QKeySequence::Save);
     quit->setShortcut(QKeySequence::Quit);
+    settings->setShortcut(QKeySequence::Preferences);
     file->addAction(newFile);
     file->addAction(openFile);
     file->addAction(saveFile);
@@ -160,7 +160,7 @@ void Notepad::applyStyle()
 {
     setGeometry(QStyle::alignedRect(Qt::LeftToRight,Qt::AlignCenter,size(),QGuiApplication::primaryScreen()->availableGeometry()));
     setWindowIcon(QIcon(":assets/notepad.ico"));
-    setStyleSheet(Aqua);
+    setStyleSheet(Manjaro);
     tabView->setElideMode(Qt::ElideRight);
 }
 
@@ -424,8 +424,9 @@ void Notepad::synthaxicHighlighting()
     for(auto i = 0; i != qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->blockCount(); i++)
     {
         QTextBlock block = qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->document()->findBlockByLineNumber(i);
-        if(block.isValid())
+        if(block.isValid() && !isComment(block))
         {
+            isComment(block);
             applyColoration(block);
         }
     }
@@ -451,6 +452,14 @@ void Notepad::applyColoration(const QTextBlock block)
             qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->setExtraSelections(extraSelections);
         }
     }
+}
+
+// Check if the textBlock is a comment
+bool Notepad::isComment(const QTextBlock &textBlock)
+{
+    auto isOneLine = (textBlock.text().left(2) == "//");
+    auto isHashtag = (textBlock.text().left(1) == "#");
+    return (isOneLine || isHashtag);
 }
 
 // Open a terminal in the current directory, it depends on the os
@@ -554,10 +563,10 @@ void Notepad::dropEvent(QDropEvent *event)
         QString filename;
         QList<QUrl> urlList = mimeData->urls();
         // Extract the local paths of the files.
-        // This code is only valid in linux because of the path . Needs to be adapted on windows
         filename = urlList[0].toString().right(urlList[0].toString().length() - 7);
         onOpenFile(filename);
     }
 }
+
 Notepad::~Notepad()
 {}
