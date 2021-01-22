@@ -5,6 +5,7 @@ Notepad::Notepad(QWidget *parent)
 {
     buildComponents();
     buildMenu();
+    buildFileView();
     tabView->setTabsClosable(true);
     tabView->setAcceptDrops(true);
     // Creating a blank plaintextedit.
@@ -32,12 +33,15 @@ void Notepad::makeConnections()
     connect(tabView,&QTabWidget::tabCloseRequested,this,&Notepad::onCloseFile);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateConnect);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateTitle);
+    connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateFileView);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::setTabSpace);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::checkFileLanguage);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::synthaxicHighlighting);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
+    connect(fileView,&QTreeView::doubleClicked,this,&Notepad::fileViewItemClicked);
+    connect(fileModel,&QFileSystemModel::fileRenamed,this,&Notepad::fileRenamed);
 }
 
 // Creationg the items.
@@ -46,20 +50,60 @@ void Notepad::buildComponents()
     fileType         = new QLabel("",this);
     file             = new QMenu("File",this);
     custom           = new QMenu("Customize",this);
-    newFile          = new QAction(QIcon("assets/new.ico"),"New",this);
-    openFile         = new QAction(QIcon("assets/open.ico"),"Open",this);
-    saveFile         = new QAction(QIcon("assets/save.ico"),"Save",this);
-    quit             = new QAction(QIcon("assets/quit.ico"),"Quit",this);
-    colorText        = new QAction(QIcon("assets/color.ico"),"Color",this);
-    colorBackground  = new QAction(QIcon("assets/background-color"),"Background Color",this);
-    highlightSynthax = new QAction(QIcon("assets/highlight.ico"),"Synthax Highlighting",this);
-    fontChange       = new QAction(QIcon("assets/font.ico"),"Font",this);
-    settings         = new QAction(QIcon("assets/settings.ico"),"Settings",this);
-    terminal         = new QAction(QIcon("assets/terminal.ico"),"",this);
+    newFile          = new QAction(QIcon(":assets/new.ico"),"New",this);
+    openFile         = new QAction(QIcon(":assets/open.ico"),"Open",this);
+    saveFile         = new QAction(QIcon(":assets/save.ico"),"Save",this);
+    quit             = new QAction(QIcon(":assets/quit.ico"),"Quit",this);
+    colorText        = new QAction(QIcon(":assets/color.ico"),"Color",this);
+    colorBackground  = new QAction(QIcon(":assets/background-color"),"Background Color",this);
+    highlightSynthax = new QAction(QIcon(":assets/highlight.ico"),"Synthax Highlighting",this);
+    fontChange       = new QAction(QIcon(":assets/font.ico"),"Font",this);
+    settings         = new QAction(QIcon(":assets/settings.ico"),"Settings",this);
+    terminal         = new QAction(QIcon(":assets/terminal.ico"),"",this);
     tabView          = new QTabWidget(this);
     menuBar          = new QMenuBar(this);
     autoSaveCheckBox = new QCheckBox("AutoSave",this);
     positionBar      = new QStatusBar(this);
+}
+
+// Build the treeFileView
+void Notepad::buildFileView()
+{
+    fileModel        = new QFileSystemModel(this);
+    fileView         = new QTreeView(this);
+    fileModel->setReadOnly(false);
+    fileView->setModel(fileModel);
+    fileView->hideColumn(1);
+    fileView->hideColumn(2);
+    fileView->hideColumn(3);
+    fileView->setVisible(false);
+}
+
+// Update the file view
+void Notepad::updateFileView()
+{
+    fileModel->setRootPath(QFileInfo(fileName()).dir().path());
+    QModelIndex idx = fileModel->index(QFileInfo(fileName()).dir().path());
+    fileView->setRootIndex(idx);
+}
+
+// Open the item when the item is double clicked
+void Notepad::fileViewItemClicked(const QModelIndex &index)
+{
+    auto name = QFileInfo(fileName()).absoluteDir().path()+"/"+index.data().toString();
+    if(QFileInfo(name).isFile() && getIndex(name) == -1)
+    {
+        onOpenFile(QFileInfo(fileName()).absoluteDir().path()+"/"+index.data().toString());
+    }
+}
+
+// File renamed.
+void Notepad::fileRenamed(const QString &path,const QString &oldName,const QString &newName)
+{
+    QString oldNm = path+"/"+oldName;
+    QString newNm = path+"/"+newName;
+    QFile::rename(oldNm,newNm);
+    tabView->setTabText(getIndex(oldNm),newNm);
 }
 
 // Building the menu
@@ -98,10 +142,13 @@ void Notepad::applyLayout()
     bottomLayout->setContentsMargins(0,0,0,0);
     bottomLayout->addWidget(positionBar,8);
     bottomLayout->addWidget(fileType,2);
+    QHBoxLayout *mediumLayout = new QHBoxLayout();
+    mediumLayout->addWidget(fileView,2);
+    mediumLayout->addWidget(tabView,15);
     QVBoxLayout *vboxLayout = new QVBoxLayout();
-    vboxLayout->setContentsMargins(5,0,5,0);
+    vboxLayout->setContentsMargins(0,0,0,0);
     vboxLayout->addLayout(topLayout,1);
-    vboxLayout->addWidget(tabView,28);
+    vboxLayout->addLayout(mediumLayout,28);
     vboxLayout->addLayout(bottomLayout,1);
     auto central = new QWidget(this);
     central->setLayout(vboxLayout);
@@ -112,7 +159,7 @@ void Notepad::applyLayout()
 void Notepad::applyStyle()
 {
     setGeometry(QStyle::alignedRect(Qt::LeftToRight,Qt::AlignCenter,size(),QGuiApplication::primaryScreen()->availableGeometry()));
-    setWindowIcon(QIcon("assets/notepad.ico"));
+    setWindowIcon(QIcon(":assets/notepad.ico"));
     setStyleSheet(Aqua);
     tabView->setElideMode(Qt::ElideRight);
 }
@@ -123,7 +170,7 @@ void Notepad::onNewFile()
     auto filename = QFileDialog::getSaveFileName(this);
     if(filename.isEmpty())
     {
-        QMessageBox::warning(this,"Nouveau Fichier","Entrer un nom valide");
+        QMessageBox::warning(this,"New File","Enter a valid name");
     }
     else
     {
@@ -137,12 +184,12 @@ void Notepad::createFile(const QString &fileToCreate)
     QFile fichier{fileToCreate};
     if((!fichier.open(QIODevice::ReadWrite)))
     {
-        QMessageBox::critical(this,"Nouveau Fichier","Impossible de créer le fichier");
+        QMessageBox::critical(this,"New File","Cannot create the file");
         return;
     }
     else
     {
-        QMessageBox::information(this,"Nouveau Fichier","Le fichier a bien été créé");
+        QMessageBox::information(this,"New File","File created");
         auto fileContent = new QPlainTextEdit(this);
         tabView->addTab(fileContent,fileToCreate);
         tabView->setTabText(getIndex(fileToCreate),fileToCreate);
@@ -155,7 +202,7 @@ void Notepad::openFileDialog()
     auto filename = QFileDialog::getOpenFileName(this);
     if(filename.isEmpty())
     {
-        QMessageBox::warning(this,"Nouveau Fichier","Choisir fichier valide");
+        QMessageBox::warning(this,"New File","Choose a valid file");
         return;
     }
     else
@@ -170,7 +217,7 @@ void Notepad::onOpenFile(const QString &filename)
     QFile fichier{filename};
     if((!fichier.open(QIODevice::ReadWrite)))
     {
-        QMessageBox::critical(this,"Nouveau Fichier","Impossible d'ouvrir le fichier");
+        QMessageBox::critical(this,"New File","Cannot open the file");
         return;
     }
     else
@@ -182,6 +229,10 @@ void Notepad::onOpenFile(const QString &filename)
         QString fileContent{in.readAll()};
         fichier.close();
         qobject_cast<QPlainTextEdit*>(tabView->widget(getIndex(filename)))->setPlainText(fileContent);
+        fileModel->setRootPath(QFileInfo(filename).dir().path());
+        QModelIndex idx = fileModel->index(QFileInfo(filename).dir().path());
+        fileView->setRootIndex(idx);
+        fileView->setVisible(true);
     }
 }
 
@@ -204,14 +255,14 @@ void Notepad::onNewFileSave()
     auto filename = QFileDialog::getSaveFileName(this);
     if(filename.isEmpty())
     {
-        QMessageBox::warning(this,"Nouveau Fichier","Entrer un nom valide");
+        QMessageBox::warning(this,"New File","Enter a valid name");
     }
     else
     {
         QFile fichier{filename};
         if((!fichier.open(QIODevice::ReadWrite)))
         {
-            QMessageBox::critical(this,"Sauvegarder","Impossible de sauvegarder le fichier");
+            QMessageBox::critical(this,"Save","Could not save");
             return;
         }
         else
@@ -234,11 +285,10 @@ void Notepad::onExistingFileSave()
         out << qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText();
         setWindowTitle("QNotePad");
         isSaved = true;
-        QMessageBox::information(this,"Sauvegarde","Sauvegarde Réussie");
     }
     else
     {
-        QMessageBox::critical(this,"Sauvegarde","Impossible de sauvegarder");
+        QMessageBox::critical(this,"Save","Could not save");
         return;
     }
 }
@@ -273,7 +323,8 @@ void Notepad::onCloseFile(const int &index)
         }
         else if((!tabView->tabText(index).isEmpty()) && !(qobject_cast<QPlainTextEdit*>(tabView->widget(index))->toPlainText().isEmpty()))
         {
-            onExistingFileSave();
+            auto rep = QMessageBox::question(this,"Save","Do you want to save ?");
+            if(rep == QMessageBox::Yes) onExistingFileSave();
         }
         tabView->removeTab(index);
         delete(tabItem);
@@ -297,7 +348,7 @@ void Notepad::onQuit()
     else if(((!fileName().isEmpty()) && !isSaved && !(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty()))
             ||(fileName().isEmpty() &&!(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty())))
     {
-        auto reply = QMessageBox::question(this, "Quitter", "Voulez vous sauvegarder ?",QMessageBox::Yes|QMessageBox::No);
+        auto reply = QMessageBox::question(this, "Quit", "Save ?",QMessageBox::Yes|QMessageBox::No);
         if(reply == QMessageBox::Yes)
         {
             onSaveFile();
@@ -321,7 +372,7 @@ void Notepad::onBackgroundColorChanged()
 
 QString Notepad::colorDialog()
 {
-    QColor chosenColor = QColorDialog::getColor("Choisir une couleur");
+    QColor chosenColor = QColorDialog::getColor("Choose a color");
     QString colorToSet = QString::number(chosenColor.red())+","+QString::number(chosenColor.green())+","+QString::number(chosenColor.blue());
     return colorToSet;
 }
@@ -375,23 +426,29 @@ void Notepad::synthaxicHighlighting()
         QTextBlock block = qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->document()->findBlockByLineNumber(i);
         if(block.isValid())
         {
-            QList<QTextEdit::ExtraSelection> extraSelections {qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->extraSelections()};
-            QString text = block.text();
-            foreach(auto highlight,keywordsList)
-            {
-                int p;
-                if(((p = text.indexOf(highlight)) != -1) && (text.mid(p,highlight.length()+1) == highlight+" "))
-                {
-                    int pos = block.position() + p;
-                    QTextEdit::ExtraSelection selection{};
-                    selection.cursor = QTextCursor(qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->document());
-                    selection.cursor.setPosition( pos );
-                    selection.cursor.setPosition( pos+highlight.length(), QTextCursor::KeepAnchor );
-                    selection.format.setForeground(Qt::red);
-                    extraSelections.append(selection);
-                    qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->setExtraSelections(extraSelections);
-                }
-            }
+            applyColoration(block);
+        }
+    }
+}
+
+// Apply coloration
+void Notepad::applyColoration(const QTextBlock block)
+{
+    QList<QTextEdit::ExtraSelection> extraSelections {qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->extraSelections()};
+    QString text = block.text();
+    foreach(auto highlight,keywordsList)
+    {
+        int p;
+        if(((p = text.indexOf(highlight)) != -1) && (text.mid(p,highlight.length()+1) == highlight+" "))
+        {
+            int pos = block.position() + p;
+            QTextEdit::ExtraSelection selection{};
+            selection.cursor = QTextCursor(qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->document());
+            selection.cursor.setPosition( pos );
+            selection.cursor.setPosition( pos+highlight.length(), QTextCursor::KeepAnchor );
+            selection.format.setForeground(Qt::red);
+            extraSelections.append(selection);
+            qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->setExtraSelections(extraSelections);
         }
     }
 }
@@ -450,6 +507,7 @@ void Notepad::updateConnect()
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
+    connect(fileView,&QTreeView::doubleClicked,this,&Notepad::fileViewItemClicked);
 }
 
 QString Notepad::fileName()
@@ -469,7 +527,7 @@ int Notepad::getIndex(const QString &tabName)
             return i;
         }
     }
-    return 1;
+    return -1;
 }
 
 bool Notepad::isEmpty()

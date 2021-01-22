@@ -16,7 +16,6 @@
 #include <QCheckBox>
 #include <QProcess>
 #include <QPlainTextEdit>
-#include <QFileInfo>
 #include <QStatusBar>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -26,8 +25,12 @@
 #include <QFontMetrics>
 #include <QFontDialog>
 #include <QInputDialog>
-#include <QFileDialog>
 #include <QColorDialog>
+#include <QFileInfo>
+#include <QFileDialog>
+#include <QFileSystemModel>
+#include <QTreeView>
+#include <QVariant>
 #include <QColor>
 #include <QTextDocument>
 #include <QTextBlock>
@@ -48,18 +51,18 @@ protected:
     void dropEvent(QDropEvent *event);
 private:
     // Constants.
-    const QString Adaptic      = loadStyleFromFile("style/Adaptic.qss");
-    const QString Amoled       = loadStyleFromFile("style/Amoled.qss");
-    const QString Aqua         = loadStyleFromFile("style/Aqua.qss");
-    const QString Console      = loadStyleFromFile("style/Console.qss");
-    const QString Diffness     = loadStyleFromFile("style/Diffness.qss");
-    const QString ElegantDark  = loadStyleFromFile("style/ElegantDark.qss");
-    const QString Mac          = loadStyleFromFile("style/Mac.qss");
-    const QString Manjaro      = loadStyleFromFile("style/Manjaro.qss");
-    const QString Material     = loadStyleFromFile("style/Material.qss");
-    const QString Obit         = loadStyleFromFile("style/Obit.qss");
-    const QString Ubuntu       = loadStyleFromFile("style/Ubuntu.qss");
-    const QString World        = loadStyleFromFile("style/World.qss");
+    const QString Adaptic      = loadStyleFromFile(":style/Adaptic.qss");
+    const QString Amoled       = loadStyleFromFile(":style/Amoled.qss");
+    const QString Aqua         = loadStyleFromFile(":style/Aqua.qss");
+    const QString Console      = loadStyleFromFile(":style/Console.qss");
+    const QString Diffness     = loadStyleFromFile(":style/Diffness.qss");
+    const QString ElegantDark  = loadStyleFromFile(":style/ElegantDark.qss");
+    const QString Mac          = loadStyleFromFile(":style/Mac.qss");
+    const QString Manjaro      = loadStyleFromFile(":style/Manjaro.qss");
+    const QString Material     = loadStyleFromFile(":style/Material.qss");
+    const QString Obit         = loadStyleFromFile(":style/Obit.qss");
+    const QString Ubuntu       = loadStyleFromFile(":style/Ubuntu.qss");
+    const QString World        = loadStyleFromFile(":style/World.qss");
     const QMap<QString,QStringList> FILE_EXTENSIONS{
         {"Asp",{"asp","asax","ascx","ashx","asmx","aspx","axd"}},
         {"Ada",{"adb","ada","ads"}},
@@ -164,6 +167,8 @@ private:
     QStatusBar *positionBar;
     QTabWidget *tabView;
     QCheckBox *autoSaveCheckBox;
+    QFileSystemModel *fileModel;
+    QTreeView *fileView;
     QString currentFileLanguage;
     // Methods.
     QString fileName();
@@ -172,6 +177,7 @@ private:
     int getIndex(const QString &tabName);
     void buildComponents();
     void buildMenu();
+    void buildFileView();
     void applyLayout();
     void applyStyle();
     void makeConnections();
@@ -197,7 +203,11 @@ private slots:
     void updateCursorPosition();
     void updateConnect();
     void synthaxicHighlighting();
+    void applyColoration(const QTextBlock block);
     void checkFileLanguage();
+    void updateFileView();
+    void fileRenamed(const QString &path,const QString &oldName,const QString &newName);
+    void fileViewItemClicked(const QModelIndex &index);
     void setTabSpace(uint8_t space = 4);
 };
 #endif // NOTEPAD_HPP
