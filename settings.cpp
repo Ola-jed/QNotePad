@@ -7,9 +7,7 @@ Settings::Settings(QWidget *parent) : QDialog(parent)
     setWindowIcon(QIcon("assets/settings.ico"));
     buildElements();
     applyLayout();
-    connect(ok,&QPushButton::clicked,this,[this](){
-        close();
-    });
+    connect(ok,&QPushButton::clicked,this,[this](){close();});
     connect(cancel,&QPushButton::clicked,this,[this](){
         themeChange->setCurrentIndex(2);
         spinTab->setValue(4);
@@ -31,7 +29,7 @@ void Settings::buildElements()
     spinTab->setValue(4);
     themeChange->addItems({"Adaptic","Amoled","Aqua","Console",
         "Diffness","Dtor","Elegant Dark","Mac","Manjaro","Material Dark","Obit","Ubuntu","World"});
-    themeChange->setCurrentIndex(2);
+    themeChange->setCurrentIndex(8);
 }
 
 void Settings::applyLayout()
