@@ -184,6 +184,7 @@ private:
     void applyStyle();
     void makeConnections();
     void createFile(const QString &fileToCreate);
+    bool isComment(const QTextBlock &textBlock);
 private slots:
     void onNewFile();
     void openFileDialog();
