@@ -56,6 +56,7 @@ private:
     const QString Aqua         = loadStyleFromFile(":style/Aqua.qss");
     const QString Console      = loadStyleFromFile(":style/Console.qss");
     const QString Diffness     = loadStyleFromFile(":style/Diffness.qss");
+    const QString Dtor         = loadStyleFromFile(":style/Dtor.qss");
     const QString ElegantDark  = loadStyleFromFile(":style/ElegantDark.qss");
     const QString Mac          = loadStyleFromFile(":style/Mac.qss");
     const QString Manjaro      = loadStyleFromFile(":style/Manjaro.qss");
@@ -138,7 +139,8 @@ private:
         {"Amoled",Amoled},
         {"Aqua",Aqua},
         {"Console",Console},
-        {"Difness",Diffness},
+        {"Diffness",Diffness},
+        {"Dtor",Dtor},
         {"Elegant Dark",ElegantDark},
         {"Mac",Mac},
         {"Manjaro",Manjaro},

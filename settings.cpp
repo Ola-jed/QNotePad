@@ -30,7 +30,7 @@ void Settings::buildElements()
     spinTab->setRange(1,10);
     spinTab->setValue(4);
     themeChange->addItems({"Adaptic","Amoled","Aqua","Console",
-        "Diffness","Elegant Dark","Mac","Manjaro","Material Dark","Obit","Ubuntu","World"});
+        "Diffness","Dtor","Elegant Dark","Mac","Manjaro","Material Dark","Obit","Ubuntu","World"});
     themeChange->setCurrentIndex(2);
 }
 

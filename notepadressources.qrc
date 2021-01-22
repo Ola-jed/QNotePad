@@ -24,5 +24,6 @@
         <file>style/Obit.qss</file>
         <file>style/Ubuntu.qss</file>
         <file>style/World.qss</file>
+        <file>style/Dtor.qss</file>
     </qresource>
 </RCC>
