@@ -5,10 +5,10 @@ Notepad::Notepad(QWidget *parent)
 {
     buildComponents();
     buildMenu();
+    buildStatusBar();
     buildFileView();
     tabView->setTabsClosable(true);
     tabView->setAcceptDrops(true);
-    // Creating a blank plaintextedit.
     tabView->addTab(new QPlainTextEdit(this),"New File");
     setTabSpace();
     applyLayout();
@@ -47,14 +47,15 @@ void Notepad::makeConnections()
 // Creationg the items.
 void Notepad::buildComponents()
 {
+    position         = new QLabel("",this);
     fileType         = new QLabel("",this);
     file             = new QMenu("File",this);
-    custom           = new QMenu("Customize",this);
+    custom           = new QMenu("Custom",this);
     newFile          = new QAction(QIcon(":assets/new.ico"),"New",this);
     openFile         = new QAction(QIcon(":assets/open.ico"),"Open",this);
     saveFile         = new QAction(QIcon(":assets/save.ico"),"Save",this);
     quit             = new QAction(QIcon(":assets/quit.ico"),"Quit",this);
-    colorText        = new QAction(QIcon(":assets/color.ico"),"Color",this);
+    colorText        = new QAction(QIcon(":assets/color.ico"),"Text Color",this);
     colorBackground  = new QAction(QIcon(":assets/background-color"),"Background Color",this);
     highlightSynthax = new QAction(QIcon(":assets/highlight.ico"),"Synthax Highlighting",this);
     fontChange       = new QAction(QIcon(":assets/font.ico"),"Font",this);
@@ -63,20 +64,28 @@ void Notepad::buildComponents()
     tabView          = new QTabWidget(this);
     menuBar          = new QMenuBar(this);
     autoSaveCheckBox = new QCheckBox("AutoSave",this);
-    positionBar      = new QStatusBar(this);
+    statusBar        = new QStatusBar(this);
 }
 
 // Build the treeFileView
 void Notepad::buildFileView()
 {
-    fileModel        = new QFileSystemModel(this);
-    fileView         = new QTreeView(this);
+    fileModel = new QFileSystemModel(this);
+    fileView  = new QTreeView(this);
     fileModel->setReadOnly(false);
     fileView->setModel(fileModel);
     fileView->hideColumn(1);
     fileView->hideColumn(2);
     fileView->hideColumn(3);
     fileView->setVisible(false);
+}
+
+// Build the status bar$
+void Notepad::buildStatusBar()
+{
+    statusBar->addWidget(position,1);
+    statusBar->addWidget(fileType,4);
+    statusBar->setSizeGripEnabled(false);
 }
 
 // Update the file view
@@ -135,13 +144,9 @@ void Notepad::buildMenu()
 // Setup the layout
 void Notepad::applyLayout()
 {
-    QHBoxLayout *topLayout = new QHBoxLayout();
+    QHBoxLayout *topLayout    = new QHBoxLayout();
     topLayout->addWidget(menuBar,5);
     topLayout->addWidget(autoSaveCheckBox,2);
-    QHBoxLayout *bottomLayout = new QHBoxLayout();
-    bottomLayout->setContentsMargins(0,0,0,0);
-    bottomLayout->addWidget(positionBar,8);
-    bottomLayout->addWidget(fileType,2);
     QHBoxLayout *mediumLayout = new QHBoxLayout();
     mediumLayout->addWidget(fileView,2);
     mediumLayout->addWidget(tabView,15);
@@ -149,7 +154,7 @@ void Notepad::applyLayout()
     vboxLayout->setContentsMargins(0,0,0,0);
     vboxLayout->addLayout(topLayout,1);
     vboxLayout->addLayout(mediumLayout,28);
-    vboxLayout->addLayout(bottomLayout,1);
+    vboxLayout->addWidget(statusBar,1);
     auto central = new QWidget(this);
     central->setLayout(vboxLayout);
     setCentralWidget(central);
@@ -160,7 +165,8 @@ void Notepad::applyStyle()
 {
     setGeometry(QStyle::alignedRect(Qt::LeftToRight,Qt::AlignCenter,size(),QGuiApplication::primaryScreen()->availableGeometry()));
     setWindowIcon(QIcon(":assets/notepad.ico"));
-    setStyleSheet(Manjaro);
+    setTabSpace((notepadSettings.value("Tab width").toInt() == 0) ? 4 : notepadSettings.value("Tab width").toInt()); // Loading tab space
+    setStyleSheet(THEME_NAMES[notepadSettings.value("Theme").toString()]); // Loading the user's favourite theme
     tabView->setElideMode(Qt::ElideRight);
 }
 
@@ -392,12 +398,6 @@ void Notepad::checkFileLanguage()
     fileType->setText(currentFileType);
 }
 
-// Applying the new theme with the name
-void Notepad::onApplyOtherTheme(QString theme)
-{
-    setStyleSheet(THEME_NAMES[theme]);
-}
-
 // Font customization
 void Notepad::onFont()
 {
@@ -416,6 +416,22 @@ void Notepad::onSettings()
     connect(s,&Settings::themeChanged,this,&Notepad::onApplyOtherTheme);
     connect(s,&Settings::changeTabWidth,this,&Notepad::setTabSpace);
     s->show();
+}
+
+// Applying the new theme with the name
+void Notepad::onApplyOtherTheme(QString theme)
+{
+    notepadSettings.setValue("Theme",theme);
+    setStyleSheet(THEME_NAMES[theme]);
+}
+
+// Set the tab space of the QPlainTextEdit
+void Notepad::setTabSpace(uint8_t space)
+{
+    notepadSettings.setValue("Tab width",space);
+    tabSpace = space;
+    QFontMetrics metrics(qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->font());
+    qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->setTabStopDistance(tabSpace * metrics.horizontalAdvance(' '));
 }
 
 // Synthax Highlighting module
@@ -487,14 +503,6 @@ void Notepad::onTerminal()
     }
 }
 
-// Set the tab space of the QPlainTextEdit
-void Notepad::setTabSpace(uint8_t space)
-{
-    tabSpace = space;
-    QFontMetrics metrics(qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->font());
-    qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->setTabStopDistance(tabSpace * metrics.horizontalAdvance(' '));
-}
-
 // Update the window title
 void Notepad::updateTitle()
 {
@@ -506,7 +514,7 @@ void Notepad::updateCursorPosition()
 {
     int line    = qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->textCursor().blockNumber() + 1 ;
     int columnn = qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->textCursor().positionInBlock() + 1;
-    positionBar->showMessage("Line : "+QString::number(line)+" col : "+QString::number(columnn));
+    position->setText("Line : "+QString::number(line)+" Col : "+QString::number(columnn));
 }
 
 // Update the slots connexion when the tab is changed
@@ -521,8 +529,7 @@ void Notepad::updateConnect()
 
 QString Notepad::fileName()
 {
-    if(tabView->count() == 0)
-        return " ";
+    if(tabView->count() == 0) return " ";
     return tabView->tabText(tabView->currentIndex());
 }
 

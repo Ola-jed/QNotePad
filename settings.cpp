@@ -4,12 +4,12 @@ Settings::Settings(QWidget *parent) : QDialog(parent)
 {
     setWindowTitle("Settings");
     setFixedSize(400,300);
-    setWindowIcon(QIcon("assets/settings.ico"));
+    setWindowIcon(QIcon(":assets/settings.ico"));
     buildElements();
     applyLayout();
     connect(ok,&QPushButton::clicked,this,[this](){close();});
     connect(cancel,&QPushButton::clicked,this,[this](){
-        themeChange->setCurrentIndex(2);
+        themeChange->setCurrentIndex(11);
         spinTab->setValue(4);
         close();
     });
@@ -27,9 +27,9 @@ void Settings::buildElements()
     cancel             = new QPushButton("Cancel",this);
     spinTab->setRange(1,10);
     spinTab->setValue(4);
-    themeChange->addItems({"Adaptic","Amoled","Aqua","Console",
-        "Diffness","Dtor","Elegant Dark","Mac","Manjaro","Material Dark","Obit","Ubuntu","World"});
-    themeChange->setCurrentIndex(8);
+    themeChange->addItems({"Adaptic","Amoled","Aqua","Console","Diffness","Dtor","Elegant Dark",
+                           "Fibrary","Genetive","Irrorater","Mac","Manjaro","Material Dark","Obit","Ubuntu","World"});
+    themeChange->setCurrentIndex(11);
 }
 
 void Settings::applyLayout()

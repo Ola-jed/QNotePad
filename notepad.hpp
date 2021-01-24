@@ -7,6 +7,7 @@
 #include <QApplication>
 #include <QMainWindow>
 #include <QScreen>
+#include <QSettings>
 #include <QStyle>
 #include <QIcon>
 #include <QMap>
@@ -58,6 +59,9 @@ private:
     const QString Diffness     = loadStyleFromFile(":style/Diffness.qss");
     const QString Dtor         = loadStyleFromFile(":style/Dtor.qss");
     const QString ElegantDark  = loadStyleFromFile(":style/ElegantDark.qss");
+    const QString Fibrary      = loadStyleFromFile(":style/Fibrary.qss");
+    const QString Genetive     = loadStyleFromFile(":style/Genetive.qss");
+    const QString Irrorater    = loadStyleFromFile(":style/Irrorater.qss");
     const QString Mac          = loadStyleFromFile(":style/Mac.qss");
     const QString Manjaro      = loadStyleFromFile(":style/Manjaro.qss");
     const QString Material     = loadStyleFromFile(":style/Material.qss");
@@ -142,6 +146,9 @@ private:
         {"Diffness",Diffness},
         {"Dtor",Dtor},
         {"Elegant Dark",ElegantDark},
+        {"Fibrary",Fibrary},
+        {"Genetive",Genetive},
+        {"Irrorater",Irrorater},
         {"Mac",Mac},
         {"Manjaro",Manjaro},
         {"Material Dark",Material},
@@ -152,6 +159,7 @@ private:
     // Member variables.
     bool isSaved = false;
     uint8_t tabSpace = 4;
+    QLabel *position;
     QLabel *fileType;
     QMenuBar *menuBar;
     QMenu *file;
@@ -166,12 +174,13 @@ private:
     QAction *fontChange;
     QAction *settings;
     QAction *terminal;
-    QStatusBar *positionBar;
+    QStatusBar *statusBar;
     QTabWidget *tabView;
     QCheckBox *autoSaveCheckBox;
     QFileSystemModel *fileModel;
     QTreeView *fileView;
     QString currentFileLanguage;
+    QSettings notepadSettings;
     // Methods.
     QString fileName();
     bool isEmpty();
@@ -179,6 +188,7 @@ private:
     int getIndex(const QString &tabName);
     void buildComponents();
     void buildMenu();
+    void buildStatusBar();
     void buildFileView();
     void applyLayout();
     void applyStyle();

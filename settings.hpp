@@ -28,4 +28,5 @@ signals:
     void themeChanged(QString themeName);
     void changeTabWidth(uint8_t width);
 };
+
 #endif // SETTINGS_HPP
