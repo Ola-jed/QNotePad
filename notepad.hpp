@@ -175,6 +175,7 @@ private:
     QAction *settings;
     QAction *terminal;
     QStatusBar *statusBar;
+    QPushButton *lock;
     QTabWidget *tabView;
     QCheckBox *autoSaveCheckBox;
     QFileSystemModel *fileModel;
@@ -209,6 +210,8 @@ private slots:
     void onApplyOtherTheme(QString theme);
     void onAutoSave();
     void onTextModified();
+    void onApplyLock();
+    void onCheckLock();
     void onTerminal();
     void onSettings();
     void onFont();

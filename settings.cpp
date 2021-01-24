@@ -1,15 +1,15 @@
 #include "settings.hpp"
 
-Settings::Settings(QWidget *parent) : QDialog(parent)
+Settings::Settings(QWidget *parent,const QString &themeName) : QDialog(parent)
 {
     setWindowTitle("Settings");
     setFixedSize(400,300);
     setWindowIcon(QIcon(":assets/settings.ico"));
-    buildElements();
+    buildElements(themeName);
     applyLayout();
     connect(ok,&QPushButton::clicked,this,[this](){close();});
-    connect(cancel,&QPushButton::clicked,this,[this](){
-        themeChange->setCurrentIndex(11);
+    connect(cancel,&QPushButton::clicked,this,[this,themeName](){
+        themeChange->setCurrentText(themeName);
         spinTab->setValue(4);
         close();
     });
@@ -17,7 +17,7 @@ Settings::Settings(QWidget *parent) : QDialog(parent)
     connect(spinTab, QOverload<int>::of(&QSpinBox::valueChanged),this,[=](int i){emit changeTabWidth(i);});
 }
 
-void Settings::buildElements()
+void Settings::buildElements(const QString &themeName)
 {
     tabSpaceIndication = new QLabel("Tab width : ",this);
     spinTab            = new QSpinBox(this);
@@ -29,7 +29,7 @@ void Settings::buildElements()
     spinTab->setValue(4);
     themeChange->addItems({"Adaptic","Amoled","Aqua","Console","Diffness","Dtor","Elegant Dark",
                            "Fibrary","Genetive","Irrorater","Mac","Manjaro","Material Dark","Obit","Ubuntu","World"});
-    themeChange->setCurrentIndex(11);
+    themeChange->setCurrentText(themeName);
 }
 
 void Settings::applyLayout()

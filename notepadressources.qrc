@@ -28,5 +28,7 @@
         <file>style/Fibrary.qss</file>
         <file>style/Genetive.qss</file>
         <file>style/Irrorater.qss</file>
+        <file>assets/lock.ico</file>
+        <file>assets/unlock.ico</file>
     </qresource>
 </RCC>

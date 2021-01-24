@@ -14,7 +14,7 @@ class Settings : public QDialog
 {
     Q_OBJECT
 public:
-    explicit Settings(QWidget *parent = nullptr);
+    explicit Settings(QWidget *parent = nullptr,const QString &themeName = "Manjaro");
 private:
     QLabel *tabSpaceIndication;
     QSpinBox *spinTab;
@@ -22,7 +22,7 @@ private:
     QComboBox *themeChange;
     QPushButton *ok;
     QPushButton *cancel;
-    void buildElements();
+    void buildElements(const QString &themeName);
     void applyLayout();
 signals:
     void themeChanged(QString themeName);

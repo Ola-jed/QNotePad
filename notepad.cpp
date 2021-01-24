@@ -34,8 +34,10 @@ void Notepad::makeConnections()
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateConnect);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateTitle);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateFileView);
+    connect(tabView,&QTabWidget::currentChanged,this,&Notepad::onCheckLock);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::setTabSpace);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::checkFileLanguage);
+    connect(lock,&QPushButton::clicked,this,&Notepad::onApplyLock);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::synthaxicHighlighting);
@@ -64,7 +66,9 @@ void Notepad::buildComponents()
     tabView          = new QTabWidget(this);
     menuBar          = new QMenuBar(this);
     autoSaveCheckBox = new QCheckBox("AutoSave",this);
+    lock             = new QPushButton(QIcon(":assets/unlock.ico"),"",this);
     statusBar        = new QStatusBar(this);
+    autoSaveCheckBox->setIcon(QIcon(":assets/autosave.ico"));
 }
 
 // Build the treeFileView
@@ -85,6 +89,7 @@ void Notepad::buildStatusBar()
 {
     statusBar->addWidget(position,1);
     statusBar->addWidget(fileType,4);
+    statusBar->addWidget(lock,1);
     statusBar->setSizeGripEnabled(false);
 }
 
@@ -364,7 +369,7 @@ void Notepad::onQuit()
 }
 
 // Color.
-void Notepad::onColorChanged() // Get the color and set the color in the textEdit.
+void Notepad::onColorChanged()
 {
     if(isEmpty()) return; // Do not try anything if the editor is empty
     qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->styleSheet()+" color:rgb("+colorDialog()+");");
@@ -412,7 +417,7 @@ void Notepad::onFont()
 // Settings
 void Notepad::onSettings()
 {
-    Settings *s = new Settings(this);
+    Settings *s = new Settings(this,notepadSettings.value("Theme").toString());
     connect(s,&Settings::themeChanged,this,&Notepad::onApplyOtherTheme);
     connect(s,&Settings::changeTabWidth,this,&Notepad::setTabSpace);
     s->show();
@@ -525,6 +530,20 @@ void Notepad::updateConnect()
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
     connect(fileView,&QTreeView::doubleClicked,this,&Notepad::fileViewItemClicked);
+    connect(lock,&QPushButton::clicked,this,&Notepad::onCheckLock);
+}
+
+// Lock or unlock the current file
+void Notepad::onApplyLock()
+{
+    qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->setReadOnly(!qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->isReadOnly());
+    onCheckLock();
+}
+
+void Notepad::onCheckLock()
+{
+    lock->setIcon((qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->isReadOnly())
+                  ? QIcon(":assets/lock.ico") : QIcon(":assets/unlock.ico"));
 }
 
 QString Notepad::fileName()
