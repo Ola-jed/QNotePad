@@ -80,7 +80,7 @@ void Notepad::buildFileView()
     fileView->setVisible(false);
 }
 
-// Build the status bar$
+// Build the status bar
 void Notepad::buildStatusBar()
 {
     statusBar->addWidget(position,1);
@@ -144,7 +144,7 @@ void Notepad::buildMenu()
 // Setup the layout
 void Notepad::applyLayout()
 {
-    QHBoxLayout *topLayout    = new QHBoxLayout();
+    QHBoxLayout *topLayout = new QHBoxLayout();
     topLayout->addWidget(menuBar,5);
     topLayout->addWidget(autoSaveCheckBox,2);
     QHBoxLayout *mediumLayout = new QHBoxLayout();
@@ -308,7 +308,7 @@ void Notepad::onAutoSave()
         if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
         {
             QTextStream out{&fich};
-            out << qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText() << "\n";
+            out << qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText();
             isSaved = true;
             setWindowTitle("QNotePad");
         }
