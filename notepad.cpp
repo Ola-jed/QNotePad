@@ -442,6 +442,7 @@ void Notepad::setTabSpace(uint8_t space)
 // Synthax Highlighting module
 void Notepad::synthaxicHighlighting()
 {
+    if(!highlightSynthax->isChecked()) return;
     for(auto i = 0; i != qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->blockCount(); i++)
     {
         QTextBlock block = qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->document()->findBlockByLineNumber(i);
