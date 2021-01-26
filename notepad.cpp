@@ -587,10 +587,9 @@ void Notepad::dropEvent(QDropEvent *event)
     // Check for our needed mime type, here a file or a list of files
     if (mimeData->hasUrls())
     {
-        QString filename;
         QList<QUrl> urlList = mimeData->urls();
         // Extract the local paths of the files.
-        filename = urlList[0].toString().right(urlList[0].toString().length() - 7);
+        QString filename = urlList[0].toString().right(urlList[0].toString().length() - 7);
         onOpenFile(filename);
     }
 }
