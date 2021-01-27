@@ -1,9 +1,14 @@
 # QNotePad
-Notepad application written in c++ with Qt.
 
-It is a text editor able to open several files at the same time and to open a terminal in the current directory.
+[![CodeFactor](https://www.codefactor.io/repository/github/ola-jed/qnotepad/badge)](https://www.codefactor.io/repository/github/ola-jed/qnotepad)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/c795bf59211b4d6ba9d656644b9bb241)](https://www.codacy.com/gh/Ola-jed/QNotePad/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Ola-jed/QNotePad&amp;utm_campaign=Badge_Grade)
 
-Run the following commands to compile
+QNotePad is a lightweight text editor written in c++ with the qt framework
+
+## How to build ?
+
+You need to have [qt](https://www.qt.io/download-qt-installer) installed  to build the app. 
+
 ```bash
 git clone https://github.com/Ola-jed/QNotePad
 cd QNotePad
@@ -12,7 +17,4 @@ qmake
 make
 ./QNotePad
 ```
-If you use Qt creator or visual studio,you can import the project, build and run
-(don't forget to copy the images in the build directory)
-
-[![CodeFactor](https://www.codefactor.io/repository/github/ola-jed/qnotepad/badge)](https://www.codefactor.io/repository/github/ola-jed/qnotepad)
+Just import the project if you use an ide.
