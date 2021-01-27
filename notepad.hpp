@@ -66,6 +66,7 @@ private:
     const QString Manjaro      = loadStyleFromFile(":style/Manjaro.qss");
     const QString Material     = loadStyleFromFile(":style/Material.qss");
     const QString Obit         = loadStyleFromFile(":style/Obit.qss");
+    const QString Visual       = loadStyleFromFile(":style/Visual.qss");
     const QString Ubuntu       = loadStyleFromFile(":style/Ubuntu.qss");
     const QString World        = loadStyleFromFile(":style/World.qss");
     const QMap<QString,QStringList> FILE_EXTENSIONS{
@@ -153,6 +154,7 @@ private:
         {"Manjaro",Manjaro},
         {"Material Dark",Material},
         {"Obit",Obit},
+        {"Visual",Visual},
         {"Ubuntu",Ubuntu},
         {"World",World}
     };
@@ -161,6 +163,7 @@ private:
     uint8_t tabSpace = 4;
     QLabel *position;
     QLabel *fileType;
+    QLabel *tabSpaceIndicator;
     QMenuBar *menuBar;
     QMenu *file;
     QMenu *custom;

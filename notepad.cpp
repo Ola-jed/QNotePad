@@ -49,8 +49,6 @@ void Notepad::makeConnections()
 // Creationg the items.
 void Notepad::buildComponents()
 {
-    position         = new QLabel("",this);
-    fileType         = new QLabel("",this);
     file             = new QMenu("File",this);
     custom           = new QMenu("Custom",this);
     newFile          = new QAction(QIcon(":assets/new.ico"),"New",this);
@@ -66,8 +64,6 @@ void Notepad::buildComponents()
     tabView          = new QTabWidget(this);
     menuBar          = new QMenuBar(this);
     autoSaveCheckBox = new QCheckBox("AutoSave",this);
-    lock             = new QPushButton(QIcon(":assets/unlock.ico"),"",this);
-    statusBar        = new QStatusBar(this);
     autoSaveCheckBox->setIcon(QIcon(":assets/autosave.ico"));
 }
 
@@ -87,8 +83,14 @@ void Notepad::buildFileView()
 // Build the status bar
 void Notepad::buildStatusBar()
 {
+    statusBar         = new QStatusBar(this);
+    position          = new QLabel("",this);
+    fileType          = new QLabel("",this);
+    lock              = new QPushButton(QIcon(":assets/unlock.ico"),"",this);
+    tabSpaceIndicator = new QLabel("",this);
     statusBar->addWidget(position,1);
     statusBar->addWidget(fileType,4);
+    statusBar->addWidget(tabSpaceIndicator,4);
     statusBar->addWidget(lock,1);
     statusBar->setSizeGripEnabled(false);
 }
@@ -435,6 +437,7 @@ void Notepad::setTabSpace(uint8_t space)
 {
     notepadSettings.setValue("Tab width",space);
     tabSpace = space;
+    tabSpaceIndicator->setText("Tab space : "+QString::number(tabSpace));
     QFontMetrics metrics(qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->font());
     qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->setTabStopDistance(tabSpace * metrics.horizontalAdvance(' '));
 }
@@ -476,11 +479,11 @@ void Notepad::applyColoration(const QTextBlock block)
     }
 }
 
-// Check if the textBlock is a one line comment
+// Check if the textBlock is a comment
 bool Notepad::isComment(const QTextBlock &textBlock)
 {
-    bool isOneLine = (textBlock.text().left(2) == "//");
-    bool isHashtag = (textBlock.text().left(1) == "#");
+    auto isOneLine = (textBlock.text().left(2) == "//");
+    auto isHashtag = (textBlock.text().left(1) == "#");
     return (isOneLine || isHashtag);
 }
 
@@ -497,7 +500,7 @@ void Notepad::onTerminal()
                     : QDir::home().absolutePath();
     QProcess *process = new QProcess(this);
     process->setWorkingDirectory(path);
-    process->start(exec,QStringList{});
+    process->startDetached(exec,QStringList{});
 }
 
 // Update the window title

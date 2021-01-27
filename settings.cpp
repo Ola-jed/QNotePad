@@ -14,7 +14,7 @@ Settings::Settings(QWidget *parent,const QString &themeName) : QDialog(parent)
         close();
     });
     connect(themeChange,&QComboBox::currentTextChanged,this,[this](){emit themeChanged(themeChange->currentText());});
-    connect(spinTab, QOverload<int>::of(&QSpinBox::valueChanged),this,[=](int i){emit changeTabWidth(i);});
+    connect(spinTab,QOverload<int>::of(&QSpinBox::valueChanged),this,[=](int i){emit changeTabWidth(i);});
 }
 
 void Settings::buildElements(const QString &themeName)
@@ -28,7 +28,7 @@ void Settings::buildElements(const QString &themeName)
     spinTab->setRange(1,10);
     spinTab->setValue(4);
     themeChange->addItems({"Adaptic","Amoled","Aqua","Console","Diffness","Dtor","Elegant Dark",
-                           "Fibrary","Genetive","Irrorater","Mac","Manjaro","Material Dark","Obit","Ubuntu","World"});
+                           "Fibrary","Genetive","Irrorater","Mac","Manjaro","Material Dark","Obit","Visual","Ubuntu","World"});
     themeChange->setCurrentText(themeName);
 }
 

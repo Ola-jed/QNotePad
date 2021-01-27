@@ -30,5 +30,6 @@
         <file>style/Irrorater.qss</file>
         <file>assets/lock.ico</file>
         <file>assets/unlock.ico</file>
+        <file>style/Visual.qss</file>
     </qresource>
 </RCC>
