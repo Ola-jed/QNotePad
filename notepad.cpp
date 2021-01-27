@@ -498,7 +498,7 @@ void Notepad::onTerminal()
                     : QDir::home().absolutePath();
     QProcess *process = new QProcess(this);
     process->setWorkingDirectory(path);
-    process->startDetached(exec,QStringList{});
+    process->start(exec,QStringList{});
 }
 
 // Update the window title
