@@ -10,7 +10,6 @@ Notepad::Notepad(QWidget *parent)
     tabView->setTabsClosable(true);
     tabView->setAcceptDrops(true);
     tabView->addTab(new QPlainTextEdit(this),"New File");
-    setTabSpace();
     applyLayout();
     applyStyle();
     checkFileLanguage();
@@ -35,7 +34,6 @@ void Notepad::makeConnections()
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateTitle);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateFileView);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::onCheckLock);
-    connect(tabView,&QTabWidget::currentChanged,this,&Notepad::setTabSpace);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::checkFileLanguage);
     connect(lock,&QPushButton::clicked,this,&Notepad::onApplyLock);
     connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
@@ -106,10 +104,10 @@ void Notepad::updateFileView()
 // Open the item when the item is double clicked
 void Notepad::fileViewItemClicked(const QModelIndex &index)
 {
-    auto name = QFileInfo(fileName()).absoluteDir().path()+"/"+index.data().toString();
-    if(QFileInfo(name).isFile() && getIndex(name) == -1)
+    auto currentFileName = fileModel->filePath(index);
+    if(QFileInfo(currentFileName).isFile() && (getIndex(currentFileName) == -1))
     {
-        onOpenFile(QFileInfo(fileName()).absoluteDir().path()+"/"+index.data().toString());
+        onOpenFile(currentFileName);
     }
 }
 
@@ -419,7 +417,7 @@ void Notepad::onFont()
 // Settings
 void Notepad::onSettings()
 {
-    Settings *s = new Settings(this,notepadSettings.value("Theme").toString());
+    Settings *s = new Settings(this,notepadSettings.value("Theme").toString(),notepadSettings.value("Tab width").toUInt());
     connect(s,&Settings::themeChanged,this,&Notepad::onApplyOtherTheme);
     connect(s,&Settings::changeTabWidth,this,&Notepad::setTabSpace);
     s->show();
