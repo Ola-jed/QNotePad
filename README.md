@@ -18,3 +18,5 @@ make
 ./QNotePad
 ```
 Just import the project if you use an ide.
+
+![Screenshot_20210127_194042](https://user-images.githubusercontent.com/66482155/106039127-0865ef80-60d9-11eb-8776-59e8f1af1000.png)
