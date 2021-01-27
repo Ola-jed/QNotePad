@@ -4,9 +4,9 @@ Notepad application written in c++ with Qt.
 It is a text editor able to open several files at the same time and to open a terminal in the current directory.
 
 Run the following commands to compile
-```bash
+```sh
 git clone https://github.com/Ola-jed/QNotePad
-cd QNotePad/src
+cd QNotePad
 qmake -project
 qmake
 make
