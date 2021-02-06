@@ -31,6 +31,7 @@
 #include <QFileDialog>
 #include <QFileSystemModel>
 #include <QTreeView>
+#include <QHeaderView>
 #include <QVariant>
 #include <QColor>
 #include <QTextDocument>

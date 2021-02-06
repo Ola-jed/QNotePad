@@ -1,23 +1,23 @@
 #include "settings.hpp"
 
-Settings::Settings(QWidget *parent,const QString &themeName) : QDialog(parent)
+Settings::Settings(QWidget *parent,const QString &themeName,uint8_t tabspace) : QDialog(parent)
 {
     setWindowTitle("Settings");
     setFixedSize(400,300);
     setWindowIcon(QIcon(":assets/settings.ico"));
-    buildElements(themeName);
+    buildElements(themeName,tabspace);
     applyLayout();
     connect(ok,&QPushButton::clicked,this,[this](){close();});
-    connect(cancel,&QPushButton::clicked,this,[this,themeName](){
+    connect(cancel,&QPushButton::clicked,this,[this,tabspace,themeName](){
         themeChange->setCurrentText(themeName);
-        spinTab->setValue(4);
+        spinTab->setValue(tabspace);
         close();
     });
     connect(themeChange,&QComboBox::currentTextChanged,this,[this](){emit themeChanged(themeChange->currentText());});
     connect(spinTab,QOverload<int>::of(&QSpinBox::valueChanged),this,[=](int i){emit changeTabWidth(i);});
 }
 
-void Settings::buildElements(const QString &themeName)
+void Settings::buildElements(const QString &themeName,uint8_t tabspace)
 {
     tabSpaceIndication = new QLabel("Tab width : ",this);
     spinTab            = new QSpinBox(this);
@@ -26,7 +26,7 @@ void Settings::buildElements(const QString &themeName)
     ok                 = new QPushButton("Ok",this);
     cancel             = new QPushButton("Cancel",this);
     spinTab->setRange(1,10);
-    spinTab->setValue(4);
+    spinTab->setValue(tabspace);
     themeChange->addItems({"Adaptic","Amoled","Aqua","Console","Diffness","Dtor","Elegant Dark",
                            "Fibrary","Genetive","Irrorater","Mac","Manjaro","Material Dark","Obit","Visual","Ubuntu","World"});
     themeChange->setCurrentText(themeName);
