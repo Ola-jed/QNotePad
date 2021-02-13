@@ -41,6 +41,7 @@
 #include <QMenuBar>
 #include <QMimeData>
 #include <QAction>
+#include <QSplitter>
 
 class Notepad : public QMainWindow
 {
@@ -184,6 +185,7 @@ private:
     QCheckBox *autoSaveCheckBox;
     QFileSystemModel *fileModel;
     QTreeView *fileView;
+    QSplitter *editorSplitter;
     QString currentFileLanguage;
     QSettings notepadSettings;
     // Methods.

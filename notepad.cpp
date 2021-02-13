@@ -76,6 +76,7 @@ void Notepad::buildFileView()
     fileView->hideColumn(2);
     fileView->hideColumn(3);
     fileView->setVisible(false);
+    editorSplitter = new QSplitter(Qt::Horizontal,this);
 }
 
 // Build the status bar
@@ -152,13 +153,13 @@ void Notepad::applyLayout()
     QHBoxLayout *topLayout = new QHBoxLayout();
     topLayout->addWidget(menuBar,5);
     topLayout->addWidget(autoSaveCheckBox,2);
-    QHBoxLayout *mediumLayout = new QHBoxLayout();
-    mediumLayout->addWidget(fileView,2);
-    mediumLayout->addWidget(tabView,15);
+    editorSplitter->addWidget(fileView);
+    editorSplitter->addWidget(tabView);
+    editorSplitter->setStretchFactor(1,3);
     QVBoxLayout *vboxLayout = new QVBoxLayout();
     vboxLayout->setContentsMargins(0,0,0,0);
     vboxLayout->addLayout(topLayout,1);
-    vboxLayout->addLayout(mediumLayout,28);
+    vboxLayout->addWidget(editorSplitter,28);
     vboxLayout->addWidget(statusBar,1);
     auto central = new QWidget(this);
     central->setLayout(vboxLayout);
