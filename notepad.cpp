@@ -5,6 +5,7 @@ Notepad::Notepad(QWidget *parent)
 {
     buildComponents();
     buildMenu();
+    applyShortcuts();
     buildStatusBar();
     buildFileView();
     tabView->setTabsClosable(true);
@@ -25,10 +26,13 @@ void Notepad::makeConnections()
     connect(newFile,&QAction::triggered,this,&Notepad::onNewFile);
     connect(openFile,&QAction::triggered,this,&Notepad::openFileDialog);
     connect(saveFile,&QAction::triggered,this,&Notepad::onSaveFile);
+    connect(saveFileAs,&QAction::triggered,this,&Notepad::onNewFileSave);
     connect(terminal,&QAction::triggered,this,&Notepad::onTerminal);
     connect(fontChange,&QAction::triggered,this,&Notepad::onFont);
     connect(colorText,&QAction::triggered,this,&Notepad::onColorChanged);
     connect(colorBackground,&QAction::triggered,this,&Notepad::onBackgroundColorChanged);
+    connect(zoomIn,&QAction::triggered,this,&Notepad::zoomPlus);
+    connect(zoomOut,&QAction::triggered,this,&Notepad::zoomMinus);
     connect(tabView,&QTabWidget::tabCloseRequested,this,&Notepad::onCloseFile);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateConnect);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::updateTitle);
@@ -49,16 +53,20 @@ void Notepad::buildComponents()
 {
     file             = new QMenu("File",this);
     custom           = new QMenu("Custom",this);
+    view             = new QMenu("View",this);
     newFile          = new QAction(QIcon(":assets/new.ico"),"New",this);
     openFile         = new QAction(QIcon(":assets/open.ico"),"Open",this);
     saveFile         = new QAction(QIcon(":assets/save.ico"),"Save",this);
+    saveFileAs       = new QAction(QIcon(":assets/saveas.ico"),"Save as",this);
     quit             = new QAction(QIcon(":assets/quit.ico"),"Quit",this);
     colorText        = new QAction(QIcon(":assets/color.ico"),"Text Color",this);
-    colorBackground  = new QAction(QIcon(":assets/background-color"),"Background Color",this);
-    highlightSynthax = new QAction(QIcon(":assets/highlight.ico"),"Synthax Highlighting",this);
+    colorBackground  = new QAction(QIcon(":assets/background-color"),"Background color",this);
+    highlightSynthax = new QAction(QIcon(":assets/highlight.ico"),"Synthax highlighting",this);
     fontChange       = new QAction(QIcon(":assets/font.ico"),"Font",this);
     settings         = new QAction(QIcon(":assets/settings.ico"),"Preferences",this);
     terminal         = new QAction(QIcon(":assets/terminal.ico"),"",this);
+    zoomIn           = new QAction(QIcon(":assets/zoomin.ico"),"Zoom in",this);
+    zoomOut          = new QAction(QIcon(":assets/zoomout.ico"),"Zoom out",this);
     tabView          = new QTabWidget(this);
     menuBar          = new QMenuBar(this);
     autoSaveCheckBox = new QCheckBox("AutoSave",this);
@@ -125,28 +133,44 @@ void Notepad::fileRenamed(const QString &path,const QString &oldName,const QStri
 // Building the menu
 void Notepad::buildMenu()
 {
-    newFile->setShortcut(QKeySequence::New);
-    openFile->setShortcut(QKeySequence::Open);
-    saveFile->setShortcut(QKeySequence::Save);
-    quit->setShortcut(QKeySequence::Quit);
-    settings->setShortcut(QKeySequence::Preferences);
     file->addAction(newFile);
     file->addAction(openFile);
+    file->addSeparator();
     file->addAction(saveFile);
+    file->addAction(saveFileAs);
+    file->addSeparator();
     file->addAction(quit);
     custom->addAction(colorText);
     custom->addAction(colorBackground);
+    custom->addSeparator();
     custom->addAction(settings);
     custom->addAction(highlightSynthax);
     custom->addAction(fontChange);
+    view->addAction(zoomIn);
+    view->addAction(zoomOut);
     menuBar->addMenu(file);
     menuBar->addSeparator();
     menuBar->addMenu(custom);
+    menuBar->addMenu(view);
     menuBar->addSeparator();
     menuBar->addAction(terminal);
     highlightSynthax->setCheckable(true);
     highlightSynthax->setChecked(true);
 }
+
+// Menu shortcuts
+void Notepad::applyShortcuts()
+{
+    newFile->setShortcut(QKeySequence::New);
+    openFile->setShortcut(QKeySequence::Open);
+    saveFile->setShortcut(QKeySequence::Save);
+    saveFileAs->setShortcut(QKeySequence::SaveAs);
+    quit->setShortcut(QKeySequence::Quit);
+    settings->setShortcut(QKeySequence::Preferences);
+    zoomIn->setShortcut(QKeySequence::ZoomIn);
+    zoomOut->setShortcut(QKeySequence::ZoomOut);
+}
+
 
 // Setup the layout
 void Notepad::applyLayout()
@@ -586,6 +610,17 @@ void Notepad::dropEvent(QDropEvent *event)
         QString filename = urlList[0].toString().right(urlList[0].toString().length() - 7);
         onOpenFile(filename);
     }
+}
+
+// Zooming in the current qplaintextedit
+void Notepad::zoomPlus()
+{
+    qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->zoomIn();
+}
+
+void Notepad::zoomMinus()
+{
+    qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->zoomOut();
 }
 
 Notepad::~Notepad()

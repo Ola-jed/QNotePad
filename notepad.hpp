@@ -169,15 +169,19 @@ private:
     QMenuBar *menuBar;
     QMenu *file;
     QMenu *custom;
+    QMenu *view;
     QAction *newFile;
     QAction *openFile;
     QAction *saveFile;
+    QAction *saveFileAs;
     QAction *quit;
     QAction *colorText;
     QAction *colorBackground;
     QAction *highlightSynthax;
     QAction *fontChange;
     QAction *settings;
+    QAction *zoomIn;
+    QAction *zoomOut;
     QAction *terminal;
     QStatusBar *statusBar;
     QPushButton *lock;
@@ -200,6 +204,7 @@ private:
     void applyLayout();
     void applyStyle();
     void makeConnections();
+    void applyShortcuts();
     void createFile(const QString &fileToCreate);
     bool isComment(const QTextBlock &textBlock);
 private slots:
@@ -231,5 +236,7 @@ private slots:
     void fileRenamed(const QString &path,const QString &oldName,const QString &newName);
     void fileViewItemClicked(const QModelIndex &index);
     void setTabSpace(uint8_t space = 4);
+    void zoomPlus();
+    void zoomMinus();
 };
 #endif // NOTEPAD_HPP

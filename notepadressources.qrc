@@ -31,5 +31,8 @@
         <file>assets/lock.ico</file>
         <file>assets/unlock.ico</file>
         <file>style/Visual.qss</file>
+        <file>assets/saveas.ico</file>
+        <file>assets/zoomout.ico</file>
+        <file>assets/zoomin.ico</file>
     </qresource>
 </RCC>
