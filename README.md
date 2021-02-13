@@ -19,7 +19,6 @@ make
 ```
 Just import the project if you use an ide.
 ### Example
-![Screenshot_20210127_194042](https://user-images.githubusercontent.com/66482155/106039127-0865ef80-60d9-11eb-8776-59e8f1af1000.png)
-
+![1](https://user-images.githubusercontent.com/66482155/107852039-841ca780-6e0e-11eb-9757-578c87e2cf2a.png)
 ### Terminal option
-![Screenshot_20210127_194928](https://user-images.githubusercontent.com/66482155/106039544-888c5500-60d9-11eb-9ed6-2d9c91f1bc81.png)
+![2](https://user-images.githubusercontent.com/66482155/107852051-9991d180-6e0e-11eb-9539-641e79323e1c.png)
