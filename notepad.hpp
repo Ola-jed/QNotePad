@@ -10,10 +10,11 @@
 #include <QSettings>
 #include <QStyle>
 #include <QIcon>
+#include <QDir>
 #include <QMap>
 #include <QMapIterator>
+#include <QDirIterator>
 #include <QStringList>
-#include <QList>
 #include <QCheckBox>
 #include <QProcess>
 #include <QPlainTextEdit>
@@ -28,7 +29,6 @@
 #include <QInputDialog>
 #include <QColorDialog>
 #include <QFileInfo>
-#include <QFileDialog>
 #include <QFileSystemModel>
 #include <QTreeView>
 #include <QHeaderView>
@@ -54,6 +54,7 @@ protected:
     void dropEvent(QDropEvent *event);
 private:
     // Constants.
+    const QString THEME_DIR{QDir::homePath()+"/.qnotepad_themes"};
     const QString Adaptic      = loadStyleFromFile(":style/Adaptic.qss");
     const QString Amoled       = loadStyleFromFile(":style/Amoled.qss");
     const QString Aqua         = loadStyleFromFile(":style/Aqua.qss");
@@ -141,7 +142,7 @@ private:
         {"XML",{"xml","axml","ccxml","fxml"}},
         {"Yaml",{"yaml","yml","yaml-tmlanguage"}},
     };
-    const QMap<QString,QString> THEME_NAMES{
+    QMap<QString,QString> THEME_NAMES{
         {"Adaptic",Adaptic},
         {"Amoled",Amoled},
         {"Aqua",Aqua},
@@ -206,6 +207,7 @@ private:
     void makeConnections();
     void applyShortcuts();
     void createFile(const QString &fileToCreate);
+    void loadSavedThemes();
     bool isComment(const QTextBlock &textBlock);
 private slots:
     void onNewFile();
@@ -219,6 +221,7 @@ private slots:
     void onColorChanged();
     void onBackgroundColorChanged();
     void onApplyOtherTheme(QString theme);
+    void onApplyLocalTheme(const QString &themeFileName);
     void onAutoSave();
     void onTextModified();
     void onApplyLock();

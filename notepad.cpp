@@ -3,6 +3,7 @@
 Notepad::Notepad(QWidget *parent)
     : QMainWindow(parent)
 {
+    loadSavedThemes();
     buildComponents();
     buildMenu();
     applyShortcuts();
@@ -443,8 +444,9 @@ void Notepad::onFont()
 // Settings
 void Notepad::onSettings()
 {
-    Settings *s = new Settings(this,notepadSettings.value("Theme").toString(),notepadSettings.value("Tab width").toUInt());
+    Settings *s = new Settings(this,THEME_NAMES.keys(),notepadSettings.value("Tab width").toUInt());
     connect(s,&Settings::themeChanged,this,&Notepad::onApplyOtherTheme);
+    connect(s,&Settings::localThemeSelected,this,&Notepad::onApplyLocalTheme);
     connect(s,&Settings::changeTabWidth,this,&Notepad::setTabSpace);
     s->show();
 }
@@ -454,6 +456,17 @@ void Notepad::onApplyOtherTheme(QString theme)
 {
     notepadSettings.setValue("Theme",theme);
     setStyleSheet(THEME_NAMES[theme]);
+}
+
+// Applying a user's theme
+void Notepad::onApplyLocalTheme(const QString &themeFileName)
+{
+    QDir dir{};
+    dir.mkpath(THEME_DIR);
+    setStyleSheet(loadStyleFromFile(themeFileName));
+    QFile::copy(themeFileName,THEME_DIR+"/"+QFileInfo{themeFileName}.fileName());
+    loadSavedThemes();
+    notepadSettings.setValue("Theme",THEME_NAMES[QFileInfo{themeFileName}.fileName().split(".").front()]);
 }
 
 // Set the tab space of the QPlainTextEdit
@@ -621,6 +634,17 @@ void Notepad::zoomPlus()
 void Notepad::zoomMinus()
 {
     qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->zoomOut();
+}
+
+// Load all the themes located in the local themes directory
+void Notepad::loadSavedThemes()
+{
+    QString tmpThemeName;
+    QDirIterator themeDirIt{THEME_DIR};
+    while((themeDirIt.hasNext()) && (QFileInfo(tmpThemeName = themeDirIt.next())).isFile())
+    {
+        THEME_NAMES.insert(QFileInfo{tmpThemeName}.fileName().split(".").front(),loadStyleFromFile(tmpThemeName));
+    }
 }
 
 Notepad::~Notepad()
