@@ -76,6 +76,7 @@ void Notepad::buildFileView()
     fileView->hideColumn(2);
     fileView->hideColumn(3);
     fileView->setVisible(false);
+    fileView->setHeaderHidden(true);
     editorSplitter = new QSplitter(Qt::Horizontal,this);
 }
 
@@ -155,7 +156,7 @@ void Notepad::applyLayout()
     topLayout->addWidget(autoSaveCheckBox,2);
     editorSplitter->addWidget(fileView);
     editorSplitter->addWidget(tabView);
-    editorSplitter->setStretchFactor(1,3);
+    editorSplitter->setStretchFactor(1,4);
     QVBoxLayout *vboxLayout = new QVBoxLayout();
     vboxLayout->setContentsMargins(0,0,0,0);
     vboxLayout->addLayout(topLayout,1);
@@ -493,7 +494,7 @@ void Notepad::onTerminal()
     #if (defined (_WIN32) || defined (_WIN64))
         exec = "cmd.exe";
     #elif (defined (LINUX) || defined (__linux__))
-        exec = "gnome-terminal";
+        exec = "konsole";
     #endif
     QString path = ((tabView->count() > 0) && (tabView->currentIndex() >= 0)) ? QFileInfo(fileName()).absoluteDir().absolutePath()
                     : QDir::home().absolutePath();
