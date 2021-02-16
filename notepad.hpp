@@ -15,7 +15,6 @@
 #include <QMapIterator>
 #include <QDirIterator>
 #include <QStringList>
-#include <QCheckBox>
 #include <QProcess>
 #include <QPlainTextEdit>
 #include <QStatusBar>
@@ -175,7 +174,9 @@ private:
     QAction *openFile;
     QAction *saveFile;
     QAction *saveFileAs;
+    QAction *closeAll;
     QAction *quit;
+    QAction *autoSave;
     QAction *colorText;
     QAction *colorBackground;
     QAction *highlightSynthax;
@@ -187,7 +188,6 @@ private:
     QStatusBar *statusBar;
     QPushButton *lock;
     QTabWidget *tabView;
-    QCheckBox *autoSaveCheckBox;
     QFileSystemModel *fileModel;
     QTreeView *fileView;
     QSplitter *editorSplitter;
@@ -217,6 +217,7 @@ private slots:
     void onNewFileSave();
     void onExistingFileSave();
     void onCloseFile(const int &index);
+    void closeAllTabs();
     void onQuit();
     void onColorChanged();
     void onBackgroundColorChanged();

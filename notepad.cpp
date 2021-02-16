@@ -30,6 +30,7 @@ void Notepad::makeConnections()
     connect(saveFileAs,&QAction::triggered,this,&Notepad::onNewFileSave);
     connect(terminal,&QAction::triggered,this,&Notepad::onTerminal);
     connect(fontChange,&QAction::triggered,this,&Notepad::onFont);
+    connect(closeAll,&QAction::triggered,this,&Notepad::closeAllTabs);
     connect(colorText,&QAction::triggered,this,&Notepad::onColorChanged);
     connect(colorBackground,&QAction::triggered,this,&Notepad::onBackgroundColorChanged);
     connect(zoomIn,&QAction::triggered,this,&Notepad::zoomPlus);
@@ -59,7 +60,9 @@ void Notepad::buildComponents()
     openFile         = new QAction(QIcon(":assets/open.ico"),"Open",this);
     saveFile         = new QAction(QIcon(":assets/save.ico"),"Save",this);
     saveFileAs       = new QAction(QIcon(":assets/saveas.ico"),"Save as",this);
+    closeAll         = new QAction(QIcon(":assets/closeall.ico"),"Close all",this);
     quit             = new QAction(QIcon(":assets/quit.ico"),"Quit",this);
+    autoSave         = new QAction(QIcon(":assets/autosave.ico"),"AutoSave",this);
     colorText        = new QAction(QIcon(":assets/color.ico"),"Text Color",this);
     colorBackground  = new QAction(QIcon(":assets/background-color"),"Background color",this);
     highlightSynthax = new QAction(QIcon(":assets/highlight.ico"),"Synthax highlighting",this);
@@ -70,8 +73,6 @@ void Notepad::buildComponents()
     zoomOut          = new QAction(QIcon(":assets/zoomout.ico"),"Zoom out",this);
     tabView          = new QTabWidget(this);
     menuBar          = new QMenuBar(this);
-    autoSaveCheckBox = new QCheckBox("AutoSave",this);
-    autoSaveCheckBox->setIcon(QIcon(":assets/autosave.ico"));
 }
 
 // Build the treeFileView
@@ -134,13 +135,17 @@ void Notepad::fileRenamed(const QString &path,const QString &oldName,const QStri
 // Building the menu
 void Notepad::buildMenu()
 {
+    autoSave->setCheckable(true);
     file->addAction(newFile);
     file->addAction(openFile);
     file->addSeparator();
     file->addAction(saveFile);
     file->addAction(saveFileAs);
     file->addSeparator();
+    file->addAction(closeAll);
     file->addAction(quit);
+    file->addSeparator();
+    file->addAction(autoSave);
     custom->addAction(colorText);
     custom->addAction(colorBackground);
     custom->addSeparator();
@@ -177,8 +182,7 @@ void Notepad::applyShortcuts()
 void Notepad::applyLayout()
 {
     QHBoxLayout *topLayout = new QHBoxLayout();
-    topLayout->addWidget(menuBar,5);
-    topLayout->addWidget(autoSaveCheckBox,2);
+    topLayout->addWidget(menuBar);
     editorSplitter->addWidget(fileView);
     editorSplitter->addWidget(tabView);
     editorSplitter->setStretchFactor(1,4);
@@ -334,7 +338,7 @@ void Notepad::onExistingFileSave()
 // AutoSave of the file
 void Notepad::onAutoSave()
 {
-    if((autoSaveCheckBox->isChecked()) && (!fileName().isEmpty()))
+    if((autoSave->isChecked()) && (!fileName().isEmpty()))
     {
         QFile fich{fileName()};
         if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
@@ -372,7 +376,7 @@ void Notepad::onCloseFile(const int &index)
 
 void Notepad::onTextModified()
 {
-    if(!autoSaveCheckBox->isChecked())
+    if(!autoSave->isChecked())
     {
         setWindowTitle("QNotePad (file modified)");
         isSaved = false;
@@ -597,6 +601,16 @@ int Notepad::getIndex(const QString &tabName)
     return -1;
 }
 
+void Notepad::closeAllTabs()
+{
+    tabView->addTab(new QPlainTextEdit(this),"New File");
+    auto const sizeTab{tabView->count()-1};
+    for(auto s{0};s != sizeTab;s++)
+    {
+        tabView->removeTab(0);
+    }
+}
+
 bool Notepad::isEmpty()
 {
     return (tabView->count() == 0);
@@ -618,9 +632,9 @@ void Notepad::dropEvent(QDropEvent *event)
     // Check for our needed mime type, here a file or a list of files
     if (mimeData->hasUrls())
     {
-        QList<QUrl> urlList = mimeData->urls();
+        const QList<QUrl> urlList = mimeData->urls();
         // Extract the local paths of the files.
-        QString filename = urlList[0].toString().right(urlList[0].toString().length() - 7);
+        const QString filename {urlList[0].toString().right(urlList[0].toString().length() - 7)};
         onOpenFile(filename);
     }
 }

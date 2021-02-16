@@ -34,5 +34,6 @@
         <file>assets/saveas.ico</file>
         <file>assets/zoomout.ico</file>
         <file>assets/zoomin.ico</file>
+        <file>assets/closeall.ico</file>
     </qresource>
 </RCC>
