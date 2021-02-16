@@ -194,8 +194,8 @@ private:
     QString currentFileLanguage;
     QSettings notepadSettings;
     // Methods.
-    QString fileName();
-    bool isEmpty();
+    QString fileName() const;
+    bool isEmpty() const;
     QString colorDialog();
     int getIndex(const QString &tabName);
     void buildComponents();
@@ -208,7 +208,8 @@ private:
     void applyShortcuts();
     void createFile(const QString &fileToCreate);
     void loadSavedThemes();
-    bool isComment(const QTextBlock &textBlock);
+    QPlainTextEdit* getCurrent() const;
+    bool isComment(const QTextBlock &textBlock) const;
 private slots:
     void onNewFile();
     void openFileDialog();

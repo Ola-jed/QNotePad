@@ -42,10 +42,10 @@ void Notepad::makeConnections()
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::onCheckLock);
     connect(tabView,&QTabWidget::currentChanged,this,&Notepad::checkFileLanguage);
     connect(lock,&QPushButton::clicked,this,&Notepad::onApplyLock);
-    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
-    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
-    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::synthaxicHighlighting);
-    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
+    connect(getCurrent(),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
+    connect(getCurrent(),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
+    connect(getCurrent(),&QPlainTextEdit::textChanged,this,&Notepad::synthaxicHighlighting);
+    connect(getCurrent(),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
     connect(fileView,&QTreeView::doubleClicked,this,&Notepad::fileViewItemClicked);
     connect(fileModel,&QFileSystemModel::fileRenamed,this,&Notepad::fileRenamed);
 }
@@ -479,17 +479,17 @@ void Notepad::setTabSpace(uint8_t space)
     notepadSettings.setValue("Tab width",space);
     tabSpace = space;
     tabSpaceIndicator->setText("Tab space : "+QString::number(tabSpace));
-    QFontMetrics metrics(qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->font());
-    qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->setTabStopDistance(tabSpace * metrics.horizontalAdvance(' '));
+    QFontMetrics metrics(getCurrent()->font());
+    getCurrent()->setTabStopDistance(tabSpace * metrics.horizontalAdvance(' '));
 }
 
 // Synthax Highlighting module
 void Notepad::synthaxicHighlighting()
 {
     if(!highlightSynthax->isChecked()) return;
-    for(auto i = 0; i != qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->blockCount(); i++)
+    for(auto i = 0; i != getCurrent()->blockCount(); i++)
     {
-        QTextBlock block = qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->document()->findBlockByLineNumber(i);
+        QTextBlock block = getCurrent()->document()->findBlockByLineNumber(i);
         if(block.isValid() && !isComment(block))
         {
             isComment(block);
@@ -501,7 +501,7 @@ void Notepad::synthaxicHighlighting()
 // Apply coloration
 void Notepad::applyColoration(const QTextBlock block)
 {
-    QList<QTextEdit::ExtraSelection> extraSelections {qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->extraSelections()};
+    QList<QTextEdit::ExtraSelection> extraSelections {getCurrent()->extraSelections()};
     QString text = block.text();
     foreach(auto highlight,keywordsList)
     {
@@ -510,18 +510,18 @@ void Notepad::applyColoration(const QTextBlock block)
         {
             int pos = block.position() + p;
             QTextEdit::ExtraSelection selection{};
-            selection.cursor = QTextCursor(qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->document());
+            selection.cursor = QTextCursor(getCurrent()->document());
             selection.cursor.setPosition( pos );
             selection.cursor.setPosition( pos+highlight.length(), QTextCursor::KeepAnchor );
             selection.format.setForeground(Qt::red);
             extraSelections.append(selection);
-            qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->setExtraSelections(extraSelections);
+            getCurrent()->setExtraSelections(extraSelections);
         }
     }
 }
 
 // Check if the textBlock is a comment
-bool Notepad::isComment(const QTextBlock &textBlock)
+bool Notepad::isComment(const QTextBlock &textBlock) const
 {
     auto isOneLine = (textBlock.text().left(2) == "//");
     auto isHashtag = (textBlock.text().left(1) == "#");
@@ -553,18 +553,18 @@ void Notepad::updateTitle()
 // Update and show the cursor position in the status bar
 void Notepad::updateCursorPosition()
 {
-    int line    = qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->textCursor().blockNumber() + 1 ;
-    int columnn = qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->textCursor().positionInBlock() + 1;
+    int line    = getCurrent()->textCursor().blockNumber() + 1 ;
+    int columnn = getCurrent()->textCursor().positionInBlock() + 1;
     position->setText("Line : "+QString::number(line)+" Col : "+QString::number(columnn));
 }
 
 // Update the slots connexion when the tab is changed
 void Notepad::updateConnect()
 {
-    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::synthaxicHighlighting);
-    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
-    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
-    connect(qobject_cast<QPlainTextEdit*>(tabView->currentWidget()),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
+    connect(getCurrent(),&QPlainTextEdit::textChanged,this,&Notepad::synthaxicHighlighting);
+    connect(getCurrent(),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
+    connect(getCurrent(),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
+    connect(getCurrent(),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
     connect(fileView,&QTreeView::doubleClicked,this,&Notepad::fileViewItemClicked);
     connect(lock,&QPushButton::clicked,this,&Notepad::onCheckLock);
 }
@@ -572,17 +572,16 @@ void Notepad::updateConnect()
 // Lock or unlock the current file
 void Notepad::onApplyLock()
 {
-    qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->setReadOnly(!qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->isReadOnly());
+    getCurrent()->setReadOnly(!getCurrent()->isReadOnly());
     onCheckLock();
 }
 
 void Notepad::onCheckLock()
 {
-    lock->setIcon((qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->isReadOnly())
-                  ? QIcon(":assets/lock.ico") : QIcon(":assets/unlock.ico"));
+    lock->setIcon((getCurrent()->isReadOnly()) ? QIcon(":assets/lock.ico") : QIcon(":assets/unlock.ico"));
 }
 
-QString Notepad::fileName()
+QString Notepad::fileName() const
 {
     if(tabView->count() == 0) return " ";
     return tabView->tabText(tabView->currentIndex());
@@ -611,7 +610,7 @@ void Notepad::closeAllTabs()
     }
 }
 
-bool Notepad::isEmpty()
+bool Notepad::isEmpty() const
 {
     return (tabView->count() == 0);
 }
@@ -642,12 +641,18 @@ void Notepad::dropEvent(QDropEvent *event)
 // Zooming in the current qplaintextedit
 void Notepad::zoomPlus()
 {
-    qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->zoomIn();
+    getCurrent()->zoomIn();
 }
 
 void Notepad::zoomMinus()
 {
-    qobject_cast<QPlainTextEdit*>(tabView->currentWidget())->zoomOut();
+    getCurrent()->zoomOut();
+}
+
+// Get the current qplaintextedit widge
+QPlainTextEdit* Notepad::getCurrent() const
+{
+    return (isEmpty()) ? nullptr : qobject_cast<QPlainTextEdit*>(tabView->currentWidget());
 }
 
 // Load all the themes located in the local themes directory
