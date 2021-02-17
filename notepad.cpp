@@ -448,8 +448,11 @@ void Notepad::onFont()
 // Settings
 void Notepad::onSettings()
 {
-    Settings *s = new Settings(this,THEME_NAMES.keys(),notepadSettings.value("Tab width").toUInt());
+    notepadSettings.setValue("Terminal","konsole");
+    qDebug() << notepadSettings.value("Terminal").toString();
+    Settings *s = new Settings(this,THEME_NAMES.keys(),notepadSettings.value("Terminal").toString(),notepadSettings.value("Tab width").toUInt());
     connect(s,&Settings::themeChanged,this,&Notepad::onApplyOtherTheme);
+    connect(s,&Settings::terminalChanged,this,&Notepad::changeTerminal);
     connect(s,&Settings::localThemeSelected,this,&Notepad::onApplyLocalTheme);
     connect(s,&Settings::changeTabWidth,this,&Notepad::setTabSpace);
     s->show();
@@ -471,6 +474,13 @@ void Notepad::onApplyLocalTheme(const QString &themeFileName)
     QFile::copy(themeFileName,THEME_DIR+"/"+QFileInfo{themeFileName}.fileName());
     loadSavedThemes();
     notepadSettings.setValue("Theme",THEME_NAMES[QFileInfo{themeFileName}.fileName().split(".").front()]);
+}
+
+// Chage the default app terminal
+void Notepad::changeTerminal(const QString &terminalName)
+{
+    notepadSettings.setValue("Terminal",terminalName);
+    qDebug() << notepadSettings.value("Terminal").toString();
 }
 
 // Set the tab space of the QPlainTextEdit
@@ -533,7 +543,7 @@ void Notepad::onTerminal()
 {
     QString exec;
     #if (defined (_WIN32) || defined (_WIN64))
-        exec = "cmd.exe";
+        exec = "C:\\Users\\SEA\\AppData\\Local\\Microsoft\\WindowsApps\\wt.exe";
     #elif (defined (LINUX) || defined (__linux__))
         exec = "konsole";
     #endif

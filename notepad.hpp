@@ -238,6 +238,7 @@ private slots:
     void applyColoration(const QTextBlock block);
     void checkFileLanguage();
     void updateFileView();
+    void changeTerminal(const QString &terminalName);
     void fileRenamed(const QString &path,const QString &oldName,const QString &newName);
     void fileViewItemClicked(const QModelIndex &index);
     void setTabSpace(uint8_t space = 4);

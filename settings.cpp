@@ -1,13 +1,16 @@
 #include "settings.hpp"
 
-Settings::Settings(QWidget *parent,const QList<QString> &themes,uint8_t tabspace) : QDialog(parent)
+Settings::Settings(QWidget *parent,const QList<QString> &themes,const QString terminalName,uint8_t tabspace) : QDialog(parent)
 {
     setWindowTitle("Settings");
     setFixedSize(400,300);
     setWindowIcon(QIcon(":assets/settings.ico"));
-    buildElements(themes,tabspace);
+    buildElements(themes,terminalName,tabspace);
     applyLayout();
-    connect(ok,&QPushButton::clicked,this,[this](){close();});
+    connect(ok,&QPushButton::clicked,this,[this](){
+        emit terminalChanged(terminalIndication->text());
+        close();
+    });
     connect(cancel,&QPushButton::clicked,this,[this,tabspace](){
         spinTab->setValue(tabspace);
         close();
@@ -17,16 +20,19 @@ Settings::Settings(QWidget *parent,const QList<QString> &themes,uint8_t tabspace
     connect(spinTab,QOverload<int>::of(&QSpinBox::valueChanged),this,[=](int i){emit changeTabWidth(i);});
 }
 
-void Settings::buildElements(const QList<QString> &themes,uint8_t tabspace)
+void Settings::buildElements(const QList<QString> &themes,const QString terminalName,uint8_t tabspace)
 {
     tabSpaceIndication = new QLabel("Tab width : ",this);
     spinTab            = new QSpinBox(this);
     themeIndication    = new QLabel("Theme : ",this);
     themeChange        = new QComboBox(this);
+    terminalIndication = new QLabel("Terminal",this);
+    terminalText       = new QLineEdit(terminalName,this);
     ok                 = new QPushButton("Ok",this);
     cancel             = new QPushButton("Cancel",this);
     loadUserTheme      = new QPushButton("Load .qss file theme",this);
     spinTab->setRange(1,10);
+    terminalText->setText(terminalName);
     spinTab->setValue(tabspace);
     foreach(auto const tmpTheme,themes)
     {
@@ -41,9 +47,11 @@ void Settings::applyLayout()
     lay->addWidget(spinTab,0,1);
     lay->addWidget(themeIndication,1,0);
     lay->addWidget(themeChange,1,1);
+    lay->addWidget(terminalIndication,2,0);
+    lay->addWidget(terminalText,2,1);
     lay->addWidget(loadUserTheme);
-    lay->addWidget(ok,3,0);
-    lay->addWidget(cancel,3,1);
+    lay->addWidget(ok,4,0);
+    lay->addWidget(cancel,4,1);
     setLayout(lay);
 }
 
