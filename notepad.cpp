@@ -126,8 +126,8 @@ void Notepad::fileViewItemClicked(const QModelIndex &index)
 // File renamed.
 void Notepad::fileRenamed(const QString &path,const QString &oldName,const QString &newName)
 {
-    QString oldNm = path+"/"+oldName;
-    QString newNm = path+"/"+newName;
+    const QString oldNm {path+"/"+oldName};
+    const QString newNm {path+"/"+newName};
     QFile::rename(oldNm,newNm);
     tabView->setTabText(getIndex(oldNm),newNm);
 }
@@ -270,7 +270,7 @@ void Notepad::onOpenFile(const QString &filename)
         QTextStream in{&fichier};
         QString fileContent{in.readAll()};
         fichier.close();
-        qobject_cast<QPlainTextEdit*>(tabView->widget(getIndex(filename)))->setPlainText(fileContent);
+        getCurrent()->setPlainText(fileContent);
         fileModel->setRootPath(QFileInfo(filename).dir().path());
         QModelIndex idx = fileModel->index(QFileInfo(filename).dir().path());
         fileView->setRootIndex(idx);
@@ -281,11 +281,11 @@ void Notepad::onOpenFile(const QString &filename)
 // Saving the current file.
 void Notepad::onSaveFile()
 {
-    if((fileName() == "New File") && !(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty())) // If this is a new file
+    if((fileName() == "New File") && !(getCurrent()->toPlainText().isEmpty())) // If this is a new file
     {
         onNewFileSave();
     }
-    else if((!fileName().isEmpty()) && !(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty()))
+    else if((!fileName().isEmpty()) && !(getCurrent()->toPlainText().isEmpty()))
     {
         onExistingFileSave();
     }
@@ -310,7 +310,7 @@ void Notepad::onNewFileSave()
         else
         {
             QTextStream out{&fichier};
-            out << qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText();
+            out << getCurrent()->toPlainText();
             setWindowTitle("QNotePad");
             tabView->setTabText(tabView->currentIndex(),filename);
         }
@@ -324,7 +324,7 @@ void Notepad::onExistingFileSave()
     if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
     {
         QTextStream out{&fich};
-        out << qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText();
+        out << getCurrent()->toPlainText();
         setWindowTitle("QNotePad");
         isSaved = true;
     }
@@ -344,7 +344,7 @@ void Notepad::onAutoSave()
         if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
         {
             QTextStream out{&fich};
-            out << qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText();
+            out << getCurrent()->toPlainText();
             isSaved = true;
             setWindowTitle("QNotePad");
         }
@@ -386,11 +386,12 @@ void Notepad::onTextModified()
 void Notepad::onQuit()
 {
     if(isEmpty())
-        qApp->quit();
-    else if(((!fileName().isEmpty()) && !isSaved && !(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty()))
-            ||(fileName().isEmpty() &&!(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->toPlainText().isEmpty())))
     {
-        auto reply = QMessageBox::question(this, "Quit", "Save ?",QMessageBox::Yes|QMessageBox::No);
+        qApp->quit();
+    }
+    else if(((!fileName().isEmpty()) && !isSaved && !(getCurrent()->toPlainText().isEmpty())) ||(fileName().isEmpty() &&!(getCurrent()->toPlainText().isEmpty())))
+    {
+        auto const reply = QMessageBox::question(this, "Quit", "Save ?",QMessageBox::Yes|QMessageBox::No);
         if(reply == QMessageBox::Yes)
         {
             onSaveFile();
@@ -403,13 +404,13 @@ void Notepad::onQuit()
 void Notepad::onColorChanged()
 {
     if(isEmpty()) return; // Do not try anything if the editor is empty
-    qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->styleSheet()+" color:rgb("+colorDialog()+");");
+    getCurrent()->setStyleSheet(getCurrent()->styleSheet()+" color:rgb("+colorDialog()+");");
 }
 
 void Notepad::onBackgroundColorChanged()
 {
     if(isEmpty()) return; // Do not try anything if the editor is empty
-    qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setStyleSheet(qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->styleSheet()+" background:rgb("+colorDialog()+");");
+    getCurrent()->setStyleSheet(getCurrent()->styleSheet()+" background:rgb("+colorDialog()+");");
 }
 
 QString Notepad::colorDialog()
@@ -441,7 +442,7 @@ void Notepad::onFont()
     QFont font = QFontDialog::getFont(&ok, QFont("Times", 12), this);
     if(ok)
     {
-        qobject_cast<QPlainTextEdit*>(tabView->widget(tabView->currentIndex()))->setFont(font);
+        getCurrent()->setFont(font);
     }
 }
 
@@ -449,7 +450,6 @@ void Notepad::onFont()
 void Notepad::onSettings()
 {
     notepadSettings.setValue("Terminal","konsole");
-    qDebug() << notepadSettings.value("Terminal").toString();
     Settings *s = new Settings(this,THEME_NAMES.keys(),notepadSettings.value("Terminal").toString(),notepadSettings.value("Tab width").toUInt());
     connect(s,&Settings::themeChanged,this,&Notepad::onApplyOtherTheme);
     connect(s,&Settings::terminalChanged,this,&Notepad::changeTerminal);
@@ -480,7 +480,6 @@ void Notepad::onApplyLocalTheme(const QString &themeFileName)
 void Notepad::changeTerminal(const QString &terminalName)
 {
     notepadSettings.setValue("Terminal",terminalName);
-    qDebug() << notepadSettings.value("Terminal").toString();
 }
 
 // Set the tab space of the QPlainTextEdit
@@ -545,7 +544,7 @@ void Notepad::onTerminal()
     #if (defined (_WIN32) || defined (_WIN64))
         exec = "C:\\Users\\SEA\\AppData\\Local\\Microsoft\\WindowsApps\\wt.exe";
     #elif (defined (LINUX) || defined (__linux__))
-        exec = "konsole";
+        exec = notepadSettings.value("Terminal").toString();
     #endif
     QString path = ((tabView->count() > 0) && (tabView->currentIndex() >= 0)) ? QFileInfo(fileName()).absoluteDir().absolutePath()
                     : QDir::home().absolutePath();
