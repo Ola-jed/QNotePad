@@ -4,6 +4,7 @@
 #include "style.hpp"
 #include "keywords.hpp"
 #include "settings.hpp"
+#include "popup.hpp"
 #include <QApplication>
 #include <QMainWindow>
 #include <QScreen>
@@ -12,9 +13,9 @@
 #include <QIcon>
 #include <QDir>
 #include <QMap>
+#include <QRegularExpression>
 #include <QMapIterator>
 #include <QDirIterator>
-#include <QStringList>
 #include <QProcess>
 #include <QPlainTextEdit>
 #include <QStatusBar>
@@ -36,10 +37,8 @@
 #include <QTextDocument>
 #include <QTextBlock>
 #include <QTabWidget>
-#include <QMenu>
 #include <QMenuBar>
 #include <QMimeData>
-#include <QAction>
 #include <QSplitter>
 
 class Notepad : public QMainWindow
@@ -49,6 +48,7 @@ public:
     Notepad(QWidget *parent = nullptr);
     ~Notepad();
 protected:
+    void keyReleaseEvent(QKeyEvent *e);
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
 private:
@@ -210,6 +210,8 @@ private:
     void loadSavedThemes();
     QPlainTextEdit* getCurrent() const;
     bool isComment(const QTextBlock &textBlock) const;
+    QStringList words;
+    QString currentWord{};
 private slots:
     void onNewFile();
     void openFileDialog();

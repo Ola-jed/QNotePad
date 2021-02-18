@@ -11,12 +11,14 @@ CONFIG += c++14
 SOURCES += \
     main.cpp \
     notepad.cpp \
+    popup.cpp \
     settings.cpp \
     style.cpp
 
 HEADERS += \
     keywords.hpp \
     notepad.hpp \
+    popup.hpp \
     settings.hpp \
     style.hpp
 

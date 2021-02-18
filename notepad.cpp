@@ -161,7 +161,7 @@ void Notepad::buildMenu()
     menuBar->addSeparator();
     menuBar->addAction(terminal);
     highlightSynthax->setCheckable(true);
-    highlightSynthax->setChecked(true);
+    highlightSynthax->setChecked(false);
 }
 
 // Menu shortcuts
@@ -423,7 +423,7 @@ QString Notepad::colorDialog()
 // Check the language type
 void Notepad::checkFileLanguage()
 {
-    auto currentFileExtension  = QFileInfo(fileName()).completeSuffix();
+    const auto currentFileExtension {QFileInfo(fileName()).completeSuffix()};
     QString currentFileType    = "Plain Text";
     QMapIterator<QString,QStringList> iteratorMap{FILE_EXTENSIONS};
     while (iteratorMap.hasNext())
@@ -449,7 +449,6 @@ void Notepad::onFont()
 // Settings
 void Notepad::onSettings()
 {
-    notepadSettings.setValue("Terminal","konsole");
     Settings *s = new Settings(this,THEME_NAMES.keys(),notepadSettings.value("Terminal").toString(),notepadSettings.value("Tab width").toUInt());
     connect(s,&Settings::themeChanged,this,&Notepad::onApplyOtherTheme);
     connect(s,&Settings::terminalChanged,this,&Notepad::changeTerminal);
@@ -624,6 +623,81 @@ bool Notepad::isEmpty() const
     return (tabView->count() == 0);
 }
 
+// Zooming in the current qplaintextedit
+void Notepad::zoomPlus()
+{
+    getCurrent()->zoomIn();
+}
+
+void Notepad::zoomMinus()
+{
+    getCurrent()->zoomOut();
+}
+
+// Get the current qplaintextedit widget
+QPlainTextEdit* Notepad::getCurrent() const
+{
+    return (isEmpty()) ? nullptr : qobject_cast<QPlainTextEdit*>(tabView->currentWidget());
+}
+
+// Load all the themes located in the local themes directory
+void Notepad::loadSavedThemes()
+{
+    QString tmpThemeName;
+    QDirIterator themeDirIt{THEME_DIR};
+    while((themeDirIt.hasNext()) && (QFileInfo(tmpThemeName = themeDirIt.next())).isFile())
+    {
+        THEME_NAMES.insert(QFileInfo{tmpThemeName}.fileName().split(".").front(),loadStyleFromFile(tmpThemeName));
+    }
+}
+
+// Key event
+void Notepad::keyReleaseEvent(QKeyEvent *e)
+{
+    if(!getCurrent()->hasFocus()) return;
+    const QChar charEntered{e->text().at(0)};
+    if(charEntered.isLetterOrNumber())
+    {
+        currentWord += charEntered;
+        const QRegularExpression regexp{currentWord,QRegularExpression::CaseInsensitiveOption};
+        QStringList results{};
+        foreach(auto const tempWord,words)
+        {
+            if(regexp.match(tempWord).hasMatch())
+            {
+                results.append(tempWord);
+            }
+        }
+        if(!results.empty())
+        {
+            // TODO
+            // focus implementation and fix some small bugs
+            Popup *popupMenu = new Popup(this,results);
+            popupMenu->setFocus();
+            qDebug() << popupMenu->hasFocus();
+            connect(popupMenu,&Popup::textSelected,this,[&](QString text){
+                getCurrent()->insertPlainText(text.right(text.size()-currentWord.size()));
+                qDebug() << text;
+            });
+            const QPoint ref{0,0};
+            const QPoint cursorPos{(getCurrent()->mapToGlobal(ref).x()) + getCurrent()->cursorRect().x()+10,
+                        getCurrent()->mapToGlobal(ref).y()+getCurrent()->cursorRect().y()+10};
+            popupMenu->popup(cursorPos);
+        }
+    }
+    else
+    {
+        if(!(currentWord.size() < 2))
+        {
+            if(!words.contains(currentWord))
+            {
+                words.append(currentWord);
+            }
+            currentWord.clear();
+        }
+    }
+}
+
 // Drag event to open files.
 void Notepad::dragEnterEvent(QDragEnterEvent *e)
 {
@@ -641,37 +715,9 @@ void Notepad::dropEvent(QDropEvent *event)
     if (mimeData->hasUrls())
     {
         const QList<QUrl> urlList = mimeData->urls();
-        // Extract the local paths of the files.
+        // Extract the local path.
         const QString filename {urlList[0].toString().right(urlList[0].toString().length() - 7)};
         onOpenFile(filename);
-    }
-}
-
-// Zooming in the current qplaintextedit
-void Notepad::zoomPlus()
-{
-    getCurrent()->zoomIn();
-}
-
-void Notepad::zoomMinus()
-{
-    getCurrent()->zoomOut();
-}
-
-// Get the current qplaintextedit widge
-QPlainTextEdit* Notepad::getCurrent() const
-{
-    return (isEmpty()) ? nullptr : qobject_cast<QPlainTextEdit*>(tabView->currentWidget());
-}
-
-// Load all the themes located in the local themes directory
-void Notepad::loadSavedThemes()
-{
-    QString tmpThemeName;
-    QDirIterator themeDirIt{THEME_DIR};
-    while((themeDirIt.hasNext()) && (QFileInfo(tmpThemeName = themeDirIt.next())).isFile())
-    {
-        THEME_NAMES.insert(QFileInfo{tmpThemeName}.fileName().split(".").front(),loadStyleFromFile(tmpThemeName));
     }
 }
 
