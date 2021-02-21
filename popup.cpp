@@ -14,10 +14,12 @@ Popup::Popup(QWidget *parent, const QStringList &content) : QMenu(parent)
 void Popup::keyPressEvent(QKeyEvent *e)
 {
     auto const triggeredKey{e->key()};
-
     if(triggeredKey == Qt::Key_Tab)
     {
-        emit triggered(activeAction());
+        if(activeAction() != nullptr)
+        {
+            emit triggered(activeAction());
+        }
     }
     else if((triggeredKey != Qt::Key_Up) && (triggeredKey != Qt::Key_Down))
     {

@@ -54,7 +54,7 @@ void Notepad::makeConnections()
 void Notepad::buildComponents()
 {
     file             = new QMenu("File",this);
-    custom           = new QMenu("Custom",this);
+    custom           = new QMenu("Configure",this);
     view             = new QMenu("View",this);
     newFile          = new QAction(QIcon(":assets/new.ico"),"New",this);
     openFile         = new QAction(QIcon(":assets/open.ico"),"Open",this);
@@ -67,7 +67,7 @@ void Notepad::buildComponents()
     colorBackground  = new QAction(QIcon(":assets/background-color"),"Background color",this);
     highlightSynthax = new QAction(QIcon(":assets/highlight.ico"),"Synthax highlighting",this);
     fontChange       = new QAction(QIcon(":assets/font.ico"),"Font",this);
-    settings         = new QAction(QIcon(":assets/settings.ico"),"Preferences",this);
+    settings         = new QAction(QIcon(":assets/settings.ico"),"Settings",this);
     terminal         = new QAction(QIcon(":assets/terminal.ico"),"",this);
     zoomIn           = new QAction(QIcon(":assets/zoomin.ico"),"Zoom in",this);
     zoomOut          = new QAction(QIcon(":assets/zoomout.ico"),"Zoom out",this);
@@ -673,16 +673,14 @@ void Notepad::keyReleaseEvent(QKeyEvent *e)
             // TODO
             // focus implementation and fix some small bugs
             Popup *popupMenu = new Popup(this,results);
-            popupMenu->setFocus();
-            qDebug() << popupMenu->hasFocus();
             connect(popupMenu,&Popup::textSelected,this,[&](QString text){
                 getCurrent()->insertPlainText(text.right(text.size()-currentWord.size()));
-                qDebug() << text;
             });
             const QPoint ref{0,0};
-            const QPoint cursorPos{(getCurrent()->mapToGlobal(ref).x()) + getCurrent()->cursorRect().x()+10,
+            const QPoint cursorPos{(getCurrent()->mapToGlobal(ref).x())+getCurrent()->cursorRect().x()+10,
                         getCurrent()->mapToGlobal(ref).y()+getCurrent()->cursorRect().y()+10};
             popupMenu->popup(cursorPos);
+            popupMenu->setFocus();
         }
     }
     else
