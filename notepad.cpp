@@ -266,6 +266,7 @@ void Notepad::onOpenFile(const QString &filename)
     {
         auto tab = new QPlainTextEdit(this);
         tabView->addTab(tab,filename);
+        tabView->setCurrentIndex(getIndex(filename));
         // Reading the file line by line and storing in the textEdit.
         QTextStream in{&fichier};
         QString fileContent{in.readAll()};
