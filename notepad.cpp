@@ -674,6 +674,9 @@ void Notepad::keyReleaseEvent(QKeyEvent *e)
             // TODO
             // focus implementation and fix some small bugs
             Popup *popupMenu = new Popup(this,results);
+            connect(popupMenu,&Popup::charCancel,this,[&](const QChar c){
+                getCurrent()->insertPlainText(c);
+            });
             connect(popupMenu,&Popup::textSelected,this,[&](QString text){
                 getCurrent()->insertPlainText(text.right(text.size()-currentWord.size()));
             });
@@ -713,7 +716,7 @@ void Notepad::dropEvent(QDropEvent *event)
     // Check for our needed mime type, here a file or a list of files
     if (mimeData->hasUrls())
     {
-        const QList<QUrl> urlList = mimeData->urls();
+        const QList<QUrl> urlList {mimeData->urls()};
         // Extract the local path.
         const QString filename {urlList[0].toString().right(urlList[0].toString().length() - 7)};
         onOpenFile(filename);

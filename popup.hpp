@@ -18,6 +18,7 @@ protected:
     void keyPressEvent(QKeyEvent *e);
 signals:
     void textSelected(QString text);
+    void charCancel(const QChar c);
 };
 
 #endif // POPUP_HPP
