@@ -21,9 +21,7 @@ make
 Import the project if you use an ide.
 
 ### Example
-
-![1](https://user-images.githubusercontent.com/66482155/107852039-841ca780-6e0e-11eb-9757-578c87e2cf2a.png)
+![1](https://user-images.githubusercontent.com/66482155/108749094-ab2a5600-753f-11eb-9e7d-80bbf1156f1d.png)
 
 ### Terminal option
-
-![2](https://user-images.githubusercontent.com/66482155/107852051-9991d180-6e0e-11eb-9539-641e79323e1c.png)
+![2](https://user-images.githubusercontent.com/66482155/108749144-bc736280-753f-11eb-9a44-4bdb33963c7a.png)
