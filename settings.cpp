@@ -8,7 +8,7 @@ Settings::Settings(QWidget *parent,const QList<QString> &themes,const QString te
     buildElements(themes,terminalName,tabspace);
     applyLayout();
     connect(ok,&QPushButton::clicked,this,[this](){
-        emit terminalChanged(terminalIndication->text());
+        emit terminalChanged(terminalText->text());
         close();
     });
     connect(cancel,&QPushButton::clicked,this,[this,tabspace](){

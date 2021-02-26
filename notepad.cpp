@@ -708,7 +708,6 @@ void Notepad::dragEnterEvent(QDragEnterEvent *e)
 void Notepad::dropEvent(QDropEvent *event)
 {
     const QMimeData* mimeData = event->mimeData();
-    // Check for our needed mime type, here a file or a list of files
     if (mimeData->hasUrls())
     {
         const QList<QUrl> urlList {mimeData->urls()};
