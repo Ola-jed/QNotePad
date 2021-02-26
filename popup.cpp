@@ -23,7 +23,6 @@ void Popup::keyPressEvent(QKeyEvent *e)
     }
     else if((triggeredKey != Qt::Key_Up) && (triggeredKey != Qt::Key_Down))
     {
-        // TODO emit key char when canceled
         const QChar pressed{e->text().at(0)};
         if(pressed.isLetterOrNumber())
         {

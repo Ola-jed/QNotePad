@@ -109,14 +109,14 @@ void Notepad::buildStatusBar()
 void Notepad::updateFileView()
 {
     fileModel->setRootPath(QFileInfo(fileName()).dir().path());
-    QModelIndex idx = fileModel->index(QFileInfo(fileName()).dir().path());
+    const QModelIndex idx {fileModel->index(QFileInfo(fileName()).dir().path())};
     fileView->setRootIndex(idx);
 }
 
 // Open the item when the item is double clicked
 void Notepad::fileViewItemClicked(const QModelIndex &index)
 {
-    auto currentFileName = fileModel->filePath(index);
+    auto const currentFileName {fileModel->filePath(index)};
     if(QFileInfo(currentFileName).isFile() && (getIndex(currentFileName) == -1))
     {
         onOpenFile(currentFileName);
@@ -209,12 +209,8 @@ void Notepad::applyStyle()
 // New File
 void Notepad::onNewFile()
 {
-    auto filename = QFileDialog::getSaveFileName(this);
-    if(filename.isEmpty())
-    {
-        QMessageBox::warning(this,"New File","Enter a valid name");
-    }
-    else
+    const auto filename {QFileDialog::getSaveFileName(this)};
+    if(!filename.isEmpty())
     {
         createFile(filename);
     }
@@ -231,9 +227,9 @@ void Notepad::createFile(const QString &fileToCreate)
     }
     else
     {
-        QMessageBox::information(this,"New File","File created");
         auto fileContent = new QPlainTextEdit(this);
         tabView->addTab(fileContent,fileToCreate);
+        tabView->setCurrentIndex(getIndex(fileToCreate));
         tabView->setTabText(getIndex(fileToCreate),fileToCreate);
     }
 }
@@ -241,11 +237,10 @@ void Notepad::createFile(const QString &fileToCreate)
 // Dialog for opening a file
 void Notepad::openFileDialog()
 {
-    auto filename = QFileDialog::getOpenFileName(this);
+    auto const filename {QFileDialog::getOpenFileName(this)};
     if(filename.isEmpty())
     {
         QMessageBox::warning(this,"New File","Choose a valid file");
-        return;
     }
     else
     {
@@ -269,11 +264,11 @@ void Notepad::onOpenFile(const QString &filename)
         tabView->setCurrentIndex(getIndex(filename));
         // Reading the file line by line and storing in the textEdit.
         QTextStream in{&fichier};
-        QString fileContent{in.readAll()};
+        const QString fileContent{in.readAll()};
         fichier.close();
         getCurrent()->setPlainText(fileContent);
         fileModel->setRootPath(QFileInfo(filename).dir().path());
-        QModelIndex idx = fileModel->index(QFileInfo(filename).dir().path());
+        const QModelIndex idx {fileModel->index(QFileInfo(filename).dir().path())};
         fileView->setRootIndex(idx);
         fileView->setVisible(true);
     }
@@ -282,7 +277,7 @@ void Notepad::onOpenFile(const QString &filename)
 // Saving the current file.
 void Notepad::onSaveFile()
 {
-    if((fileName() == "New File") && !(getCurrent()->toPlainText().isEmpty())) // If this is a new file
+    if((fileName() == "New File") && !(getCurrent()->toPlainText().isEmpty()))
     {
         onNewFileSave();
     }
@@ -295,7 +290,7 @@ void Notepad::onSaveFile()
 // Saving a new file.
 void Notepad::onNewFileSave()
 {
-    auto filename = QFileDialog::getSaveFileName(this);
+    auto const filename {QFileDialog::getSaveFileName(this)};
     if(filename.isEmpty())
     {
         QMessageBox::warning(this,"New File","Enter a valid name");
@@ -416,8 +411,8 @@ void Notepad::onBackgroundColorChanged()
 
 QString Notepad::colorDialog()
 {
-    QColor chosenColor = QColorDialog::getColor("Choose a color");
-    QString colorToSet = QString::number(chosenColor.red())+","+QString::number(chosenColor.green())+","+QString::number(chosenColor.blue());
+    const QColor chosenColor {QColorDialog::getColor("Choose a color")};
+    const QString colorToSet {QString::number(chosenColor.red())+","+QString::number(chosenColor.green())+","+QString::number(chosenColor.blue())};
     return colorToSet;
 }
 
@@ -425,7 +420,7 @@ QString Notepad::colorDialog()
 void Notepad::checkFileLanguage()
 {
     const auto currentFileExtension {QFileInfo(fileName()).completeSuffix()};
-    QString currentFileType    = "Plain Text";
+    QString currentFileType {"Plain Text"};
     QMapIterator<QString,QStringList> iteratorMap{FILE_EXTENSIONS};
     while (iteratorMap.hasNext())
     {
@@ -532,8 +527,8 @@ void Notepad::applyColoration(const QTextBlock block)
 // Check if the textBlock is a comment
 bool Notepad::isComment(const QTextBlock &textBlock) const
 {
-    auto isOneLine = (textBlock.text().left(2) == "//");
-    auto isHashtag = (textBlock.text().left(1) == "#");
+    bool isOneLine {(textBlock.text().left(2) == "//")};
+    bool isHashtag {(textBlock.text().left(1) == "#")};
     return (isOneLine || isHashtag);
 }
 
@@ -542,7 +537,7 @@ void Notepad::onTerminal()
 {
     QString exec;
     #if (defined (_WIN32) || defined (_WIN64))
-        exec = "C:\\Users\\SEA\\AppData\\Local\\Microsoft\\WindowsApps\\wt.exe";
+        exec = QDir::homePath()+"\\AppData\\Local\\Microsoft\\WindowsApps\\wt.exe";
     #elif (defined (LINUX) || defined (__linux__))
         exec = notepadSettings.value("Terminal").toString();
     #endif
@@ -562,8 +557,8 @@ void Notepad::updateTitle()
 // Update and show the cursor position in the status bar
 void Notepad::updateCursorPosition()
 {
-    int line    = getCurrent()->textCursor().blockNumber() + 1 ;
-    int columnn = getCurrent()->textCursor().positionInBlock() + 1;
+    const int line {getCurrent()->textCursor().blockNumber() + 1} ;
+    const int columnn {getCurrent()->textCursor().positionInBlock() + 1};
     position->setText("Line : "+QString::number(line)+" Col : "+QString::number(columnn));
 }
 
