@@ -651,7 +651,9 @@ void Notepad::loadSavedThemes()
 void Notepad::keyReleaseEvent(QKeyEvent *e)
 {
     if(!getCurrent()->hasFocus()) return;
-    const QChar charEntered{e->text().at(0)};
+    const auto keyText{e->text()};
+    if(keyText.isEmpty() || keyText.isNull()) return;
+    const QChar charEntered{keyText.at(0)};
     if(charEntered.isLetterOrNumber())
     {
         currentWord += charEntered;
