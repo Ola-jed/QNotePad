@@ -435,7 +435,7 @@ void Notepad::checkFileLanguage()
 void Notepad::onFont()
 {
     bool ok;
-    QFont font = QFontDialog::getFont(&ok, QFont("Times", 12), this);
+    const QFont font {QFontDialog::getFont(&ok, QFont("Times", 12), this)};
     if(ok)
     {
         getCurrent()->setFont(font);
@@ -512,7 +512,7 @@ void Notepad::applyColoration(const QTextBlock block)
         int p;
         if(((p = text.indexOf(highlight)) != -1) && (text.mid(p,highlight.length()+1) == highlight+" "))
         {
-            int pos = block.position() + p;
+            int pos {block.position() + p};
             QTextEdit::ExtraSelection selection{};
             selection.cursor = QTextCursor(getCurrent()->document());
             selection.cursor.setPosition( pos );
@@ -527,8 +527,8 @@ void Notepad::applyColoration(const QTextBlock block)
 // Check if the textBlock is a comment
 bool Notepad::isComment(const QTextBlock &textBlock) const
 {
-    bool isOneLine {(textBlock.text().left(2) == "//")};
-    bool isHashtag {(textBlock.text().left(1) == "#")};
+    const bool isOneLine {(textBlock.text().left(2) == "//")};
+    const bool isHashtag {(textBlock.text().left(1) == "#")};
     return (isOneLine || isHashtag);
 }
 
@@ -675,7 +675,7 @@ void Notepad::keyReleaseEvent(QKeyEvent *e)
                 getCurrent()->insertPlainText(c);
             });
             connect(popupMenu,&Popup::textSelected,this,[&](QString text){
-                getCurrent()->insertPlainText(text.right(text.size()-currentWord.size()));
+                getCurrent()->insertPlainText(text.right(text.size()-currentWord.size())+" ");
             });
             const QPoint ref{0,0};
             const QPoint cursorPos{(getCurrent()->mapToGlobal(ref).x())+getCurrent()->cursorRect().x()+10,

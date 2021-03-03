@@ -6,6 +6,7 @@ Popup::Popup(QWidget *parent, const QStringList &content) : QMenu(parent)
     {
         addAction(item);
     }
+    setActiveAction(actions().front());
     connect(this,&QMenu::triggered,this,[this](QAction *act){
         emit textSelected(act->text());
     });
@@ -13,21 +14,35 @@ Popup::Popup(QWidget *parent, const QStringList &content) : QMenu(parent)
 
 void Popup::keyPressEvent(QKeyEvent *e)
 {
-    auto const triggeredKey{e->key()};
-    if(triggeredKey == Qt::Key_Tab)
+    const auto triggeredKey{e->key()};
+    switch (triggeredKey)
     {
-        if(activeAction() != nullptr)
-        {
-            emit triggered(activeAction());
-        }
-    }
-    else if((triggeredKey != Qt::Key_Up) && (triggeredKey != Qt::Key_Down))
-    {
-        const QChar pressed{e->text().at(0)};
-        if(pressed.isLetterOrNumber())
-        {
-            emit charCancel(pressed);
-        }
-        close();
+        case Qt::Key_Down:
+            if(actions().size() > actions().indexOf(activeAction())+1)
+            {
+                setActiveAction(actions().at(actions().indexOf(activeAction())+1));
+            }
+        break;
+        case Qt::Key_Up:
+            if(0 <= actions().indexOf(activeAction())-1)
+            {
+                setActiveAction(actions().at(actions().indexOf(activeAction())-1));
+            }
+        break;
+        case Qt::Key_Return:
+        case Qt::Key_Tab:
+            if(activeAction() != nullptr)
+            {
+                emit triggered(activeAction());
+            }
+            close();
+        break;
+        default:
+            const QChar pressed{e->text().at(0)};
+            if(pressed.isLetterOrNumber())
+            {
+                emit charCancel(pressed);
+            }
+            close();
     }
 }
