@@ -54,7 +54,8 @@ void Notepad::makeConnections()
 void Notepad::buildComponents()
 {
     file             = new QMenu("File",this);
-    custom           = new QMenu("Configure",this);
+    color            = new QMenu("Color",this);
+    edit             = new QMenu("Edit",this);
     view             = new QMenu("View",this);
     newFile          = new QAction(QIcon(":assets/new.ico"),"New",this);
     openFile         = new QAction(QIcon(":assets/open.ico"),"Open",this);
@@ -146,17 +147,17 @@ void Notepad::buildMenu()
     file->addAction(quit);
     file->addSeparator();
     file->addAction(autoSave);
-    custom->addAction(colorText);
-    custom->addAction(colorBackground);
-    custom->addSeparator();
-    custom->addAction(settings);
-    custom->addAction(highlightSynthax);
-    custom->addAction(fontChange);
+    color->addAction(colorText);
+    color->addAction(colorBackground);
+    edit->addAction(settings);
+    edit->addAction(highlightSynthax);
+    edit->addAction(fontChange);
     view->addAction(zoomIn);
     view->addAction(zoomOut);
     menuBar->addMenu(file);
     menuBar->addSeparator();
-    menuBar->addMenu(custom);
+    menuBar->addMenu(color);
+    menuBar->addMenu(edit);
     menuBar->addMenu(view);
     menuBar->addSeparator();
     menuBar->addAction(terminal);
@@ -252,7 +253,7 @@ void Notepad::openFileDialog()
 void Notepad::onOpenFile(const QString &filename)
 {
     QFile fichier{filename};
-    if((!fichier.open(QIODevice::ReadWrite)))
+    if((!fichier.open(QIODevice::ReadOnly)))
     {
         QMessageBox::critical(this,"New File","Cannot open the file");
         return;
@@ -674,7 +675,7 @@ void Notepad::keyReleaseEvent(QKeyEvent *e)
             connect(popupMenu,&Popup::charCancel,this,[&](const QChar c){
                 getCurrent()->insertPlainText(c);
             });
-            connect(popupMenu,&Popup::textSelected,this,[&](QString text){
+            connect(popupMenu,&Popup::textSelected,this,[&](const QString text){
                 getCurrent()->insertPlainText(text.right(text.size()-currentWord.size())+" ");
             });
             const QPoint ref{0,0};
@@ -709,7 +710,7 @@ void Notepad::dragEnterEvent(QDragEnterEvent *e)
 // Drop event to open files.
 void Notepad::dropEvent(QDropEvent *event)
 {
-    const QMimeData* mimeData = event->mimeData();
+    const auto mimeData = event->mimeData();
     if (mimeData->hasUrls())
     {
         const QList<QUrl> urlList {mimeData->urls()};

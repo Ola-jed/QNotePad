@@ -168,7 +168,8 @@ private:
     QLabel *tabSpaceIndicator;
     QMenuBar *menuBar;
     QMenu *file;
-    QMenu *custom;
+    QMenu *color;
+    QMenu *edit;
     QMenu *view;
     QAction *newFile;
     QAction *openFile;
@@ -215,7 +216,6 @@ private:
 private slots:
     void onNewFile();
     void openFileDialog();
-    void onOpenFile(const QString &filename);
     void onSaveFile();
     void onNewFileSave();
     void onExistingFileSave();
@@ -246,5 +246,7 @@ private slots:
     void setTabSpace(uint8_t space = 4);
     void zoomPlus();
     void zoomMinus();
+public slots:
+    void onOpenFile(const QString &filename);
 };
 #endif // NOTEPAD_HPP
