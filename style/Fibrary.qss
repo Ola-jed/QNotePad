@@ -4,6 +4,15 @@ QWidget
 	color: #fff;
 	border-color: #000000;
 }
+QTabBar::tab
+{
+	color : #555555;
+}
+QTabBar::tab:selected
+{
+	color : #555555;
+	font-weight:bold;
+}
 QLabel
 {
 	background-color: transparent;

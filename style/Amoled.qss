@@ -1,6 +1,6 @@
-QMainWindow {background-color:#000000;}
-QDialog {background-color:#000000;}
-QColorDialog {background-color:#000000;}
+QMainWindow {background-color:#666666;}
+QDialog {background-color:#666666;}
+QColorDialog {background-color:#666666;}
 QPlainTextEdit{
 	selection-background-color:#f39c12;
 	background-color:#000000;

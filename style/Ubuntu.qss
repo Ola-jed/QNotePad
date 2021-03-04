@@ -186,7 +186,7 @@ QTabBar::tab {
 	padding-right:4px;
 	padding-bottom:2px;
 	padding-top:2px;
-	color:rgb(81,72,65);
+	color:#E95420;
   	background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(221,218,217,255), stop:1 rgba(240,239,238,255));
 	border-style: solid;
 	border-width: 1px;
@@ -199,6 +199,7 @@ QTabBar::tab {
 }
 QTabBar::tab:selected, QTabBar::tab:last:selected, QTabBar::tab:hover {
   	background-color:rgb(247,246,246);
+	color :#5E2750;
   	margin-left: 0px;
   	margin-right: 1px;
 }

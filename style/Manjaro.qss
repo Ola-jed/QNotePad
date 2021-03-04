@@ -161,7 +161,7 @@ QTabBar::tab:selected, QTabBar::tab:last:selected, QTabBar::tab:hover {
 	border-top-color: #050a0e;
 	border-left-color: #050a0e;
 	border-bottom-color: #050a0e;
-	color: #FFFFFF;
+	color: #34be5b;
 	padding: 3px;
 	margin-left:0px;
 	background-color: #1e282c;
@@ -175,7 +175,7 @@ QTabBar::tab:selected, QTabBar::tab:first:selected, QTabBar::tab:hover {
 	border-top-color: #050a0e;
 	border-left-color: #050a0e;
 	border-bottom-color: #050a0e;
-	color: #FFFFFF;
+	color: #34be5b;
 	padding: 3px;
 	margin-left:0px;
 	background-color: #1e282c;

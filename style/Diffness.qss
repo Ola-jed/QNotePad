@@ -139,10 +139,14 @@ QComboBox::down-arrow
     width: 8px;
     height: 8px;
 }
+QTabBar::tab
+{
+	color:#000000;
+}
 QCheckBox
 {
 	background-color: transparent;
-    color: #fff;
+	color: #fff;
 	border: none;
 }
 QCheckBox::indicator
