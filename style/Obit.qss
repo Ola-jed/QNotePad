@@ -1,8 +1,8 @@
 QWidget
 {
 	background-color: #232430;
-	color: #000000;
-	border-color: #000000;
+	color: #999999;
+	border-color: #FFFFFF;
 }
 QLabel
 {
@@ -64,7 +64,7 @@ QTabWidget::tab-bar
 }
 QTabBar::tab
 {
-    color: #c1c1c1;
+    color: #ffffff;
     min-width: 1px;
 	padding-left: 25px;
 	margin-left:-22px;
@@ -73,9 +73,10 @@ QTabBar::tab
 }
 QTabBar::tab:selected
 {
-    color: #c1c1c1;
+	color: #ffffff;
 	font-weight: bold;
-    height: 28px;
+	height: 28px;
+}
 
 }
 QTabBar::tab:!first
