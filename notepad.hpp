@@ -4,6 +4,7 @@
 #include "style.hpp"
 #include "keywords.hpp"
 #include "settings.hpp"
+#include "about.hpp"
 #include "popup.hpp"
 #include <QApplication>
 #include <QMainWindow>
@@ -126,13 +127,15 @@ private:
         {"QMake",{"pro","pri"}},
         {"QML",{"qml","qbs"}},
         {"R",{"r"}},
+        {"Resource",{"qrc"}},
         {"Ruby",{"rb","ruby","ru"}},
         {"Rust",{"rs","rs.in"}},
         {"Sass",{"sass"}},
         {"SCSS",{"scss"}},
-        {"SQL",{"sql"}},
+        {"SQL",{"sql","pls"}},
         {"Shell",{"bash","sh","zsh","ksh"}},
         {"Swift",{"swift"}},
+        {"Toml",{"Toml"}},
         {"TeX",{"tex"}},
         {"Text",{"txt","","fr"}},
         {"Typescript",{"ts","tsx"}},
@@ -161,8 +164,8 @@ private:
         {"World",World}
     };
     // Member variables.
-    bool isSaved = false;
-    uint8_t tabSpace = 4;
+    bool isSaved {false};
+    uint8_t tabSpace {4};
     QLabel *position;
     QLabel *fileType;
     QLabel *tabSpaceIndicator;
@@ -186,6 +189,7 @@ private:
     QAction *zoomIn;
     QAction *zoomOut;
     QAction *terminal;
+    QAction *about;
     QStatusBar *statusBar;
     QPushButton *lock;
     QTabWidget *tabView;
@@ -198,7 +202,7 @@ private:
     QString fileName() const;
     bool isEmpty() const;
     QString colorDialog();
-    int getIndex(const QString &tabName);
+    int getIndex(const QString &tabName) const;
     void buildComponents();
     void buildMenu();
     void buildStatusBar();
@@ -209,6 +213,7 @@ private:
     void applyShortcuts();
     void createFile(const QString &fileToCreate);
     void loadSavedThemes();
+    void checkExistingSettings();
     QPlainTextEdit* getCurrent() const;
     bool isComment(const QTextBlock &textBlock) const;
     QStringList words;
@@ -246,6 +251,7 @@ private slots:
     void setTabSpace(uint8_t space = 4);
     void zoomPlus();
     void zoomMinus();
+    void onAbout();
 public slots:
     void onOpenFile(const QString &filename);
 };

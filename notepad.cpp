@@ -32,6 +32,7 @@ void Notepad::makeConnections()
     connect(fontChange,&QAction::triggered,this,&Notepad::onFont);
     connect(closeAll,&QAction::triggered,this,&Notepad::closeAllTabs);
     connect(colorText,&QAction::triggered,this,&Notepad::onColorChanged);
+    connect(about,&QAction::triggered,this,&Notepad::onAbout);
     connect(colorBackground,&QAction::triggered,this,&Notepad::onBackgroundColorChanged);
     connect(zoomIn,&QAction::triggered,this,&Notepad::zoomPlus);
     connect(zoomOut,&QAction::triggered,this,&Notepad::zoomMinus);
@@ -56,7 +57,7 @@ void Notepad::buildComponents()
     file             = new QMenu("File",this);
     color            = new QMenu("Color",this);
     edit             = new QMenu("Edit",this);
-    view             = new QMenu("View",this);
+    view             = new QMenu("Zoom",this);
     newFile          = new QAction(QIcon(":assets/new.ico"),"New",this);
     openFile         = new QAction(QIcon(":assets/open.ico"),"Open",this);
     saveFile         = new QAction(QIcon(":assets/save.ico"),"Save",this);
@@ -69,9 +70,10 @@ void Notepad::buildComponents()
     highlightSynthax = new QAction(QIcon(":assets/highlight.ico"),"Synthax highlighting",this);
     fontChange       = new QAction(QIcon(":assets/font.ico"),"Font",this);
     settings         = new QAction(QIcon(":assets/settings.ico"),"Settings",this);
-    terminal         = new QAction(QIcon(":assets/terminal.ico"),"",this);
     zoomIn           = new QAction(QIcon(":assets/zoomin.ico"),"Zoom in",this);
     zoomOut          = new QAction(QIcon(":assets/zoomout.ico"),"Zoom out",this);
+    terminal         = new QAction("Terminal",this);
+    about            = new QAction("About",this);
     tabView          = new QTabWidget(this);
     menuBar          = new QMenuBar(this);
 }
@@ -149,6 +151,7 @@ void Notepad::buildMenu()
     file->addAction(autoSave);
     color->addAction(colorText);
     color->addAction(colorBackground);
+    edit->addMenu(color);
     edit->addAction(settings);
     edit->addAction(highlightSynthax);
     edit->addAction(fontChange);
@@ -156,11 +159,12 @@ void Notepad::buildMenu()
     view->addAction(zoomOut);
     menuBar->addMenu(file);
     menuBar->addSeparator();
-    menuBar->addMenu(color);
     menuBar->addMenu(edit);
     menuBar->addMenu(view);
     menuBar->addSeparator();
     menuBar->addAction(terminal);
+    menuBar->addSeparator();
+    menuBar->addAction(about);
     highlightSynthax->setCheckable(true);
     highlightSynthax->setChecked(false);
 }
@@ -494,7 +498,7 @@ void Notepad::synthaxicHighlighting()
     if(!highlightSynthax->isChecked()) return;
     for(auto i = 0; i != getCurrent()->blockCount(); i++)
     {
-        QTextBlock block = getCurrent()->document()->findBlockByLineNumber(i);
+        QTextBlock block {getCurrent()->document()->findBlockByLineNumber(i)};
         if(block.isValid() && !isComment(block))
         {
             isComment(block);
@@ -507,7 +511,7 @@ void Notepad::synthaxicHighlighting()
 void Notepad::applyColoration(const QTextBlock block)
 {
     QList<QTextEdit::ExtraSelection> extraSelections {getCurrent()->extraSelections()};
-    QString text = block.text();
+    const QString text {block.text()};
     foreach(auto highlight,keywordsList)
     {
         int p;
@@ -593,7 +597,7 @@ QString Notepad::fileName() const
 }
 
 // Get the index with the current filename
-int Notepad::getIndex(const QString &tabName)
+int Notepad::getIndex(const QString &tabName) const
 {
     for(auto i = 0;i <= tabView->count();i++)
     {
@@ -710,14 +714,19 @@ void Notepad::dragEnterEvent(QDragEnterEvent *e)
 // Drop event to open files.
 void Notepad::dropEvent(QDropEvent *event)
 {
-    const auto mimeData = event->mimeData();
-    if (mimeData->hasUrls())
+    if (event->mimeData()->hasUrls())
     {
-        const QList<QUrl> urlList {mimeData->urls()};
+        const QList<QUrl> urlList {event->mimeData()->urls()};
         // Extract the local path.
         const QString filename {urlList[0].toString().right(urlList[0].toString().length() - 7)};
         onOpenFile(filename);
     }
+}
+
+void Notepad::onAbout()
+{
+    auto ab = new About(this);
+    ab->show();
 }
 
 Notepad::~Notepad()

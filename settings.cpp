@@ -57,7 +57,7 @@ void Settings::applyLayout()
 
 void Settings::localThemeLoader()
 {
-    auto fileToLoad = QFileDialog::getOpenFileName(this,"Load a local qss file","/home","*.qss");
+    const auto fileToLoad {QFileDialog::getOpenFileName(this,"Load a local qss file","/home","*.qss")};
     emit localThemeSelected(fileToLoad);
     close();
 }
