@@ -17,7 +17,6 @@ void About::buildComponents()
     iconLabel = new QLabel(this);
     label     = new QLabel(this);
     okBtn     = new QPushButton("Ok",this);
-
     iconLabel->setPixmap(QIcon(":assets/notepad.ico").pixmap(48, 48));
     label->setTextFormat(Qt::RichText);
     label->setTextInteractionFlags(Qt::TextBrowserInteraction);
