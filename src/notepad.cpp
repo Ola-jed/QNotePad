@@ -188,7 +188,7 @@ void Notepad::applyLayout()
     editorSplitter->addWidget(fileView);
     editorSplitter->addWidget(tabView);
     editorSplitter->setStretchFactor(1,4);
-    QVBoxLayout *vboxLayout = new QVBoxLayout();
+    auto *vboxLayout = new QVBoxLayout();
     vboxLayout->setContentsMargins(0,0,0,0);
     vboxLayout->addLayout(topLayout,1);
     vboxLayout->addWidget(editorSplitter,28);
@@ -221,8 +221,8 @@ void Notepad::onNewFile()
 // Create  new file
 void Notepad::createFile(const QString &fileToCreate)
 {
-    QFile fichier{fileToCreate};
-    if((!fichier.open(QIODevice::ReadWrite)))
+    QFile fToCreate{fileToCreate};
+    if((!fToCreate.open(QIODevice::ReadWrite)))
     {
         QMessageBox::critical(this,"New File","Cannot create the file");
         return;
@@ -414,7 +414,7 @@ void Notepad::onBackgroundColorChanged()
 QString Notepad::colorDialog()
 {
     const QColor chosenColor {QColorDialog::getColor("Choose a color")};
-    const QString colorToSet {QString::number(chosenColor.red())+","+QString::number(chosenColor.green())+","+QString::number(chosenColor.blue())};
+    auto colorToSet {QString::number(chosenColor.red())+","+QString::number(chosenColor.green())+","+QString::number(chosenColor.blue())};
     return colorToSet;
 }
 
@@ -427,7 +427,7 @@ void Notepad::checkFileLanguage()
     while (iteratorMap.hasNext())
     {
         auto elmt    = iteratorMap.next();
-        auto content = elmt.value();
+        const auto& content = elmt.value();
         if(content.contains(currentFileExtension)) currentFileType = iteratorMap.key();
     }
     fileType->setText(currentFileType);

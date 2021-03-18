@@ -26,7 +26,7 @@ void About::buildComponents()
 
 void About::applyLayout()
 {
-    QVBoxLayout *lay = new QVBoxLayout(this);
+    auto *lay = new QVBoxLayout(this);
     lay->addWidget(iconLabel,2);
     lay->addWidget(label,6);
     lay->addWidget(okBtn,2);

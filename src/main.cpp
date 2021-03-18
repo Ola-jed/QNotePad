@@ -13,5 +13,5 @@ int main(int argc, char *argv[])
         w.onOpenFile(paramFile);
     }
     w.show();
-    return a.exec();
+    return QApplication::exec();
 }

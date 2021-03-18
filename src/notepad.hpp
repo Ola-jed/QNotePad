@@ -92,7 +92,7 @@ private:
             {"CSS",{"css"}},
             {"CSV",{"csv"}},
             {"Clojure",{"clj","boot","cl2","cljc","cljs","cljs.hl","cljscm","cljx","hic"}},
-            {"CofeeScript",{"coffee","_coffee","cake","cjsx","cson","iced"}},
+            {"CoffeeScript",{"coffee","_coffee","cake","cjsx","cson","iced"}},
             {"Coq",{"coq","v"}},
             {"D",{"d","di"}},
             {"Dart",{"dart"}},
@@ -200,7 +200,6 @@ private:
     QFileSystemModel *fileModel;
     QTreeView *fileView;
     QSplitter *editorSplitter;
-    QString currentFileLanguage;
     QSettings notepadSettings;
     // Methods.
     QString fileName() const;
