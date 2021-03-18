@@ -1,0 +1,39 @@
+<RCC>
+    <qresource prefix="/">
+        <file>assets/notepad.ico</file>
+        <file>assets/new.ico</file>
+        <file>assets/save.ico</file>
+        <file>assets/open.ico</file>
+        <file>assets/color.ico</file>
+        <file>assets/quit.ico</file>
+        <file>assets/autosave.ico</file>
+        <file>assets/background-color.ico</file>
+        <file>assets/font.ico</file>
+        <file>assets/terminal.ico</file>
+        <file>assets/highlight.ico</file>
+        <file>assets/settings.ico</file>
+        <file>style/Adaptic.qss</file>
+        <file>style/Amoled.qss</file>
+        <file>style/Aqua.qss</file>
+        <file>style/Console.qss</file>
+        <file>style/Diffness.qss</file>
+        <file>style/ElegantDark.qss</file>
+        <file>style/Mac.qss</file>
+        <file>style/Manjaro.qss</file>
+        <file>style/Material.qss</file>
+        <file>style/Obit.qss</file>
+        <file>style/Ubuntu.qss</file>
+        <file>style/World.qss</file>
+        <file>style/Dtor.qss</file>
+        <file>style/Fibrary.qss</file>
+        <file>style/Genetive.qss</file>
+        <file>style/Irrorater.qss</file>
+        <file>assets/lock.ico</file>
+        <file>assets/unlock.ico</file>
+        <file>style/Visual.qss</file>
+        <file>assets/saveas.ico</file>
+        <file>assets/zoomout.ico</file>
+        <file>assets/zoomin.ico</file>
+        <file>assets/closeall.ico</file>
+    </qresource>
+</RCC>

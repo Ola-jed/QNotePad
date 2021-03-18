@@ -1,0 +1,102 @@
+QWidget
+{
+	background-color:#18062a;
+	color: #888;
+}
+QLabel
+{
+	background-color: transparent;
+	color: #fff;
+	border-color: #000000;
+}
+QPushButton
+{
+	background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(139, 80, 255, 255),stop:1 rgba(105, 105, 255, 255));
+	color: #fff;
+	border-width: 1px;
+	border-radius: 2px;
+	border-color: #c196ff;
+	padding: 2px;
+	font-weight: bold;
+}
+QPushButton::hover
+{
+	background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(184, 148, 255, 255),stop:1 rgba(127, 127, 255, 255));
+	color: #fff;
+	border-width: 1px;
+	border-radius: 2px;
+	border-color: #c196ff;
+	padding: 2px;
+	font-weight: bold;
+}
+QPushButton::pressed
+{
+	background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(102, 26, 255, 255),stop:1 rgba(98, 98, 255, 255));
+	color: #fff;
+	border-width: 1px;
+	border-radius: 2px;
+	border-color: #c196ff;
+	padding: 2px;
+	font-weight: bold;
+}
+QCheckBox
+{
+	background-color: transparent;
+	color: #b9b9bb;
+	font-weight: bold;
+}
+QCheckBox::indicator
+{
+    color: #b1b1b1;
+    background-color: #000;
+    border: 1px solid #8b50ff;
+    width: 12px;
+    height: 12px;
+}
+QCheckBox::indicator:checked
+{
+	background-color: #1f2b2b;
+    border: 1px solid #8b50ff;
+}
+QCheckBox::indicator:unchecked:hover
+{
+    border: 1px solid #8b50ff;
+}
+QCheckBox::disabled
+{
+	color: #656565;
+}
+QCheckBox::indicator:disabled
+{
+	background-color: #656565;
+	color: #656565;
+    border: 1px solid #656565;
+}
+QScrollBar:horizontal
+{
+    border: 1px solid #222222;
+    background-color: #3d3d3d;
+    height: 15px;
+    margin: 0px 16px 0 16px;
+}
+QScrollBar::handle:horizontal
+{
+    background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(139, 80, 255, 255),stop:1 rgba(105, 105, 255, 255));
+    min-height: 20px;
+}
+QScrollBar::add-line:horizontal
+{
+    border: 1px solid #1b1b19;
+    background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(139, 80, 255, 255),stop:1 rgba(105, 105, 255, 255));
+    width: 14px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+QScrollBar::sub-line:horizontal
+{
+    border: 1px solid #1b1b19;
+    background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(139, 80, 255, 255),stop:1 rgba(105, 105, 255, 255));
+    width: 14px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
