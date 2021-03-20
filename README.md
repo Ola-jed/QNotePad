@@ -10,6 +10,7 @@ QNotePad is a lightweight text editor written in c++ with the qt framework
 You need to have [qt](https://www.qt.io/download-qt-installer) installed  to build the app.
 
 ```bash
+# Compile in debug mode
 git clone https://github.com/Ola-jed/QNotePad.git
 cd QNotePad
 cmake --build cmake-build-debug --target QNotePad -- -j 3
