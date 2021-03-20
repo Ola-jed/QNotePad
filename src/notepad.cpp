@@ -509,21 +509,21 @@ void Notepad::applyColoration(const QTextBlock block)
 {
     QList<QTextEdit::ExtraSelection> extraSelections {getCurrent()->extraSelections()};
     const QString text {block.text()};
-            foreach(auto highlight,keywordsList)
+    foreach(auto highlight,keywordsList)
+    {
+        int p;
+        if(((p = text.indexOf(highlight)) != -1) && (text.mid(p,highlight.length()+1) == highlight+" "))
         {
-            int p;
-            if(((p = text.indexOf(highlight)) != -1) && (text.mid(p,highlight.length()+1) == highlight+" "))
-            {
-                int pos {block.position() + p};
-                QTextEdit::ExtraSelection selection{};
-                selection.cursor = QTextCursor(getCurrent()->document());
-                selection.cursor.setPosition( pos );
-                selection.cursor.setPosition( pos+highlight.length(), QTextCursor::KeepAnchor );
-                selection.format.setForeground(Qt::red);
-                extraSelections.append(selection);
-                getCurrent()->setExtraSelections(extraSelections);
-            }
+            int pos {block.position() + p};
+            QTextEdit::ExtraSelection selection{};
+            selection.cursor = QTextCursor(getCurrent()->document());
+            selection.cursor.setPosition( pos );
+            selection.cursor.setPosition( pos+highlight.length(), QTextCursor::KeepAnchor );
+            selection.format.setForeground(Qt::red);
+            extraSelections.append(selection);
+            getCurrent()->setExtraSelections(extraSelections);
         }
+    }
 }
 
 // Check if the textBlock is a comment
@@ -661,13 +661,13 @@ void Notepad::keyReleaseEvent(QKeyEvent *e)
         currentWord += charEntered;
         const QRegularExpression regexp{currentWord,QRegularExpression::CaseInsensitiveOption};
         QStringList results{};
-                foreach(auto const tempWord,words)
+        foreach(auto const tempWord,words)
+        {
+            if(regexp.match(tempWord).hasMatch())
             {
-                if(regexp.match(tempWord).hasMatch())
-                {
-                    results.append(tempWord);
-                }
+                results.append(tempWord);
             }
+        }
         if(!results.empty())
         {
             // TODO
@@ -722,8 +722,8 @@ void Notepad::dropEvent(QDropEvent *event)
 
 void Notepad::onAbout()
 {
-    auto ab = new About(this);
-    ab->show();
+    auto aboutDialog = new About(this);
+    aboutDialog->show();
 }
 
 Notepad::~Notepad()
