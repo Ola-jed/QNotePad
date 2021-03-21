@@ -13,7 +13,7 @@ else()
 endif()
 
 set(REQUIRED_LIBS Core Gui Widgets)
-set(REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Gui Qt5::Widgets)
+set(REQUIRED_LIBS_QUALIFIED Qt${QT_VERSION}::Core Qt${QT_VERSION}::Gui Qt${QT_VERSION}::Widgets)
 
 add_executable(${PROJECT_NAME} src/main.cpp src/notepad.cpp src/notepad.hpp src/about.cpp src/about.hpp src/settings.cpp src/settings.hpp src/style.hpp src/style.cpp src/popup.cpp src/popup.hpp src/keywords.hpp notepadresources.qrc)
 
