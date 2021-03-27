@@ -2,10 +2,10 @@
 
 Popup::Popup(QWidget *parent, const QStringList &content) : QMenu(parent)
 {
-            foreach(auto const item,content)
-        {
-            addAction(item);
-        }
+    foreach(auto const item,content)
+    {
+        addAction(item);
+    }
     setActiveAction(actions()[0]);
     connect(this,&QMenu::triggered,this,[this](QAction *act){
         emit textSelected(act->text());
