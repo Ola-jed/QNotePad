@@ -2,9 +2,9 @@
 #define KEYWORDS_HPP
 
 #include <QString>
-#include <QList>
+#include <QSet>
 
-const QList<QString> keywordsList = {
+const QSet<QString> keywordsList = {
         "<?php",
         "?>",
         "{%",

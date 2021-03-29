@@ -423,7 +423,7 @@ void Notepad::checkFileLanguage()
 {
     const auto currentFileExtension {QFileInfo(fileName()).completeSuffix()};
     QString currentFileType {"Plain Text"};
-    QMapIterator<QString,QStringList> iteratorMap{FILE_EXTENSIONS};
+    QHashIterator<QString,QStringList> iteratorMap{FILE_EXTENSIONS};
     while (iteratorMap.hasNext())
     {
         auto elmt    = iteratorMap.next();
