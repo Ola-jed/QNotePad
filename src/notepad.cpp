@@ -423,12 +423,12 @@ void Notepad::checkFileLanguage()
 {
     const auto currentFileExtension {QFileInfo(fileName()).completeSuffix()};
     QString currentFileType {"Plain Text"};
-    QHashIterator<QString,QStringList> iteratorMap{FILE_EXTENSIONS};
-    while (iteratorMap.hasNext())
+    QHashIterator<QString,QSet<QString>> iteratorHash{FILE_EXTENSIONS};
+    while (iteratorHash.hasNext())
     {
-        auto elmt    = iteratorMap.next();
+        auto elmt    = iteratorHash.next();
         const auto& content = elmt.value();
-        if(content.contains(currentFileExtension)) currentFileType = iteratorMap.key();
+        if(content.contains(currentFileExtension)) currentFileType = iteratorHash.key();
     }
     fileType->setText(currentFileType);
 }
@@ -473,7 +473,7 @@ void Notepad::onApplyLocalTheme(const QString &themeFileName)
     notepadSettings.setValue("Theme",THEME_NAMES[QFileInfo{themeFileName}.fileName().split(".").front()]);
 }
 
-// Chage the default app terminal
+// Change the default app terminal
 void Notepad::changeTerminal(const QString &terminalName)
 {
     notepadSettings.setValue("Terminal",terminalName);

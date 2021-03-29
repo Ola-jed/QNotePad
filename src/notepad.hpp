@@ -73,7 +73,7 @@ class Notepad : public QMainWindow
         const QString Visual       = loadStyleFromFile(":style/Visual.qss");
         const QString Ubuntu       = loadStyleFromFile(":style/Ubuntu.qss");
         const QString World        = loadStyleFromFile(":style/World.qss");
-        const QHash<QString,QStringList> FILE_EXTENSIONS{
+        const QHash<QString,QSet<QString>> FILE_EXTENSIONS{
                 {"Asp",{"asp","asax","ascx","ashx","asmx","aspx","axd"}},
                 {"Ada",{"adb","ada","ads"}},
                 {"ApacheConf",{"apacheconf","vhost"}},
