@@ -426,7 +426,7 @@ void Notepad::checkFileLanguage()
     QHashIterator<QString,QSet<QString>> iteratorHash{FILE_EXTENSIONS};
     while (iteratorHash.hasNext())
     {
-        auto elmt    = iteratorHash.next();
+        auto elmt = iteratorHash.next();
         const auto& content = elmt.value();
         if(content.contains(currentFileExtension)) currentFileType = iteratorHash.key();
     }
