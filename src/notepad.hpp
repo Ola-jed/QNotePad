@@ -94,6 +94,7 @@ class Notepad : public QMainWindow
                 {"Clojure",{"clj","boot","cl2","cljc","cljs","cljs.hl","cljscm","cljx","hic"}},
                 {"CoffeeScript",{"coffee","_coffee","cake","cjsx","cson","iced"}},
                 {"Coq",{"coq","v"}},
+                {"Cuda",{"cu"}},
                 {"D",{"d","di"}},
                 {"Dart",{"dart"}},
                 {"Diff",{"diff","patch"}},

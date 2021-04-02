@@ -676,7 +676,7 @@ void Notepad::keyReleaseEvent(QKeyEvent *e)
             connect(popupMenu,&Popup::charCancel,this,[&](const QChar c){
                 getCurrent()->insertPlainText(c);
             });
-            connect(popupMenu,&Popup::textSelected,this,[&](const QString text){
+            connect(popupMenu,&Popup::textSelected,this,[&](const QString &text){
                 getCurrent()->insertPlainText(text.right(text.size()-currentWord.size())+" ");
             });
             const QPoint ref{0,0};
