@@ -6,11 +6,13 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("QNotePad");
     QCoreApplication::setOrganizationName("QNotePad");
     Notepad w;
-    // We will check if the program receives a file
+    // We will check if the program receives some files
     if(argc > 1)
     {
-        const QString paramFile{argv[1]};
-        w.onOpenFile(paramFile);
+        for(auto i = 1;i < argc;i++)
+        {
+            w.onOpenFile(argv[i]);
+        }
     }
     w.show();
     return QApplication::exec();

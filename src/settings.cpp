@@ -1,6 +1,6 @@
 #include "settings.hpp"
 
-Settings::Settings(QWidget *parent,const QList<QString> &themes,const QString terminalName,uint8_t tabspace) : QDialog(parent)
+Settings::Settings(QWidget *parent,const QList<QString> &themes,const QString &terminalName,uint8_t tabspace) : QDialog(parent)
 {
     setWindowTitle("Settings");
     setFixedSize(400,300);
@@ -20,7 +20,7 @@ Settings::Settings(QWidget *parent,const QList<QString> &themes,const QString te
     connect(spinTab,QOverload<int>::of(&QSpinBox::valueChanged),this,[=](int i){emit changeTabWidth(i);});
 }
 
-void Settings::buildElements(const QList<QString> &themes,const QString terminalName,uint8_t tabspace)
+void Settings::buildElements(const QList<QString> &themes,const QString& terminalName,uint8_t tabspace)
 {
     tabSpaceIndication = new QLabel("Tab width : ",this);
     spinTab            = new QSpinBox(this);
@@ -34,15 +34,15 @@ void Settings::buildElements(const QList<QString> &themes,const QString terminal
     spinTab->setRange(1,10);
     terminalText->setText(terminalName);
     spinTab->setValue(tabspace);
-            foreach(auto const tmpTheme,themes)
-        {
-            themeChange->addItem(tmpTheme);
-        }
+    foreach(auto const tmpTheme,themes)
+    {
+        themeChange->addItem(tmpTheme);
+    }
 }
 
 void Settings::applyLayout()
 {
-    QGridLayout *lay = new QGridLayout(this);
+    auto lay = new QGridLayout(this);
     lay->addWidget(tabSpaceIndication,0,0);
     lay->addWidget(spinTab,0,1);
     lay->addWidget(themeIndication,1,0);

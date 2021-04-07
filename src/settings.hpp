@@ -17,7 +17,7 @@ class Settings : public QDialog
 {
     Q_OBJECT
     public:
-        explicit Settings(QWidget *parent = nullptr,const QList<QString> &themes = {},const QString terminalName = "konsole",uint8_t tabspace = 4);
+        explicit Settings(QWidget *parent = nullptr,const QList<QString> &themes = {},const QString &terminalName = "konsole",uint8_t tabspace = 4);
     private:
         QLabel *tabSpaceIndication;
         QSpinBox *spinTab;
@@ -28,7 +28,7 @@ class Settings : public QDialog
         QPushButton *loadUserTheme;
         QPushButton *ok;
         QPushButton *cancel;
-        void buildElements(const QList<QString> &themes,const QString terminalName,uint8_t tabspace);
+        void buildElements(const QList<QString> &themes,const QString& terminalName,uint8_t tabspace);
         void applyLayout();
     private slots:
         void localThemeLoader();

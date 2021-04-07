@@ -1,7 +1,6 @@
 #include "notepad.hpp"
 
-Notepad::Notepad(QWidget *parent)
-        : QMainWindow(parent)
+Notepad::Notepad(QWidget *parent) : QMainWindow(parent)
 {
     loadSavedThemes();
     buildComponents();
@@ -51,7 +50,7 @@ void Notepad::makeConnections()
     connect(fileModel,&QFileSystemModel::fileRenamed,this,&Notepad::fileRenamed);
 }
 
-// Creationg the items.
+// Creating the items.
 void Notepad::buildComponents()
 {
     file             = new QMenu("File",this);
@@ -183,12 +182,12 @@ void Notepad::applyShortcuts()
 // Setup the layout
 void Notepad::applyLayout()
 {
-    QHBoxLayout *topLayout = new QHBoxLayout();
+    auto topLayout = new QHBoxLayout();
     topLayout->addWidget(menuBar);
     editorSplitter->addWidget(fileView);
     editorSplitter->addWidget(tabView);
     editorSplitter->setStretchFactor(1,4);
-    auto *vboxLayout = new QVBoxLayout();
+    auto vboxLayout = new QVBoxLayout();
     vboxLayout->setContentsMargins(0,0,0,0);
     vboxLayout->addLayout(topLayout,1);
     vboxLayout->addWidget(editorSplitter,28);
@@ -253,8 +252,8 @@ void Notepad::openFileDialog()
 // Opening a file.
 void Notepad::onOpenFile(const QString &filename)
 {
-    QFile fichier{filename};
-    if((!fichier.open(QIODevice::ReadOnly)))
+    QFile fileToOpen{filename};
+    if((!fileToOpen.open(QIODevice::ReadOnly)))
     {
         QMessageBox::critical(this,"New File","Cannot open the file");
         return;
@@ -265,9 +264,9 @@ void Notepad::onOpenFile(const QString &filename)
         tabView->addTab(tab,filename);
         tabView->setCurrentIndex(getIndex(filename));
         // Reading the file line by line and storing in the textEdit.
-        QTextStream in{&fichier};
+        QTextStream in{&fileToOpen};
         const QString fileContent{in.readAll()};
-        fichier.close();
+        fileToOpen.close();
         getCurrent()->setPlainText(fileContent);
         fileModel->setRootPath(QFileInfo(filename).dir().path());
         const QModelIndex idx {fileModel->index(QFileInfo(filename).dir().path())};
@@ -318,10 +317,10 @@ void Notepad::onNewFileSave()
 // Saving an existing file.
 void Notepad::onExistingFileSave()
 {
-    QFile fich{fileName()};
-    if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
+    QFile fileSaveName{fileName()};
+    if(fileSaveName.open(QIODevice::ReadWrite | QFile::Truncate))
     {
-        QTextStream out{&fich};
+        QTextStream out{&fileSaveName};
         out << getCurrent()->toPlainText();
         setWindowTitle("QNotePad");
         isSaved = true;
@@ -338,10 +337,10 @@ void Notepad::onAutoSave()
 {
     if((autoSave->isChecked()) && (!fileName().isEmpty()))
     {
-        QFile fich{fileName()};
-        if(fich.open(QIODevice::ReadWrite|QFile::Truncate))
+        QFile fileSaveName{fileName()};
+        if(fileSaveName.open(QIODevice::ReadWrite | QFile::Truncate))
         {
-            QTextStream out{&fich};
+            QTextStream out{&fileSaveName};
             out << getCurrent()->toPlainText();
             isSaved = true;
             setWindowTitle("QNotePad");
@@ -426,8 +425,8 @@ void Notepad::checkFileLanguage()
     QHashIterator<QString,QSet<QString>> iteratorHash{FILE_EXTENSIONS};
     while (iteratorHash.hasNext())
     {
-        auto elmt = iteratorHash.next();
-        const auto& content = elmt.value();
+        auto nextElement = iteratorHash.next();
+        const auto& content = nextElement.value();
         if(content.contains(currentFileExtension)) currentFileType = iteratorHash.key();
     }
     fileType->setText(currentFileType);
@@ -447,7 +446,7 @@ void Notepad::onFont()
 // Settings
 void Notepad::onSettings()
 {
-    Settings *s = new Settings(this,THEME_NAMES.keys(),notepadSettings.value("Terminal").toString(),notepadSettings.value("Tab width").toUInt());
+    auto s = new Settings(this,THEME_NAMES.keys(),notepadSettings.value("Terminal").toString(),notepadSettings.value("Tab width").toUInt());
     connect(s,&Settings::themeChanged,this,&Notepad::onApplyOtherTheme);
     connect(s,&Settings::terminalChanged,this,&Notepad::changeTerminal);
     connect(s,&Settings::localThemeSelected,this,&Notepad::onApplyLocalTheme);
@@ -545,7 +544,7 @@ void Notepad::onTerminal()
 #endif
     QString path = ((tabView->count() > 0) && (tabView->currentIndex() >= 0)) ? QFileInfo(fileName()).absoluteDir().absolutePath()
                                                                               : QDir::home().absolutePath();
-    QProcess *process = new QProcess(this);
+    auto process = new QProcess(this);
     process->setWorkingDirectory(path);
     process->start(exec,QStringList{});
 }
@@ -560,8 +559,8 @@ void Notepad::updateTitle()
 void Notepad::updateCursorPosition()
 {
     const int line {getCurrent()->textCursor().blockNumber() + 1} ;
-    const int columnn {getCurrent()->textCursor().positionInBlock() + 1};
-    position->setText("Line : "+QString::number(line)+" Col : "+QString::number(columnn));
+    const int column {getCurrent()->textCursor().positionInBlock() + 1};
+    position->setText("Line : "+QString::number(line)+" Col : "+QString::number(column));
 }
 
 // Update the slots connexion when the tab is changed
@@ -672,7 +671,7 @@ void Notepad::keyReleaseEvent(QKeyEvent *e)
         {
             // TODO
             // focus implementation and fix some small bugs
-            Popup *popupMenu = new Popup(this,results);
+            auto popupMenu = new Popup(this,results);
             connect(popupMenu,&Popup::charCancel,this,[&](const QChar c){
                 getCurrent()->insertPlainText(c);
             });
@@ -688,7 +687,7 @@ void Notepad::keyReleaseEvent(QKeyEvent *e)
     }
     else
     {
-        if(!(currentWord.size() < 2))
+        if(currentWord.size() >= 2)
         {
             if(!words.contains(currentWord))
             {
