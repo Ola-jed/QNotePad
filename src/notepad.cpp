@@ -713,8 +713,7 @@ void Notepad::dropEvent(QDropEvent *event)
     if (event->mimeData()->hasUrls())
     {
         const QList<QUrl> urlList {event->mimeData()->urls()};
-        // Extract the local path.
-        const QString filename {urlList[0].toString().right(urlList[0].toString().length() - 7)};
+        const QString filename {urlList[0].toLocalFile()};
         onOpenFile(filename);
     }
 }
