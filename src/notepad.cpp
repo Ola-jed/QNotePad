@@ -382,11 +382,7 @@ void Notepad::onTextModified()
 
 void Notepad::onQuit()
 {
-    if(isEmpty())
-    {
-        qApp->quit();
-    }
-    else if(((!fileName().isEmpty()) && !isSaved && !(getCurrent()->toPlainText().isEmpty())) ||(fileName().isEmpty() &&!(getCurrent()->toPlainText().isEmpty())))
+    if(((!fileName().isEmpty()) && !isSaved && !(getCurrent()->toPlainText().isEmpty())) ||(fileName().isEmpty() &&!(getCurrent()->toPlainText().isEmpty())))
     {
         auto const reply = QMessageBox::question(this, "Quit", "Save ?",QMessageBox::Yes|QMessageBox::No);
         if(reply == QMessageBox::Yes)
@@ -401,20 +397,19 @@ void Notepad::onQuit()
 void Notepad::onColorChanged()
 {
     if(isEmpty()) return; // Do not try anything if the editor is empty
-    getCurrent()->setStyleSheet(getCurrent()->styleSheet()+" color:rgb("+colorDialog()+");");
+    getCurrent()->setStyleSheet(getCurrent()->styleSheet()+" color:"+colorDialog()+";");
 }
 
 void Notepad::onBackgroundColorChanged()
 {
     if(isEmpty()) return; // Do not try anything if the editor is empty
-    getCurrent()->setStyleSheet(getCurrent()->styleSheet()+" background:rgb("+colorDialog()+");");
+    getCurrent()->setStyleSheet(getCurrent()->styleSheet()+" background:"+colorDialog()+";");
 }
 
+// Dialog to let the user choose a color
 QString Notepad::colorDialog()
 {
-    const QColor chosenColor {QColorDialog::getColor("Choose a color")};
-    auto colorToSet {QString::number(chosenColor.red())+","+QString::number(chosenColor.green())+","+QString::number(chosenColor.blue())};
-    return colorToSet;
+    return QColorDialog::getColor("Choose a color").name(QColor::HexRgb);
 }
 
 // Check the language type
