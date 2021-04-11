@@ -5,9 +5,9 @@ Notepad::Notepad(QWidget *parent) : QMainWindow(parent)
     loadSavedThemes();
     buildComponents();
     buildMenu();
-    applyShortcuts();
     buildStatusBar();
     buildFileView();
+    applyShortcuts();
     tabView->setTabsClosable(true);
     tabView->setAcceptDrops(true);
     tabView->addTab(new QPlainTextEdit(this),"New File");
@@ -55,7 +55,7 @@ void Notepad::buildComponents()
 {
     file             = new QMenu("File",this);
     color            = new QMenu("Color",this);
-    edit             = new QMenu("Edit",this);
+    edit             = new QMenu("Preferences",this);
     view             = new QMenu("Zoom",this);
     newFile          = new QAction(QIcon(":assets/new.ico"),"New",this);
     openFile         = new QAction(QIcon(":assets/open.ico"),"Open",this);
@@ -298,15 +298,15 @@ void Notepad::onNewFileSave()
     }
     else
     {
-        QFile fichier{filename};
-        if((!fichier.open(QIODevice::ReadWrite)))
+        QFile fileToSave{filename};
+        if((!fileToSave.open(QIODevice::ReadWrite)))
         {
             QMessageBox::critical(this,"Save","Could not save");
             return;
         }
         else
         {
-            QTextStream out{&fichier};
+            QTextStream out{&fileToSave};
             out << getCurrent()->toPlainText();
             setWindowTitle("QNotePad");
             tabView->setTabText(tabView->currentIndex(),filename);

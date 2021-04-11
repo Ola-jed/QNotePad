@@ -45,13 +45,16 @@
 class Notepad : public QMainWindow
 {
     Q_OBJECT
+
     public:
         explicit Notepad(QWidget *parent = nullptr);
         ~Notepad();
+
     protected:
         void keyReleaseEvent(QKeyEvent *e) override;
         void dragEnterEvent(QDragEnterEvent *event) override;
         void dropEvent(QDropEvent *event) override;
+
     private:
         // Constants.
         const QString THEME_DIR{QDir::homePath()+"/.qnotepad_themes"};
