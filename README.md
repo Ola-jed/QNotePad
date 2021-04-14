@@ -20,7 +20,7 @@ cmake-build-debug/QNotePad # You can pass the path to the file to open as a para
 Import the project if you use an ide.
 
 ### Example
-![1](https://user-images.githubusercontent.com/66482155/108749094-ab2a5600-753f-11eb-9e7d-80bbf1156f1d.png)
+![1](https://user-images.githubusercontent.com/66482155/114748702-13c8ce80-9d4a-11eb-8f00-407dd424425a.png)
 
 ### Terminal option
-![2](https://user-images.githubusercontent.com/66482155/108749144-bc736280-753f-11eb-9a44-4bdb33963c7a.png)
+![2](https://user-images.githubusercontent.com/66482155/114748786-280ccb80-9d4a-11eb-98c0-bbfc3e954bb7.png)
