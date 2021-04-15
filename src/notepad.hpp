@@ -191,7 +191,7 @@ class Notepad : public QMainWindow
         QAction *autoSave;
         QAction *colorText;
         QAction *colorBackground;
-        QAction *highlightSynthax;
+        QAction *highlightSyntax;
         QAction *fontChange;
         QAction *settings;
         QAction *zoomIn;
@@ -235,7 +235,7 @@ class Notepad : public QMainWindow
         void onQuit();
         void onColorChanged();
         void onBackgroundColorChanged();
-        void onApplyOtherTheme(QString theme);
+        void onApplyOtherTheme(const QString& theme);
         void onApplyLocalTheme(const QString &themeFileName);
         void onAutoSave();
         void onTextModified();
@@ -247,8 +247,8 @@ class Notepad : public QMainWindow
         void updateTitle();
         void updateCursorPosition();
         void updateConnect();
-        void synthaxicHighlighting();
-        void applyColoration(const QTextBlock block);
+        void syntaxicHighlighting();
+        void applyColoration(const QTextBlock& block);
         void checkFileLanguage();
         void updateFileView();
         void changeTerminal(const QString &terminalName);

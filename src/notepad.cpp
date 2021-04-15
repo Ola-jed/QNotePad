@@ -44,7 +44,7 @@ void Notepad::makeConnections()
     connect(lock,&QPushButton::clicked,this,&Notepad::onApplyLock);
     connect(getCurrent(),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
     connect(getCurrent(),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
-    connect(getCurrent(),&QPlainTextEdit::textChanged,this,&Notepad::synthaxicHighlighting);
+    connect(getCurrent(),&QPlainTextEdit::textChanged,this, &Notepad::syntaxicHighlighting);
     connect(getCurrent(),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
     connect(fileView,&QTreeView::doubleClicked,this,&Notepad::fileViewItemClicked);
     connect(fileModel,&QFileSystemModel::fileRenamed,this,&Notepad::fileRenamed);
@@ -66,7 +66,7 @@ void Notepad::buildComponents()
     autoSave         = new QAction(QIcon(":assets/autosave.ico"),"AutoSave",this);
     colorText        = new QAction(QIcon(":assets/color.ico"),"Text Color",this);
     colorBackground  = new QAction(QIcon(":assets/background-color"),"Background color",this);
-    highlightSynthax = new QAction(QIcon(":assets/highlight.ico"),"Synthax highlighting",this);
+    highlightSyntax = new QAction(QIcon(":assets/highlight.ico"), "Synthax highlighting", this);
     fontChange       = new QAction(QIcon(":assets/font.ico"),"Font",this);
     settings         = new QAction(QIcon(":assets/settings.ico"),"Settings",this);
     zoomIn           = new QAction(QIcon(":assets/zoomin.ico"),"Zoom in",this);
@@ -152,7 +152,7 @@ void Notepad::buildMenu()
     color->addAction(colorBackground);
     edit->addMenu(color);
     edit->addAction(settings);
-    edit->addAction(highlightSynthax);
+    edit->addAction(highlightSyntax);
     edit->addAction(fontChange);
     view->addAction(zoomIn);
     view->addAction(zoomOut);
@@ -161,8 +161,8 @@ void Notepad::buildMenu()
     menuBar->addMenu(view);
     menuBar->addAction(terminal);
     menuBar->addAction(about);
-    highlightSynthax->setCheckable(true);
-    highlightSynthax->setChecked(false);
+    highlightSyntax->setCheckable(true);
+    highlightSyntax->setChecked(false);
 }
 
 // Menu shortcuts
@@ -450,7 +450,7 @@ void Notepad::onSettings()
 }
 
 // Applying the new theme with the name
-void Notepad::onApplyOtherTheme(QString theme)
+void Notepad::onApplyOtherTheme(const QString& theme)
 {
     notepadSettings.setValue("Theme",theme);
     setStyleSheet(THEME_NAMES[theme]);
@@ -483,10 +483,10 @@ void Notepad::setTabSpace(uint8_t space)
     getCurrent()->setTabStopDistance(tabSpace * metrics.horizontalAdvance(' '));
 }
 
-// Synthax Highlighting module
-void Notepad::synthaxicHighlighting()
+// Syntax Highlighting module
+void Notepad::syntaxicHighlighting()
 {
-    if(!highlightSynthax->isChecked()) return;
+    if(!highlightSyntax->isChecked()) return;
     for(auto i = 0; i != getCurrent()->blockCount(); i++)
     {
         QTextBlock block {getCurrent()->document()->findBlockByLineNumber(i)};
@@ -499,20 +499,21 @@ void Notepad::synthaxicHighlighting()
 }
 
 // Apply coloration
-void Notepad::applyColoration(const QTextBlock block)
+void Notepad::applyColoration(const QTextBlock& block)
 {
-    QList<QTextEdit::ExtraSelection> extraSelections {getCurrent()->extraSelections()};
+    // TODO : Fix the coloration
+    auto extraSelections {getCurrent()->extraSelections()};
     const QString text {block.text()};
-    foreach(auto highlight,keywordsList)
+    foreach(const auto &highlight,keywordsList)
     {
         int p;
         if(((p = text.indexOf(highlight)) != -1) && (text.mid(p,highlight.length()+1) == highlight+" "))
         {
-            int pos {block.position() + p};
+            const int pos {block.position() + p};
             QTextEdit::ExtraSelection selection{};
             selection.cursor = QTextCursor(getCurrent()->document());
-            selection.cursor.setPosition( pos );
-            selection.cursor.setPosition( pos+highlight.length(), QTextCursor::KeepAnchor );
+            selection.cursor.setPosition(pos);
+            selection.cursor.setPosition(pos+highlight.length(), QTextCursor::KeepAnchor);
             selection.format.setForeground(Qt::red);
             extraSelections.append(selection);
             getCurrent()->setExtraSelections(extraSelections);
@@ -537,7 +538,7 @@ void Notepad::onTerminal()
 #elif (defined (LINUX) || defined (__linux__))
     exec = notepadSettings.value("Terminal").toString();
 #endif
-    QString path = ((tabView->count() > 0) && (tabView->currentIndex() >= 0)) ? QFileInfo(fileName()).absoluteDir().absolutePath()
+    const QString path = ((tabView->count() > 0) && (tabView->currentIndex() >= 0)) ? QFileInfo(fileName()).absoluteDir().absolutePath()
                                                                               : QDir::home().absolutePath();
     auto process = new QProcess(this);
     process->setWorkingDirectory(path);
@@ -561,7 +562,7 @@ void Notepad::updateCursorPosition()
 // Update the slots connexion when the tab is changed
 void Notepad::updateConnect()
 {
-    connect(getCurrent(),&QPlainTextEdit::textChanged,this,&Notepad::synthaxicHighlighting);
+    connect(getCurrent(),&QPlainTextEdit::textChanged,this, &Notepad::syntaxicHighlighting);
     connect(getCurrent(),&QPlainTextEdit::textChanged,this,&Notepad::onAutoSave);
     connect(getCurrent(),&QPlainTextEdit::textChanged,this,&Notepad::onTextModified);
     connect(getCurrent(),&QPlainTextEdit::cursorPositionChanged,this,&Notepad::updateCursorPosition);
@@ -655,7 +656,7 @@ void Notepad::keyReleaseEvent(QKeyEvent *e)
         currentWord += charEntered;
         const QRegularExpression regexp{currentWord,QRegularExpression::CaseInsensitiveOption};
         QStringList results{};
-        foreach(auto const tempWord,words)
+        foreach(auto const &tempWord,words)
         {
             if(regexp.match(tempWord).hasMatch())
             {
@@ -664,8 +665,6 @@ void Notepad::keyReleaseEvent(QKeyEvent *e)
         }
         if(!results.empty())
         {
-            // TODO
-            // focus implementation and fix some small bugs
             auto popupMenu = new Popup(this,results);
             connect(popupMenu,&Popup::charCancel,this,[&](const QChar c){
                 getCurrent()->insertPlainText(c);
