@@ -2,7 +2,7 @@
 
 Popup::Popup(QWidget *parent, const QStringList &content) : QMenu(parent)
 {
-    foreach(auto const item,content)
+    foreach(auto const &item,content)
     {
         addAction(item);
     }
@@ -18,13 +18,13 @@ void Popup::keyPressEvent(QKeyEvent *e)
     switch (triggeredKey)
     {
         case Qt::Key_Down:
-            if(actions().size() > actions().indexOf(activeAction())+1)
+            if(actions().indexOf(activeAction()) + 1 < actions().size())
             {
                 setActiveAction(actions().at(actions().indexOf(activeAction())+1));
             }
             break;
         case Qt::Key_Up:
-            if(0 <= actions().indexOf(activeAction())-1)
+            if(actions().indexOf(activeAction()) - 1 >= 0)
             {
                 setActiveAction(actions().at(actions().indexOf(activeAction())-1));
             }
