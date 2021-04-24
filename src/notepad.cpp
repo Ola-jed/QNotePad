@@ -128,10 +128,10 @@ void Notepad::fileViewItemClicked(const QModelIndex &index)
 // File renamed.
 void Notepad::fileRenamed(const QString &path,const QString &oldName,const QString &newName)
 {
-    const QString oldNm {path+"/"+oldName};
-    const QString newNm {path+"/"+newName};
-    QFile::rename(oldNm,newNm);
-    tabView->setTabText(getIndex(oldNm),newNm);
+    const QString oldFileName{path + "/" + oldName};
+    const QString newFileName{path + "/" + newName};
+    QFile::rename(oldFileName, newFileName);
+    tabView->setTabText(getIndex(oldFileName), newFileName);
 }
 
 // Building the menu
@@ -210,7 +210,7 @@ void Notepad::applyStyle()
 // New File
 void Notepad::onNewFile()
 {
-    const auto filename {QFileDialog::getSaveFileName(this)};
+    const auto filename{QFileDialog::getSaveFileName(this)};
     if(!filename.isEmpty())
     {
         createFile(filename);
@@ -295,13 +295,11 @@ void Notepad::onNewFileSave()
         QMessageBox::critical(this,"Save","Could not save");
         return;
     }
-    else
-    {
-        QTextStream out{&fileToSave};
-        out << getCurrent()->toPlainText();
-        setWindowTitle("QNotePad");
-        tabView->setTabText(tabView->currentIndex(),filename);
-    }
+    QTextStream out{&fileToSave};
+    out << getCurrent()->toPlainText();
+    setWindowTitle("QNotePad");
+    tabView->setTabText(tabView->currentIndex(),filename);
+    fileToSave.close();
 }
 
 // Saving an existing file.
@@ -322,16 +320,14 @@ void Notepad::onExistingFileSave()
 // AutoSave of the file
 void Notepad::onAutoSave()
 {
-    if((autoSave->isChecked()) && (!fileName().isEmpty()))
+    if(!(autoSave->isChecked()) || (fileName().isEmpty())) return;
+    QFile fileSaveName{fileName()};
+    if(fileSaveName.open(QIODevice::ReadWrite | QFile::Truncate))
     {
-        QFile fileSaveName{fileName()};
-        if(fileSaveName.open(QIODevice::ReadWrite | QFile::Truncate))
-        {
-            QTextStream out{&fileSaveName};
-            out << getCurrent()->toPlainText();
-            isSaved = true;
-            setWindowTitle("QNotePad");
-        }
+        QTextStream out{&fileSaveName};
+        out << getCurrent()->toPlainText();
+        isSaved = true;
+        setWindowTitle("QNotePad");
     }
 }
 
@@ -509,7 +505,7 @@ void Notepad::applyColoration(const QTextBlock& block)
 }
 
 // Check if the textBlock is a comment
-bool Notepad::isComment(const QTextBlock &textBlock) const
+bool Notepad::isComment(const QTextBlock &textBlock) const // TODO : this is not well implemented
 {
     const bool isOneLine {(textBlock.text().left(2) == "//")};
     const bool isHashtag {(textBlock.text().left(1) == "#")};
