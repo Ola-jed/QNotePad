@@ -208,7 +208,7 @@ class Notepad : public QMainWindow
         // Methods.
         QString fileName() const;
         bool isEmpty() const;
-        QString colorDialog();
+        static QString colorDialog();
         int getIndex(const QString &tabName) const;
         void buildComponents();
         void buildMenu();
