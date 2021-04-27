@@ -224,6 +224,7 @@ class Notepad : public QMainWindow
         bool isComment(const QTextBlock &textBlock) const;
         QStringList words;
         QString currentWord{};
+
     private slots:
         void onNewFile();
         void openFileDialog();
@@ -258,6 +259,7 @@ class Notepad : public QMainWindow
         void zoomPlus();
         void zoomMinus();
         void onAbout();
+
     public slots:
         void onOpenFile(const QString &filename);
 };
