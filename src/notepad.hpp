@@ -42,6 +42,7 @@
 #include <QSplitter>
 #include <QHash>
 
+// TODO : implement QSynthaxHighlighting
 class Notepad : public QMainWindow
 {
     Q_OBJECT

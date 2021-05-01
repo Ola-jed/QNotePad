@@ -472,7 +472,7 @@ void Notepad::syntaxicHighlighting()
     if(!highlightSyntax->isChecked()) return;
     for(auto i = 0; i != getCurrent()->blockCount(); i++)
     {
-        QTextBlock block {getCurrent()->document()->findBlockByLineNumber(i)};
+        auto block {getCurrent()->document()->findBlockByLineNumber(i)};
         if(block.isValid() && !isComment(block))
         {
             isComment(block);
@@ -507,8 +507,8 @@ void Notepad::applyColoration(const QTextBlock& block)
 // Check if the textBlock is a comment
 bool Notepad::isComment(const QTextBlock &textBlock) const // TODO : this is not well implemented
 {
-    const bool isOneLine {(textBlock.text().left(2) == "//")};
-    const bool isHashtag {(textBlock.text().left(1) == "#")};
+    const auto isOneLine {(textBlock.text().left(2) == "//")};
+    const auto isHashtag {(textBlock.text().left(1) == "#")};
     return (isOneLine || isHashtag);
 }
 
@@ -522,7 +522,7 @@ void Notepad::onTerminal()
     exec = notepadSettings.value("Terminal").toString();
 #endif
     const QString path = ((tabView->count() > 0) && (tabView->currentIndex() >= 0)) ? QFileInfo(fileName()).absoluteDir().absolutePath()
-                                                                              : QDir::home().absolutePath();
+                                                                                                                : QDir::home().absolutePath();
     auto process = new QProcess(this);
     process->setWorkingDirectory(path);
     process->start(exec,QStringList{});
