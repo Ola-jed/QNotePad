@@ -560,11 +560,13 @@ void Notepad::onApplyLock()
     onCheckLock();
 }
 
+// Update the lock icon when the document is locked/unlocked
 void Notepad::onCheckLock()
 {
     lock->setIcon((getCurrent()->isReadOnly()) ? QIcon(":assets/lock.ico") : QIcon(":assets/unlock.ico"));
 }
 
+// Return the name of the file opened in the current tab
 QString Notepad::fileName() const
 {
     if(tabView->count() == 0) return " ";
@@ -584,11 +586,12 @@ int Notepad::getIndex(const QString &tabName) const
     return -1;
 }
 
+// To close all the tabs, we loop on the size and we close the tab at pos 1
 void Notepad::closeAllTabs()
 {
     tabView->addTab(new QPlainTextEdit(this),"New File");
     auto const sizeTab{tabView->count()-1};
-    for(auto s{0};s != sizeTab;s++)
+    for(int s = 0;s != sizeTab;s++)
     {
         tabView->removeTab(0);
     }

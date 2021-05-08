@@ -17,7 +17,7 @@ make
 ./QNotePad # You can pass the path to the file to open as a param
 ```
 
-Import the project if you use an ide.
+You can import the project if you use an ide.
 
 ### Example
 ![1](https://user-images.githubusercontent.com/66482155/114748702-13c8ce80-9d4a-11eb-8f00-407dd424425a.png)
