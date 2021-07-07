@@ -16,7 +16,7 @@ endif()
 set(REQUIRED_LIBS Core Gui Widgets)
 set(REQUIRED_LIBS_QUALIFIED Qt${QT_VERSION}::Core Qt${QT_VERSION}::Gui Qt${QT_VERSION}::Widgets)
 
-add_executable(${PROJECT_NAME} src/main.cpp src/notepad.cpp src/notepad.hpp src/about.cpp src/about.hpp src/settings.cpp src/settings.hpp src/style.hpp src/style.cpp src/popup.cpp src/popup.hpp src/keywords.hpp notepadresources.qrc)
+add_executable(${PROJECT_NAME} src/main.cpp src/notepad.cpp include/notepad.hpp src/about.cpp include/about.hpp src/settings.cpp include/settings.hpp include/style.hpp src/style.cpp src/popup.cpp include/popup.hpp include/keywords.hpp notepadresources.qrc)
 
 if (NOT CMAKE_PREFIX_PATH)
     message(WARNING "CMAKE_PREFIX_PATH is not defined, you may need to set it "
@@ -29,5 +29,6 @@ endif()
 if ( MSVC )
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4")
 endif()
+include_directories(${QNotePad_SOURCE_DIR}/include)
 find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${REQUIRED_LIBS_QUALIFIED})

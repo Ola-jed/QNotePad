@@ -1,4 +1,4 @@
-#include "notepad.hpp"
+#include "../include/notepad.hpp"
 
 int main(int argc, char *argv[])
 {
