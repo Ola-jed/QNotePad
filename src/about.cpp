@@ -6,7 +6,7 @@ About::About(QWidget *parent) : QDialog(parent)
     buildComponents();
     applyLayout();
     adjustSize();
-    connect(okBtn,&QPushButton::clicked,this,[&]() -> void {
+    connect(okBtn,&QPushButton::clicked,this,[this]{
         close();
     });
 }

@@ -7,11 +7,11 @@ Settings::Settings(QWidget *parent,const QList<QString> &themes,const QString &t
     setWindowIcon(QIcon(":assets/settings.ico"));
     buildElements(themes,terminalName,tabspace);
     applyLayout();
-    connect(ok,&QPushButton::clicked,this,[this](){
+    connect(ok,&QPushButton::clicked,this,[this]{
         emit terminalChanged(terminalText->text());
         close();
     });
-    connect(cancel,&QPushButton::clicked,this,[this,tabspace](){
+    connect(cancel,&QPushButton::clicked,this,[this,tabspace]{
         spinTab->setValue(tabspace);
         close();
     });
