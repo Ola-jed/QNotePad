@@ -22,6 +22,9 @@ void RecentFilesManager::addRecentFile(const QString &filePath)
     {
         recentFilesList.pop_front();
     }
-    recentFilesList.push_back(filePath);
-    settings.setValue(RECENT_FILES,recentFilesList);
+    if(!recentFilesList.contains(filePath))
+    {
+        recentFilesList.push_back(filePath);
+        settings.setValue(RECENT_FILES,recentFilesList);
+    }
 }
