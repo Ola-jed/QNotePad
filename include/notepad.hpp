@@ -184,6 +184,7 @@ class Notepad : public QMainWindow
         QMenu *view;
         QAction *newFile;
         QAction *openFile;
+        QAction *openFolder;
         QAction *saveFile;
         QAction *saveFileAs;
         QAction *closeAll;
@@ -229,6 +230,7 @@ class Notepad : public QMainWindow
     private slots:
         void onNewFile();
         void openFileDialog();
+        void openFolderDialog();
         void onSaveFile();
         void onNewFileSave();
         void onExistingFileSave();
@@ -263,5 +265,6 @@ class Notepad : public QMainWindow
 
     public slots:
         void onOpenFile(const QString &filename);
+        void onOpenFolder(const QString &folder);
 };
 #endif // NOTEPAD_HPP

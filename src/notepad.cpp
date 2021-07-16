@@ -24,6 +24,7 @@ void Notepad::makeConnections()
     connect(quit,&QAction::triggered,this,&Notepad::onQuit);
     connect(newFile,&QAction::triggered,this,&Notepad::onNewFile);
     connect(openFile,&QAction::triggered,this,&Notepad::openFileDialog);
+    connect(openFolder,&QAction::triggered,this,&Notepad::openFolderDialog);
     connect(saveFile,&QAction::triggered,this,&Notepad::onSaveFile);
     connect(saveFileAs,&QAction::triggered,this,&Notepad::onNewFileSave);
     connect(terminal,&QAction::triggered,this,&Notepad::onTerminal);
@@ -53,9 +54,10 @@ void Notepad::makeConnections()
 void Notepad::buildComponentsAndMenu()
 {
     // File menu
-    file     = menuBar()->addMenu("File");
-    newFile  = file->addAction(QIcon(":assets/new.ico"),"New");
-    openFile = file->addAction(QIcon(":assets/open.ico"),"Open");
+    file       = menuBar()->addMenu("File");
+    newFile    = file->addAction(QIcon(":assets/new.ico"),"New");
+    openFile   = file->addAction(QIcon(":assets/open.ico"),"Open");
+    openFolder = file->addAction(QIcon(":assets/openfolder.ico"),"Open folder");
     file->addSeparator();
     saveFile   = file->addAction(QIcon(":assets/save.ico"),"Save");
     saveFileAs = file->addAction(QIcon(":assets/saveas.ico"),"Save as");
@@ -64,6 +66,8 @@ void Notepad::buildComponentsAndMenu()
     quit     = file->addAction(QIcon(":assets/quit.ico"),"Quit");
     file->addSeparator();
     autoSave = file->addAction(QIcon(":assets/autosave.ico"),"AutoSave");
+    file->addSeparator();
+    file->addAction("Recently opened");
     // Preferences menu
     edit            = menuBar()->addMenu("Preferences");
     color           = edit->addMenu("Color");
@@ -134,6 +138,19 @@ void Notepad::applyLayout()
     setStatusBar(statusBar);
 }
 
+/// Style.
+/// If existing, we load tab space preferences and/or user stylesheet
+void Notepad::applyStyle()
+{
+    resize(850,550);
+    setGeometry(QStyle::alignedRect(Qt::LeftToRight,
+                                    Qt::AlignCenter,size(),QGuiApplication::primaryScreen()->availableGeometry()));
+    setWindowIcon(QIcon(":assets/notepad.ico"));
+    setTabSpace((notepadSettings.value("Tab width").toInt() == 0) ? 4 : notepadSettings.value("Tab width").toInt()); // Loading tab space
+    setStyleSheet(THEME_NAMES[notepadSettings.value("Theme").toString()]);
+    tabView->setElideMode(Qt::ElideRight);
+}
+
 /// Open the item when the item is double clicked
 /// \param index
 void Notepad::fileViewItemClicked(const QModelIndex &index)
@@ -170,18 +187,6 @@ void Notepad::applyShortcuts()
     zoomOut->setShortcut(QKeySequence::ZoomOut);
 }
 
-/// Style.
-/// If existing, we load tab space preferences and/or user stylesheet
-void Notepad::applyStyle()
-{
-    setGeometry(QStyle::alignedRect(Qt::LeftToRight,
-                                    Qt::AlignCenter,size(),QGuiApplication::primaryScreen()->availableGeometry()));
-    setWindowIcon(QIcon(":assets/notepad.ico"));
-    setTabSpace((notepadSettings.value("Tab width").toInt() == 0) ? 4 : notepadSettings.value("Tab width").toInt()); // Loading tab space
-    setStyleSheet(THEME_NAMES[notepadSettings.value("Theme").toString()]);
-    tabView->setElideMode(Qt::ElideRight);
-}
-
 /// New File
 void Notepad::onNewFile()
 {
@@ -214,10 +219,20 @@ void Notepad::openFileDialog()
     auto const filename {QFileDialog::getOpenFileName(this)};
     if(filename.isEmpty())
     {
-        QMessageBox::warning(this,"New File","Choose a valid file");
         return;
     }
     onOpenFile(filename);
+}
+
+/// Dialog for opening a folder
+void Notepad::openFolderDialog()
+{
+    auto const folder {QFileDialog::getExistingDirectory(this)};
+    if(folder.isEmpty())
+    {
+        return;
+    }
+    onOpenFolder(folder);
 }
 
 /// Opening a file.
@@ -230,14 +245,21 @@ void Notepad::onOpenFile(const QString &filename)
         QMessageBox::critical(this,"New File","Cannot open the file");
         return;
     }
+    recentFilesManager.addRecentFile(filename);
     auto tab = new QPlainTextEdit(this);
     tabView->addTab(tab,filename);
     tabView->setCurrentIndex(getIndex(filename));
     QTextStream in{&fileToOpen};
     const auto fileContent{in.readAll()};
     getCurrent()->setPlainText(fileContent);
-    fileModel->setRootPath(QFileInfo(filename).dir().path());
-    const QModelIndex idx {fileModel->index(QFileInfo(filename).dir().path())};
+}
+
+/// Opening a folder
+/// \param filename
+void Notepad::onOpenFolder(const QString &folder)
+{
+    fileModel->setRootPath(folder);
+    const QModelIndex idx {fileModel->index(QFileInfo(folder).dir().path())};
     fileView->setRootIndex(idx);
     fileView->setVisible(true);
 }

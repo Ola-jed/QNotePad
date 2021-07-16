@@ -1,6 +1,7 @@
 #include "settings.hpp"
 
-Settings::Settings(QWidget *parent,const QList<QString> &themes,const QString &terminalName,uint8_t tabspace) : QDialog(parent)
+Settings::Settings(QWidget *parent,const QList<QString> &themes,const QString &terminalName,uint8_t tabspace)
+    : QDialog(parent)
 {
     setWindowTitle("Settings");
     setFixedSize(400,300);
@@ -16,10 +17,10 @@ Settings::Settings(QWidget *parent,const QList<QString> &themes,const QString &t
         close();
     });
     connect(loadUserTheme,&QPushButton::clicked,this,&Settings::localThemeLoader);
-    connect(themeChange,&QComboBox::currentTextChanged,this,[this]{
+    connect(themeChange,&QComboBox::currentTextChanged,[this]{
         emit themeChanged(themeChange->currentText());
     });
-    connect(spinTab,QOverload<int>::of(&QSpinBox::valueChanged),this,[=](int i){
+    connect(spinTab,QOverload<int>::of(&QSpinBox::valueChanged),[this](int i){
         emit changeTabWidth(i);
     });
 }
