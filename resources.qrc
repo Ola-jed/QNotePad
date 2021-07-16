@@ -7,6 +7,7 @@
         <file>assets/open.ico</file>
         <file>assets/openfolder.ico</file>
         <file>assets/color.ico</file>
+        <file>assets/colormenu.ico</file>
         <file>assets/quit.ico</file>
         <file>assets/autosave.ico</file>
         <file>assets/background-color.ico</file>
@@ -37,5 +38,6 @@
         <file>assets/zoomout.ico</file>
         <file>assets/zoomin.ico</file>
         <file>assets/closeall.ico</file>
+        <file>assets/recent.ico</file>
     </qresource>
 </RCC>

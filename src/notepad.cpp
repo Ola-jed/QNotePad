@@ -4,6 +4,7 @@ Notepad::Notepad(QWidget *parent) : QMainWindow(parent)
 {
     loadSavedThemes();
     buildComponentsAndMenu();
+    buildRecentlyOpenedFileList();
     buildStatusBar();
     buildFileView();
     applyShortcuts();
@@ -17,7 +18,7 @@ Notepad::Notepad(QWidget *parent) : QMainWindow(parent)
     makeConnections();
 }
 
-// Connections.
+/// Connections.
 void Notepad::makeConnections()
 {
     connect(settings,&QAction::triggered,this,&Notepad::onSettings);
@@ -56,7 +57,7 @@ void Notepad::buildComponentsAndMenu()
     // File menu
     file       = menuBar()->addMenu("File");
     newFile    = file->addAction(QIcon(":assets/new.ico"),"New");
-    openFile   = file->addAction(QIcon(":assets/open.ico"),"Open");
+    openFile   = file->addAction(QIcon(":assets/open.ico"),"Open file");
     openFolder = file->addAction(QIcon(":assets/openfolder.ico"),"Open folder");
     file->addSeparator();
     saveFile   = file->addAction(QIcon(":assets/save.ico"),"Save");
@@ -67,10 +68,10 @@ void Notepad::buildComponentsAndMenu()
     file->addSeparator();
     autoSave = file->addAction(QIcon(":assets/autosave.ico"),"AutoSave");
     file->addSeparator();
-    file->addAction("Recently opened");
+    recentlyOpened = file->addMenu(QIcon(":assets/recent.ico"),"Recently opened");
     // Preferences menu
     edit            = menuBar()->addMenu("Preferences");
-    color           = edit->addMenu("Color");
+    color           = edit->addMenu(QIcon(":assets/colormenu.ico"),"Color");
     colorText       = color->addAction(QIcon(":assets/color.ico"),"Text Color");
     colorBackground = color->addAction(QIcon(":assets/background-color"),"Background color");
     settings        = edit->addAction(QIcon(":assets/settings.ico"),"Settings");
@@ -88,6 +89,18 @@ void Notepad::buildComponentsAndMenu()
     menuBar()->addAction(terminal);
     menuBar()->addAction(about);
     tabView = new QTabWidget(this);
+}
+
+/// Build the list of recently opened files
+/// Iterate over the recently opened list to add actions to the menu
+void Notepad::buildRecentlyOpenedFileList()
+{
+    const auto recentFiles{recentFilesManager.recentFiles()};
+    for (const QVariant &aFile : recentFiles.first().toList())
+    {
+        qDebug()<< aFile;
+        recentlyOpened->addAction(aFile.toString());
+    }
 }
 
 /// Build the treeFileView

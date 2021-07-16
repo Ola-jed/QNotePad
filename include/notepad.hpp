@@ -199,7 +199,7 @@ class Notepad : public QMainWindow
         QAction *zoomOut;
         QAction *terminal;
         QAction *about;
-        QAction *recentlyOpened;
+        QMenu *recentlyOpened;
         QStatusBar *statusBar;
         QPushButton *lock;
         QTabWidget *tabView;
@@ -215,6 +215,7 @@ class Notepad : public QMainWindow
         void buildComponentsAndMenu();
         void buildStatusBar();
         void buildFileView();
+        void buildRecentlyOpenedFileList();
         void applyLayout();
         void applyStyle();
         void makeConnections();
