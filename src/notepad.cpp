@@ -98,8 +98,9 @@ void Notepad::buildRecentlyOpenedFileList()
     const auto recentFiles{recentFilesManager.recentFiles()};
     for (const QVariant &aFile : recentFiles.first().toList())
     {
-        qDebug()<< aFile;
-        recentlyOpened->addAction(aFile.toString());
+        recentlyOpened->addAction(aFile.toString(),[this,aFile]{
+            onOpenFile(aFile.toString());
+        });
     }
 }
 
