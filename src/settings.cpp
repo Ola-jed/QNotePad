@@ -7,19 +7,27 @@ Settings::Settings(QWidget *parent,const QList<QString> &themes,const QString &t
     setWindowIcon(QIcon(":assets/settings.ico"));
     buildElements(themes,terminalName,tabspace);
     applyLayout();
-    connect(ok,&QPushButton::clicked,this,[this]{
+    connect(ok,&QPushButton::clicked,[this]{
         emit terminalChanged(terminalText->text());
         close();
     });
-    connect(cancel,&QPushButton::clicked,this,[this,tabspace]{
+    connect(cancel,&QPushButton::clicked,[this,tabspace]{
         spinTab->setValue(tabspace);
         close();
     });
     connect(loadUserTheme,&QPushButton::clicked,this,&Settings::localThemeLoader);
-    connect(themeChange,&QComboBox::currentTextChanged,this,[this](){emit themeChanged(themeChange->currentText());});
-    connect(spinTab,QOverload<int>::of(&QSpinBox::valueChanged),this,[=](int i){emit changeTabWidth(i);});
+    connect(themeChange,&QComboBox::currentTextChanged,this,[this]{
+        emit themeChanged(themeChange->currentText());
+    });
+    connect(spinTab,QOverload<int>::of(&QSpinBox::valueChanged),this,[=](int i){
+        emit changeTabWidth(i);
+    });
 }
 
+/// Build the settings window components
+/// \param themes
+/// \param terminalName
+/// \param tabspace
 void Settings::buildElements(const QList<QString> &themes,const QString& terminalName,uint8_t tabspace)
 {
     tabSpaceIndication = new QLabel("Tab width : ",this);
@@ -34,12 +42,13 @@ void Settings::buildElements(const QList<QString> &themes,const QString& termina
     spinTab->setRange(1,10);
     terminalText->setText(terminalName);
     spinTab->setValue(tabspace);
-    foreach(auto const tmpTheme,themes)
+    for(auto const &tmpTheme : themes)
     {
         themeChange->addItem(tmpTheme);
     }
 }
 
+/// Apply layout to the settings window
 void Settings::applyLayout()
 {
     auto lay = new QGridLayout(this);
@@ -55,6 +64,7 @@ void Settings::applyLayout()
     setLayout(lay);
 }
 
+/// Load a local theme
 void Settings::localThemeLoader()
 {
     const auto fileToLoad {QFileDialog::getOpenFileName(this,"Load a local qss file","/home","*.qss")};

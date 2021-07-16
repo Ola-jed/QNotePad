@@ -4,7 +4,6 @@
 #include <QMenu>
 #include <QObject>
 #include <QWidget>
-#include <QDebug>
 #include <QStringList>
 #include <QAction>
 #include <QKeyEvent>

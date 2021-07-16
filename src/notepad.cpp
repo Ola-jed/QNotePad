@@ -3,8 +3,7 @@
 Notepad::Notepad(QWidget *parent) : QMainWindow(parent)
 {
     loadSavedThemes();
-    buildComponents();
-    buildMenu();
+    buildComponentsAndMenu();
     buildStatusBar();
     buildFileView();
     applyShortcuts();
@@ -50,34 +49,44 @@ void Notepad::makeConnections()
     connect(fileModel,&QFileSystemModel::fileRenamed,this,&Notepad::fileRenamed);
 }
 
-// Creating the items.
-void Notepad::buildComponents()
+/// Creating the items.
+void Notepad::buildComponentsAndMenu()
 {
-    file            = new QMenu("File",this);
-    color           = new QMenu("Color",this);
-    edit            = new QMenu("Preferences",this);
-    view            = new QMenu("Zoom",this);
-    newFile         = new QAction(QIcon(":assets/new.ico"),"New",this);
-    openFile        = new QAction(QIcon(":assets/open.ico"),"Open",this);
-    saveFile        = new QAction(QIcon(":assets/save.ico"),"Save",this);
-    saveFileAs      = new QAction(QIcon(":assets/saveas.ico"),"Save as",this);
-    closeAll        = new QAction(QIcon(":assets/closeall.ico"),"Close all",this);
-    quit            = new QAction(QIcon(":assets/quit.ico"),"Quit",this);
-    autoSave        = new QAction(QIcon(":assets/autosave.ico"),"AutoSave",this);
-    colorText       = new QAction(QIcon(":assets/color.ico"),"Text Color",this);
-    colorBackground = new QAction(QIcon(":assets/background-color"),"Background color",this);
-    highlightSyntax = new QAction(QIcon(":assets/highlight.ico"), "Synthax highlighting", this);
-    fontChange      = new QAction(QIcon(":assets/font.ico"),"Font",this);
-    settings        = new QAction(QIcon(":assets/settings.ico"),"Settings",this);
-    zoomIn          = new QAction(QIcon(":assets/zoomin.ico"),"Zoom in",this);
-    zoomOut         = new QAction(QIcon(":assets/zoomout.ico"),"Zoom out",this);
-    terminal        = new QAction("Terminal",this);
-    about           = new QAction("About",this);
-    tabView         = new QTabWidget(this);
-    menuBar         = new QMenuBar(this);
+    // File menu
+    file     = menuBar()->addMenu("File");
+    newFile  = file->addAction(QIcon(":assets/new.ico"),"New");
+    openFile = file->addAction(QIcon(":assets/open.ico"),"Open");
+    file->addSeparator();
+    saveFile   = file->addAction(QIcon(":assets/save.ico"),"Save");
+    saveFileAs = file->addAction(QIcon(":assets/saveas.ico"),"Save as");
+    file->addSeparator();
+    closeAll = file->addAction(QIcon(":assets/closeall.ico"),"Close all");
+    quit     = file->addAction(QIcon(":assets/quit.ico"),"Quit");
+    file->addSeparator();
+    autoSave = file->addAction(QIcon(":assets/autosave.ico"),"AutoSave");
+    // Preferences menu
+    edit            = menuBar()->addMenu("Preferences");
+    color           = edit->addMenu("Color");
+    colorText       = color->addAction(QIcon(":assets/color.ico"),"Text Color");
+    colorBackground = color->addAction(QIcon(":assets/background-color"),"Background color");
+    settings        = edit->addAction(QIcon(":assets/settings.ico"),"Settings");
+    highlightSyntax = edit->addAction(QIcon(":assets/highlight.ico"), "Synthax highlighting");
+    fontChange      = edit->addAction(QIcon(":assets/font.ico"),"Font");
+    highlightSyntax->setCheckable(true);
+    highlightSyntax->setChecked(false);
+    // Zoom menu
+    view    = menuBar()->addMenu("Zoom");
+    zoomIn  = view->addAction(QIcon(":assets/zoomin.ico"),"Zoom in");
+    zoomOut = view->addAction(QIcon(":assets/zoomout.ico"),"Zoom out");
+    // Other menu items
+    terminal = new QAction(QIcon(":assets/terminal.ico"),"Terminal",this);
+    about = new QAction(QIcon(":assets/about.ico"),"About",this);
+    menuBar()->addAction(terminal);
+    menuBar()->addAction(about);
+    tabView = new QTabWidget(this);
 }
 
-// Build the treeFileView
+/// Build the treeFileView
 void Notepad::buildFileView()
 {
     fileModel = new QFileSystemModel(this);
@@ -92,7 +101,7 @@ void Notepad::buildFileView()
     editorSplitter = new QSplitter(Qt::Horizontal,this);
 }
 
-// Build the status bar
+/// Build the status bar
 void Notepad::buildStatusBar()
 {
     statusBar         = new QStatusBar(this);
@@ -107,7 +116,7 @@ void Notepad::buildStatusBar()
     statusBar->setSizeGripEnabled(false);
 }
 
-// Update the file view
+/// Update the file view
 void Notepad::updateFileView()
 {
     fileModel->setRootPath(QFileInfo(fileName()).dir().path());
@@ -115,7 +124,18 @@ void Notepad::updateFileView()
     fileView->setRootIndex(idx);
 }
 
-// Open the item when the item is double clicked
+/// Setup the layout
+void Notepad::applyLayout()
+{
+    editorSplitter->addWidget(fileView);
+    editorSplitter->addWidget(tabView);
+    editorSplitter->setStretchFactor(1,4);
+    setCentralWidget(editorSplitter);
+    setStatusBar(statusBar);
+}
+
+/// Open the item when the item is double clicked
+/// \param index
 void Notepad::fileViewItemClicked(const QModelIndex &index)
 {
     auto const currentFileName {fileModel->filePath(index)};
@@ -125,7 +145,10 @@ void Notepad::fileViewItemClicked(const QModelIndex &index)
     }
 }
 
-// File renamed.
+/// File renamed.
+/// \param path
+/// \param oldName
+/// \param newName
 void Notepad::fileRenamed(const QString &path,const QString &oldName,const QString &newName)
 {
     const QString oldFileName{path + "/" + oldName};
@@ -134,38 +157,7 @@ void Notepad::fileRenamed(const QString &path,const QString &oldName,const QStri
     tabView->setTabText(getIndex(oldFileName), newFileName);
 }
 
-// Building the menu
-void Notepad::buildMenu()
-{
-    autoSave->setCheckable(true);
-    file->addAction(newFile);
-    file->addAction(openFile);
-    file->addSeparator();
-    file->addAction(saveFile);
-    file->addAction(saveFileAs);
-    file->addSeparator();
-    file->addAction(closeAll);
-    file->addAction(quit);
-    file->addSeparator();
-    file->addAction(autoSave);
-    color->addAction(colorText);
-    color->addAction(colorBackground);
-    edit->addMenu(color);
-    edit->addAction(settings);
-    edit->addAction(highlightSyntax);
-    edit->addAction(fontChange);
-    view->addAction(zoomIn);
-    view->addAction(zoomOut);
-    menuBar->addMenu(file);
-    menuBar->addMenu(edit);
-    menuBar->addMenu(view);
-    menuBar->addAction(terminal);
-    menuBar->addAction(about);
-    highlightSyntax->setCheckable(true);
-    highlightSyntax->setChecked(false);
-}
-
-// Menu shortcuts
+/// Menu shortcuts
 void Notepad::applyShortcuts()
 {
     newFile->setShortcut(QKeySequence::New);
@@ -178,36 +170,19 @@ void Notepad::applyShortcuts()
     zoomOut->setShortcut(QKeySequence::ZoomOut);
 }
 
-
-// Setup the layout
-void Notepad::applyLayout()
-{
-    auto topLayout = new QHBoxLayout();
-    topLayout->addWidget(menuBar);
-    editorSplitter->addWidget(fileView);
-    editorSplitter->addWidget(tabView);
-    editorSplitter->setStretchFactor(1,4);
-    auto vboxLayout = new QVBoxLayout();
-    vboxLayout->setContentsMargins(0,0,0,0);
-    vboxLayout->addLayout(topLayout,1);
-    vboxLayout->addWidget(editorSplitter,28);
-    vboxLayout->addWidget(statusBar,1);
-    auto central = new QWidget(this);
-    central->setLayout(vboxLayout);
-    setCentralWidget(central);
-}
-
-// Style.
+/// Style.
+/// If existing, we load tab space preferences and/or user stylesheet
 void Notepad::applyStyle()
 {
-    setGeometry(QStyle::alignedRect(Qt::LeftToRight,Qt::AlignCenter,size(),QGuiApplication::primaryScreen()->availableGeometry()));
+    setGeometry(QStyle::alignedRect(Qt::LeftToRight,
+                                    Qt::AlignCenter,size(),QGuiApplication::primaryScreen()->availableGeometry()));
     setWindowIcon(QIcon(":assets/notepad.ico"));
     setTabSpace((notepadSettings.value("Tab width").toInt() == 0) ? 4 : notepadSettings.value("Tab width").toInt()); // Loading tab space
-    setStyleSheet(THEME_NAMES[notepadSettings.value("Theme").toString()]); // Loading the user's favourite theme
+    setStyleSheet(THEME_NAMES[notepadSettings.value("Theme").toString()]);
     tabView->setElideMode(Qt::ElideRight);
 }
 
-// New File
+/// New File
 void Notepad::onNewFile()
 {
     const auto filename{QFileDialog::getSaveFileName(this)};
@@ -217,7 +192,8 @@ void Notepad::onNewFile()
     }
 }
 
-// Create  new file
+/// Create  new file
+/// \param fileToCreate
 void Notepad::createFile(const QString &fileToCreate)
 {
     QFile fToCreate{fileToCreate};
@@ -232,7 +208,7 @@ void Notepad::createFile(const QString &fileToCreate)
     tabView->setTabText(getIndex(fileToCreate),fileToCreate);
 }
 
-// Dialog for opening a file
+/// Dialog for opening a file
 void Notepad::openFileDialog()
 {
     auto const filename {QFileDialog::getOpenFileName(this)};
@@ -244,11 +220,12 @@ void Notepad::openFileDialog()
     onOpenFile(filename);
 }
 
-// Opening a file.
+/// Opening a file.
+/// \param filename
 void Notepad::onOpenFile(const QString &filename)
 {
     QFile fileToOpen{filename};
-    if((!fileToOpen.open(QIODevice::ReadOnly)))
+    if((!fileToOpen.open(QIODevice::ReadOnly|QIODevice::Text)))
     {
         QMessageBox::critical(this,"New File","Cannot open the file");
         return;
@@ -256,10 +233,8 @@ void Notepad::onOpenFile(const QString &filename)
     auto tab = new QPlainTextEdit(this);
     tabView->addTab(tab,filename);
     tabView->setCurrentIndex(getIndex(filename));
-    // Reading all the file's content and storing in the textEdit.
     QTextStream in{&fileToOpen};
-    const QString fileContent{in.readAll()};
-    fileToOpen.close();
+    const auto fileContent{in.readAll()};
     getCurrent()->setPlainText(fileContent);
     fileModel->setRootPath(QFileInfo(filename).dir().path());
     const QModelIndex idx {fileModel->index(QFileInfo(filename).dir().path())};
@@ -267,7 +242,7 @@ void Notepad::onOpenFile(const QString &filename)
     fileView->setVisible(true);
 }
 
-// Saving the current file.
+/// Saving the current file.
 void Notepad::onSaveFile()
 {
     if((fileName() == "New File") && !(getCurrent()->toPlainText().isEmpty()))
@@ -280,7 +255,7 @@ void Notepad::onSaveFile()
     }
 }
 
-// Saving a new file.
+/// Saving a new file.
 void Notepad::onNewFileSave()
 {
     auto const filename {QFileDialog::getSaveFileName(this)};
@@ -299,7 +274,6 @@ void Notepad::onNewFileSave()
     out << getCurrent()->toPlainText();
     setWindowTitle("QNotePad");
     tabView->setTabText(tabView->currentIndex(),filename);
-    fileToSave.close();
 }
 
 // Saving an existing file.
@@ -338,8 +312,9 @@ void Notepad::onCloseFile(const int &index)
     if(tabView->count() == 1) qApp->quit();
     else
     {
-        QWidget* tabItem = tabView->widget(index);
-        if(tabView->tabText(index).isEmpty() && !(qobject_cast<QPlainTextEdit*>(tabView->widget(index))->toPlainText().isEmpty())) // If this is a new file
+        auto tabItem = tabView->widget(index);
+        // If this is a new file
+        if(tabView->tabText(index).isEmpty() && !(qobject_cast<QPlainTextEdit*>(tabView->widget(index))->toPlainText().isEmpty()))
         {
             onNewFileSave();
         }
@@ -350,10 +325,10 @@ void Notepad::onCloseFile(const int &index)
         }
         tabView->removeTab(index);
         delete(tabItem);
-        tabItem = nullptr;
     }
 }
 
+/// Update the window title
 void Notepad::onTextModified()
 {
     if(!autoSave->isChecked())
@@ -363,6 +338,7 @@ void Notepad::onTextModified()
     }
 }
 
+/// Quitting the app
 void Notepad::onQuit()
 {
     if(((!fileName().isEmpty()) && !isSaved && !(getCurrent()->toPlainText().isEmpty())) ||(fileName().isEmpty() &&!(getCurrent()->toPlainText().isEmpty())))
@@ -376,26 +352,27 @@ void Notepad::onQuit()
     qApp->quit();
 }
 
-// Color.
+/// Text Color
 void Notepad::onColorChanged()
 {
     if(isEmpty()) return; // Do not try anything if the editor is empty
     getCurrent()->setStyleSheet(getCurrent()->styleSheet()+" color:"+colorDialog()+";");
 }
 
+/// Background color
 void Notepad::onBackgroundColorChanged()
 {
     if(isEmpty()) return; // Do not try anything if the editor is empty
     getCurrent()->setStyleSheet(getCurrent()->styleSheet()+" background:"+colorDialog()+";");
 }
 
-// Dialog to let the user choose a color
+/// Dialog to let the user choose a color
 QString Notepad::colorDialog()
 {
     return QColorDialog::getColor("Choose a color").name(QColor::HexRgb);
 }
 
-// Check the language type
+/// Check the language type
 void Notepad::checkFileLanguage()
 {
     const auto currentFileExtension {QFileInfo(fileName()).completeSuffix()};
@@ -410,7 +387,7 @@ void Notepad::checkFileLanguage()
     fileType->setText(currentFileType);
 }
 
-// Font customization
+/// Font customization
 void Notepad::onFont()
 {
     bool ok;
@@ -421,10 +398,11 @@ void Notepad::onFont()
     }
 }
 
-// Settings
+/// Settings
 void Notepad::onSettings()
 {
-    auto s = new Settings(this,THEME_NAMES.keys(),notepadSettings.value("Terminal").toString(),notepadSettings.value("Tab width").toUInt());
+    auto s = new Settings(this,THEME_NAMES.keys(),
+          notepadSettings.value("Terminal").toString(),notepadSettings.value("Tab width").toUInt());
     connect(s,&Settings::themeChanged,this,&Notepad::onApplyOtherTheme);
     connect(s,&Settings::terminalChanged,this,&Notepad::changeTerminal);
     connect(s,&Settings::localThemeSelected,this,&Notepad::onApplyLocalTheme);
@@ -432,14 +410,16 @@ void Notepad::onSettings()
     s->show();
 }
 
-// Applying the new theme with the name
+/// Applying the new theme with the name
+/// \param theme
 void Notepad::onApplyOtherTheme(const QString& theme)
 {
     notepadSettings.setValue("Theme",theme);
     setStyleSheet(THEME_NAMES[theme]);
 }
 
-// Applying a user's theme
+/// Applying a user's theme
+/// \param themeFileName
 void Notepad::onApplyLocalTheme(const QString &themeFileName)
 {
     QDir dir{};
@@ -450,13 +430,15 @@ void Notepad::onApplyLocalTheme(const QString &themeFileName)
     notepadSettings.setValue("Theme",THEME_NAMES[QFileInfo{themeFileName}.fileName().split(".").front()]);
 }
 
-// Change the default app terminal
+/// Change the default app terminal
+/// \param terminalName
 void Notepad::changeTerminal(const QString &terminalName)
 {
     notepadSettings.setValue("Terminal",terminalName);
 }
 
-// Set the tab space of the QPlainTextEdit
+/// Set the tab space of the QPlainTextEdit
+/// \param space
 void Notepad::setTabSpace(uint8_t space)
 {
     notepadSettings.setValue("Tab width",space);
@@ -466,7 +448,7 @@ void Notepad::setTabSpace(uint8_t space)
     getCurrent()->setTabStopDistance(tabSpace * metrics.horizontalAdvance(' '));
 }
 
-// Syntax Highlighting module
+/// Syntax Highlighting module
 void Notepad::syntaxicHighlighting()
 {
     if(!highlightSyntax->isChecked()) return;
@@ -481,13 +463,14 @@ void Notepad::syntaxicHighlighting()
     }
 }
 
-// Apply coloration
+/// Apply coloration
+/// \param block
 void Notepad::applyColoration(const QTextBlock& block)
 {
     // TODO : Fix the coloration
     auto extraSelections {getCurrent()->extraSelections()};
     const QString text {block.text()};
-    foreach(const auto &highlight,keywordsList)
+    for(const auto &highlight : keywordsList)
     {
         int p;
         if(((p = text.indexOf(highlight)) != -1) && (text.mid(p,highlight.length()+1) == highlight + " "))
@@ -504,15 +487,17 @@ void Notepad::applyColoration(const QTextBlock& block)
     }
 }
 
-// Check if the textBlock is a comment
-bool Notepad::isComment(const QTextBlock &textBlock) const // TODO : this is not well implemented
+/// Check if the textBlock is a comment
+/// \param textBlock
+/// TODO : this is not well implemented
+bool Notepad::isComment(const QTextBlock &textBlock) const
 {
     const auto isOneLine {(textBlock.text().left(2) == "//")};
     const auto isHashtag {(textBlock.text().left(1) == "#")};
     return (isOneLine || isHashtag);
 }
 
-// Open a terminal in the current directory, it depends on the os
+/// Open a terminal in the current directory, it depends on the os
 void Notepad::onTerminal()
 {
     QString exec;
@@ -528,13 +513,13 @@ void Notepad::onTerminal()
     process->start(exec,QStringList{});
 }
 
-// Update the window title
+/// Update the window title
 void Notepad::updateTitle()
 {
     setWindowTitle(tabView->tabText(tabView->currentIndex()));
 }
 
-// Update and show the cursor position in the status bar
+/// Update and show the cursor position in the status bar
 void Notepad::updateCursorPosition()
 {
     const int line {getCurrent()->textCursor().blockNumber() + 1} ;
@@ -542,7 +527,7 @@ void Notepad::updateCursorPosition()
     position->setText("Line : "+QString::number(line)+" Col : "+QString::number(column));
 }
 
-// Update the slots connexion when the tab is changed
+/// Update the slots connexion when the tab is changed
 void Notepad::updateConnect()
 {
     connect(getCurrent(),&QPlainTextEdit::textChanged,this, &Notepad::syntaxicHighlighting);
@@ -553,27 +538,30 @@ void Notepad::updateConnect()
     connect(lock,&QPushButton::clicked,this,&Notepad::onCheckLock);
 }
 
-// Lock or unlock the current file
+/// Lock or unlock the current file
 void Notepad::onApplyLock()
 {
     getCurrent()->setReadOnly(!getCurrent()->isReadOnly());
     onCheckLock();
 }
 
-// Update the lock icon when the document is locked/unlocked
+/// Update the lock icon when the document is locked/unlocked
 void Notepad::onCheckLock()
 {
-    lock->setIcon((getCurrent()->isReadOnly()) ? QIcon(":assets/lock.ico") : QIcon(":assets/unlock.ico"));
+    lock->setIcon((getCurrent()->isReadOnly())
+        ? QIcon(":assets/lock.ico")
+        : QIcon(":assets/unlock.ico")
+    );
 }
 
-// Return the name of the file opened in the current tab
+/// Return the name of the file opened in the current tab
 QString Notepad::fileName() const
 {
-    if(tabView->count() == 0) return " ";
+    if(tabView->count() == 0) return "";
     return tabView->tabText(tabView->currentIndex());
 }
 
-// Get the index with the current filename
+/// Get the index with the current filename
 int Notepad::getIndex(const QString &tabName) const
 {
     for(auto i = 0;i <= tabView->count();i++)
@@ -586,7 +574,7 @@ int Notepad::getIndex(const QString &tabName) const
     return -1;
 }
 
-// To close all the tabs, we loop on the size and we close the tab at pos 1
+/// To close all the tabs, we loop on the size and we close the tab at pos 1
 void Notepad::closeAllTabs()
 {
     tabView->addTab(new QPlainTextEdit(this),"New File");
@@ -597,29 +585,31 @@ void Notepad::closeAllTabs()
     }
 }
 
+/// Is the app empty ?
 bool Notepad::isEmpty() const
 {
     return (tabView->count() == 0);
 }
 
-// Zooming in the current qplaintextedit
+/// Zooming in the current qplaintextedit
 void Notepad::zoomPlus()
 {
     getCurrent()->zoomIn();
 }
 
+/// Zooming out the current qplaintextedit
 void Notepad::zoomMinus()
 {
     getCurrent()->zoomOut();
 }
 
-// Get the current qplaintextedit widget
+/// Get the current qplaintextedit widget
 QPlainTextEdit* Notepad::getCurrent() const
 {
     return (isEmpty()) ? nullptr : qobject_cast<QPlainTextEdit*>(tabView->currentWidget());
 }
 
-// Load all the themes located in the local themes directory
+/// Load all the themes located in the local themes directory
 void Notepad::loadSavedThemes()
 {
     QString tmpThemeName;
@@ -630,7 +620,8 @@ void Notepad::loadSavedThemes()
     }
 }
 
-// Key event
+/// Key event
+/// \param e
 void Notepad::keyReleaseEvent(QKeyEvent *e)
 {
     if(!getCurrent()->hasFocus()) return;
@@ -642,7 +633,7 @@ void Notepad::keyReleaseEvent(QKeyEvent *e)
         currentWord += charEntered;
         const QRegularExpression regexp{currentWord,QRegularExpression::CaseInsensitiveOption};
         QStringList results{};
-        foreach(auto const &tempWord,words)
+        for(auto const &tempWord : words)
         {
             if(regexp.match(tempWord).hasMatch())
             {
@@ -678,7 +669,8 @@ void Notepad::keyReleaseEvent(QKeyEvent *e)
     }
 }
 
-// Drag event to open files.
+/// Drag event to open files.
+/// \param e
 void Notepad::dragEnterEvent(QDragEnterEvent *e)
 {
     if (e->mimeData()->hasUrls())
@@ -687,7 +679,8 @@ void Notepad::dragEnterEvent(QDragEnterEvent *e)
     }
 }
 
-// Drop event to open files.
+/// Drop event to open files
+/// \param event
 void Notepad::dropEvent(QDropEvent *event)
 {
     if (event->mimeData()->hasUrls())
@@ -698,6 +691,7 @@ void Notepad::dropEvent(QDropEvent *event)
     }
 }
 
+/// Show the about dialog
 void Notepad::onAbout()
 {
     auto aboutDialog = new About(this);
@@ -705,4 +699,4 @@ void Notepad::onAbout()
 }
 
 Notepad::~Notepad()
-{}
+= default;

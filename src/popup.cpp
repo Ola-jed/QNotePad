@@ -2,7 +2,7 @@
 
 Popup::Popup(QWidget *parent, const QStringList &content) : QMenu(parent)
 {
-    foreach(auto const &item,content)
+    for(auto const &item : qAsConst(content))
     {
         addAction(item);
     }
@@ -12,6 +12,9 @@ Popup::Popup(QWidget *parent, const QStringList &content) : QMenu(parent)
     });
 }
 
+/// Handle the keyboard event in the popup window for autocompletion
+/// Switch between the popup choices/close the popup/ validate the choice
+/// \param e
 void Popup::keyPressEvent(QKeyEvent *e)
 {
     const auto triggeredKey{e->key()};
@@ -38,7 +41,7 @@ void Popup::keyPressEvent(QKeyEvent *e)
             close();
             break;
         default:
-            const QChar pressed{e->text().at(0)};
+            const auto pressed{e->text().at(0)};
             if(pressed.isLetterOrNumber())
             {
                 emit charCancel(pressed);

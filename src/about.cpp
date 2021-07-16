@@ -6,11 +6,12 @@ About::About(QWidget *parent) : QDialog(parent)
     buildComponents();
     applyLayout();
     adjustSize();
-    connect(okBtn,&QPushButton::clicked,this,[this]{
+    connect(okBtn,&QPushButton::clicked,[this]{
         close();
     });
 }
 
+/// Build the window components
 void About::buildComponents()
 {
     iconLabel = new QLabel(this);
@@ -24,15 +25,17 @@ void About::buildComponents()
     label->setText(INFO);
 }
 
+/// Build and apply a layout to the window
 void About::applyLayout()
 {
-    auto *lay = new QVBoxLayout(this);
+    auto lay = new QVBoxLayout(this);
     lay->addWidget(iconLabel,2);
     lay->addWidget(label,6);
     lay->addWidget(okBtn,2);
     lay->setAlignment(Qt::AlignVCenter);
 }
 
+/// Resize and set title and winow icon
 void About::buildWindow()
 {
     setWindowTitle( tr("About QNotePad"));

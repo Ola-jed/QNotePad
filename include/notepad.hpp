@@ -4,12 +4,12 @@
 #include "style.hpp"
 #include "keywords.hpp"
 #include "settings.hpp"
+#include "recentfilesmanager.hpp"
 #include "about.hpp"
 #include "popup.hpp"
 #include <QApplication>
 #include <QMainWindow>
 #include <QScreen>
-#include <QSettings>
 #include <QStyle>
 #include <QIcon>
 #include <QDir>
@@ -178,7 +178,6 @@ class Notepad : public QMainWindow
         QLabel *position;
         QLabel *fileType;
         QLabel *tabSpaceIndicator;
-        QMenuBar *menuBar;
         QMenu *file;
         QMenu *color;
         QMenu *edit;
@@ -199,6 +198,7 @@ class Notepad : public QMainWindow
         QAction *zoomOut;
         QAction *terminal;
         QAction *about;
+        QAction *recentlyOpened;
         QStatusBar *statusBar;
         QPushButton *lock;
         QTabWidget *tabView;
@@ -211,8 +211,7 @@ class Notepad : public QMainWindow
         bool isEmpty() const;
         static QString colorDialog();
         int getIndex(const QString &tabName) const;
-        void buildComponents();
-        void buildMenu();
+        void buildComponentsAndMenu();
         void buildStatusBar();
         void buildFileView();
         void applyLayout();
@@ -225,6 +224,7 @@ class Notepad : public QMainWindow
         bool isComment(const QTextBlock &textBlock) const;
         QStringList words;
         QString currentWord{};
+        RecentFilesManager recentFilesManager;
 
     private slots:
         void onNewFile();
