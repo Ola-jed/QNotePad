@@ -16,7 +16,7 @@ endif()
 set(REQUIRED_LIBS Core Gui Widgets)
 set(REQUIRED_LIBS_QUALIFIED Qt${QT_VERSION}::Core Qt${QT_VERSION}::Gui Qt${QT_VERSION}::Widgets)
 
-add_executable(${PROJECT_NAME} src/main.cpp src/notepad.cpp include/notepad.hpp src/about.cpp include/about.hpp src/settings.cpp include/settings.hpp include/style.hpp src/style.cpp src/popup.cpp include/popup.hpp include/keywords.hpp resources.qrc include/recentfilesmanager.hpp src/recentfilesmanager.cpp)
+add_executable(${PROJECT_NAME} main.cpp src/notepad.cpp include/notepad.hpp src/about.cpp include/about.hpp src/settings.cpp include/settings.hpp include/style.hpp src/style.cpp src/popup.cpp include/popup.hpp include/keywords.hpp resources.qrc include/recentfilesmanager.hpp src/recentfilesmanager.cpp)
 
 if (NOT CMAKE_PREFIX_PATH)
     message(WARNING "CMAKE_PREFIX_PATH is not defined, you may need to set it "
