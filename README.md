@@ -20,7 +20,5 @@ make
 You can import the project if you use an ide.
 
 ### Example
-![1](https://user-images.githubusercontent.com/66482155/114748702-13c8ce80-9d4a-11eb-8f00-407dd424425a.png)
 
-### Terminal option
-![2](https://user-images.githubusercontent.com/66482155/114748786-280ccb80-9d4a-11eb-98c0-bbfc3e954bb7.png)
+![Screenshot_20210801_190127](https://user-images.githubusercontent.com/66482155/127780915-d5742cc6-e54e-44c7-ad78-ff471f5ac958.png)
