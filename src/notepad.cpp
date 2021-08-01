@@ -16,6 +16,8 @@ Notepad::Notepad(QWidget *parent) : QMainWindow(parent)
     checkFileLanguage();
     setAcceptDrops(true);
     makeConnections();
+    // Rename files only with f2 key
+    fileView->setEditTriggers(QAbstractItemView::EditKeyPressed);
 }
 
 /// Connections.
@@ -273,7 +275,7 @@ void Notepad::onOpenFile(const QString &filename)
 void Notepad::onOpenFolder(const QString &folder)
 {
     fileModel->setRootPath(folder);
-    const QModelIndex idx {fileModel->index(QFileInfo(folder).dir().path())};
+    const QModelIndex idx {fileModel->index(QDir(folder).absolutePath())};
     fileView->setRootIndex(idx);
     fileView->setVisible(true);
 }
