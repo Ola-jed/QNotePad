@@ -173,6 +173,7 @@ class Notepad : public QMainWindow
             {"World",World}
         };
         // Member variables.
+        constexpr static uint8_t DEFAULT_TAB_SPACE = 4;
         bool isSaved {false};
         uint8_t tabSpace {4};
         QLabel *position;

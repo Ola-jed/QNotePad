@@ -139,8 +139,9 @@ void Notepad::buildStatusBar()
 /// Update the file view
 void Notepad::updateFileView()
 {
-    fileModel->setRootPath(QFileInfo(fileName()).dir().path());
-    const QModelIndex idx {fileModel->index(QFileInfo(fileName()).dir().path())};
+    const auto filePath{QFileInfo(fileName()).dir().path()};
+    fileModel->setRootPath(filePath);
+    const auto idx {fileModel->index(filePath)};
     fileView->setRootIndex(idx);
 }
 
@@ -162,7 +163,9 @@ void Notepad::applyStyle()
     setGeometry(QStyle::alignedRect(Qt::LeftToRight,
                                     Qt::AlignCenter,size(),QGuiApplication::primaryScreen()->availableGeometry()));
     setWindowIcon(QIcon(":assets/notepad.ico"));
-    setTabSpace((notepadSettings.value("Tab width").toInt() == 0) ? 4 : notepadSettings.value("Tab width").toInt()); // Loading tab space
+    setTabSpace((notepadSettings.value("Tab width").toInt() == 0)
+                        ? DEFAULT_TAB_SPACE
+                        : notepadSettings.value("Tab width").toInt()); // Loading tab space
     setStyleSheet(THEME_NAMES[notepadSettings.value("Theme").toString()]);
     tabView->setElideMode(Qt::ElideRight);
 }
@@ -258,7 +261,7 @@ void Notepad::onOpenFile(const QString &filename)
     QFile fileToOpen{filename};
     if((!fileToOpen.open(QIODevice::ReadOnly|QIODevice::Text)))
     {
-        QMessageBox::critical(this,"New File","Cannot open the file");
+        QMessageBox::warning(this,"New File","Cannot open the file");
         return;
     }
     recentFilesManager.addRecentFile(filename);
@@ -275,7 +278,7 @@ void Notepad::onOpenFile(const QString &filename)
 void Notepad::onOpenFolder(const QString &folder)
 {
     fileModel->setRootPath(folder);
-    const QModelIndex idx {fileModel->index(QDir(folder).absolutePath())};
+    const auto idx {fileModel->index(QDir(folder).absolutePath())};
     fileView->setRootIndex(idx);
     fileView->setVisible(true);
 }
@@ -391,16 +394,18 @@ void Notepad::onQuit()
 }
 
 /// Text Color
+/// Do not try anything if the editor is empty
 void Notepad::onColorChanged()
 {
-    if(isEmpty()) return; // Do not try anything if the editor is empty
+    if(isEmpty()) return;
     getCurrent()->setStyleSheet(getCurrent()->styleSheet()+" color:"+colorDialog()+";");
 }
 
 /// Background color
+/// Do not try anything if the editor is empty
 void Notepad::onBackgroundColorChanged()
 {
-    if(isEmpty()) return; // Do not try anything if the editor is empty
+    if(isEmpty()) return;
     getCurrent()->setStyleSheet(getCurrent()->styleSheet()+" background:"+colorDialog()+";");
 }
 
@@ -462,10 +467,11 @@ void Notepad::onApplyLocalTheme(const QString &themeFileName)
 {
     QDir dir{};
     dir.mkpath(THEME_DIR);
+    const auto fileThemeName{QFileInfo{themeFileName}.fileName()};
     setStyleSheet(loadStyleFromFile(themeFileName));
-    QFile::copy(themeFileName,THEME_DIR+"/"+QFileInfo{themeFileName}.fileName());
+    QFile::copy(themeFileName,THEME_DIR + "/" + fileThemeName);
     loadSavedThemes();
-    notepadSettings.setValue("Theme",THEME_NAMES[QFileInfo{themeFileName}.fileName().split(".").front()]);
+    notepadSettings.setValue("Theme",THEME_NAMES[fileThemeName.split(".").front()]);
 }
 
 /// Change the default app terminal
@@ -511,7 +517,7 @@ void Notepad::applyColoration(const QTextBlock& block)
     for(const auto &highlight : keywordsList)
     {
         int p;
-        if(((p = text.indexOf(highlight)) != -1) && (text.mid(p,highlight.length()+1) == highlight + " "))
+        if(((p = text.indexOf(highlight)) != -1) && (text.mid(p,highlight.length() + 1) == highlight + " "))
         {
             const int pos {block.position() + p};
             QTextEdit::ExtraSelection selection{};
@@ -544,8 +550,9 @@ void Notepad::onTerminal()
 #elif (defined (LINUX) || defined (__linux__))
     exec = notepadSettings.value("Terminal").toString();
 #endif
-    const QString path = ((tabView->count() > 0) && (tabView->currentIndex() >= 0)) ? QFileInfo(fileName()).absoluteDir().absolutePath()
-                                                                                                                : QDir::home().absolutePath();
+    const QString path = ((tabView->count() > 0) && (tabView->currentIndex() >= 0))
+                        ? QFileInfo(fileName()).absoluteDir().absolutePath()
+                        : QDir::home().absolutePath();
     auto process = new QProcess(this);
     process->setWorkingDirectory(path);
     process->start(exec,QStringList{});
@@ -562,7 +569,7 @@ void Notepad::updateCursorPosition()
 {
     const int line {getCurrent()->textCursor().blockNumber() + 1} ;
     const int column {getCurrent()->textCursor().positionInBlock() + 1};
-    position->setText("Line : "+QString::number(line)+" Col : "+QString::number(column));
+    position->setText(QString{"Line : %1 Column : %2"}.arg(line).arg(column));
 }
 
 /// Update the slots connexion when the tab is changed
@@ -616,7 +623,7 @@ int Notepad::getIndex(const QString &tabName) const
 void Notepad::closeAllTabs()
 {
     tabView->addTab(new QPlainTextEdit(this),"New File");
-    auto const sizeTab{tabView->count()-1};
+    auto const sizeTab{tabView->count() - 1};
     for(int s = 0;s != sizeTab;s++)
     {
         tabView->removeTab(0);
@@ -626,7 +633,7 @@ void Notepad::closeAllTabs()
 /// Is the app empty ?
 bool Notepad::isEmpty() const
 {
-    return (tabView->count() == 0);
+    return tabView->count() == 0;
 }
 
 /// Zooming in the current qplaintextedit
@@ -644,7 +651,7 @@ void Notepad::zoomMinus()
 /// Get the current qplaintextedit widget
 QPlainTextEdit* Notepad::getCurrent() const
 {
-    return (isEmpty()) ? nullptr : qobject_cast<QPlainTextEdit*>(tabView->currentWidget());
+    return isEmpty() ? nullptr : qobject_cast<QPlainTextEdit*>(tabView->currentWidget());
 }
 
 /// Load all the themes located in the local themes directory
