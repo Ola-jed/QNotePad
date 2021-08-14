@@ -529,7 +529,6 @@ void Notepad::syntaxicHighlighting()
         auto block{getCurrent()->document()->findBlockByLineNumber(i)};
         if (block.isValid() && !isComment(block))
         {
-            isComment(block);
             applyColoration(block);
         }
     }
