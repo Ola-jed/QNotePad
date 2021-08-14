@@ -12,7 +12,7 @@ class Popup : public QMenu
 {
 Q_OBJECT
 public:
-    Popup(QWidget *parent,const QStringList &content);
+    Popup(QWidget *parent, const QStringList &content);
 protected:
     void keyPressEvent(QKeyEvent *e);
 signals:
