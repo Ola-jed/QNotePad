@@ -1,5 +1,7 @@
 #include "notepad.hpp"
 
+/// Constructor
+/// Rename files only with f2 key for fileview
 Notepad::Notepad(QWidget *parent) : QMainWindow(parent)
 {
     loadSavedThemes();
@@ -16,7 +18,6 @@ Notepad::Notepad(QWidget *parent) : QMainWindow(parent)
     checkFileLanguage();
     setAcceptDrops(true);
     makeConnections();
-    // Rename files only with f2 key
     fileView->setEditTriggers(QAbstractItemView::EditKeyPressed);
 }
 
@@ -358,21 +359,23 @@ void Notepad::onCloseFile(const int &index)
         return;
     }
     if (tabView->count() == 1)
+    {
         qApp->quit();
+    }
     else
     {
-        auto tabItem = tabView->widget(index);
+        auto tabItem{tabView->widget(index)};
         // If this is a new file
         if (tabView->tabText(index).isEmpty() &&
-            !(qobject_cast<QPlainTextEdit *>(tabView->widget(index))->toPlainText().isEmpty()))
+            !(qobject_cast<QPlainTextEdit *>(tabItem)->toPlainText().trimmed().isEmpty()))
         {
             onNewFileSave();
         }
         else if ((!tabView->tabText(index).isEmpty()) &&
-                 !(qobject_cast<QPlainTextEdit *>(tabView->widget(index))->toPlainText().isEmpty()) &&
+                 !(qobject_cast<QPlainTextEdit *>(tabItem)->toPlainText().trimmed().isEmpty()) &&
                  !isSaved)
         {
-            const auto rep = QMessageBox::question(this, "Save", "Do you want to save ?");
+            const auto rep{QMessageBox::question(this, "Save", "Do you want to save ?")};
             if (rep == QMessageBox::Yes)
             {
                 onExistingFileSave();
@@ -396,10 +399,12 @@ void Notepad::onTextModified()
 /// Quitting the app
 void Notepad::onQuit()
 {
-    if (((!fileName().isEmpty()) && !isSaved && !(getCurrent()->toPlainText().isEmpty())) ||
-        (fileName().isEmpty() && !(getCurrent()->toPlainText().isEmpty())))
+    const auto currentTextEditIsEmpty{getCurrent()->toPlainText().trimmed().isEmpty()};
+    const auto currentFilenameIsEmpty{fileName().trimmed().isEmpty()};
+    if (((!currentFilenameIsEmpty) && !isSaved && !currentTextEditIsEmpty) ||
+        (currentFilenameIsEmpty && !currentTextEditIsEmpty))
     {
-        auto const reply = QMessageBox::question(this, "Quit", "Save ?", QMessageBox::Yes | QMessageBox::No);
+        auto const reply{QMessageBox::question(this, "Quit", "Save ?", QMessageBox::Yes | QMessageBox::No)};
         if (reply == QMessageBox::Yes)
         {
             onSaveFile();
@@ -444,8 +449,8 @@ void Notepad::checkFileLanguage()
     QHashIterator<QString, QSet<QString>> iteratorHash{FILE_EXTENSIONS};
     while (iteratorHash.hasNext())
     {
-        auto       nextElement = iteratorHash.next();
-        const auto &content    = nextElement.value();
+        auto       nextElement{iteratorHash.next()};
+        const auto &content{nextElement.value()};
         if (content.contains(currentFileExtension))
         {
             currentFileType = iteratorHash.key();
@@ -458,7 +463,7 @@ void Notepad::checkFileLanguage()
 void Notepad::onFont()
 {
     bool        ok;
-    const QFont font{QFontDialog::getFont(&ok, QFont("Times", 12), this)};
+    const auto font{QFontDialog::getFont(&ok, QFont("Times", 12), this)};
     if (ok)
     {
         getCurrent()->setFont(font);
@@ -535,12 +540,12 @@ void Notepad::syntaxicHighlighting()
 }
 
 /// Apply coloration
+/// TODO : Fix the coloration
 /// \param block
 void Notepad::applyColoration(const QTextBlock &block)
 {
-    // TODO : Fix the coloration
     auto            extraSelections{getCurrent()->extraSelections()};
-    const QString   text{block.text()};
+    const auto      text{block.text()};
     for (const auto &highlight : keywordsList)
     {
         int p;
@@ -577,10 +582,10 @@ void Notepad::onTerminal()
 #elif (defined (LINUX) || defined (__linux__))
     exec = notepadSettings.value("Terminal").toString();
 #endif
-    const QString path    = ((tabView->count() > 0) && (tabView->currentIndex() >= 0))
-                            ? QFileInfo(fileName()).absoluteDir().absolutePath()
-                            : QDir::home().absolutePath();
-    auto          process = new QProcess(this);
+    const auto path    = ((tabView->count() > 0) && (tabView->currentIndex() >= 0))
+                         ? QFileInfo(fileName()).absoluteDir().absolutePath()
+                         : QDir::home().absolutePath();
+    auto       process = new QProcess(this);
     process->setWorkingDirectory(path);
     process->start(exec, QStringList{});
 }
@@ -594,8 +599,9 @@ void Notepad::updateTitle()
 /// Update and show the cursor position in the status bar
 void Notepad::updateCursorPosition()
 {
-    const int line{getCurrent()->textCursor().blockNumber() + 1};
-    const int column{getCurrent()->textCursor().positionInBlock() + 1};
+    const auto cursor{getCurrent()->textCursor()};
+    const int  line{cursor.blockNumber() + 1};
+    const int  column{cursor.positionInBlock() + 1};
     position->setText(QString{"Line : %1 Column : %2"}.arg(line).arg(column));
 }
 
@@ -654,7 +660,7 @@ void Notepad::closeAllTabs()
 {
     tabView->addTab(new QPlainTextEdit(this), "New File");
     auto const sizeTab{tabView->count() - 1};
-    for (int   s = 0; s != sizeTab; s++)
+    for (auto  s = 0; s != sizeTab; s++)
     {
         tabView->removeTab(0);
     }
@@ -779,6 +785,3 @@ void Notepad::onAbout()
     auto aboutDialog = new About(this);
     aboutDialog->show();
 }
-
-Notepad::~Notepad()
-= default;

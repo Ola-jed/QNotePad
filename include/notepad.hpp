@@ -49,7 +49,7 @@ Q_OBJECT
 
 public:
     explicit Notepad(QWidget *parent = nullptr);
-    ~Notepad();
+    ~Notepad() = default;
 
 protected:
     void keyReleaseEvent(QKeyEvent *e) override;
