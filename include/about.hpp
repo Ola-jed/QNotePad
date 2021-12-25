@@ -25,7 +25,7 @@ private:
 
     const QString INFO{"QNotePad is a free and open source text"
                        " editor written with Qt5.\n"
-                       "It has word prediction and a basic synthaxic coloration.\n"
+                       "It has word prediction and a basic syntaxic coloration.\n"
                        "Github repository : "
                        "<a href=\"https://github.com/Ola-jed/QNotePad\">https://github.com/Ola-jed/QNotePad</a>"};
 };
