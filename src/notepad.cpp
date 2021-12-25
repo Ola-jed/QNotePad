@@ -1,10 +1,10 @@
 #include "notepad.hpp"
+#include "fileextensions.hpp"
 
 /// Constructor
-/// Rename files only with f2 key for fileview
 Notepad::Notepad(QWidget *parent) : QMainWindow(parent)
 {
-    loadSavedThemes();
+    themeManager.loadSavedThemes();
     buildComponentsAndMenu();
     buildRecentlyOpenedFileList();
     buildStatusBar();
@@ -168,7 +168,7 @@ void Notepad::applyStyle()
     setTabSpace((notepadSettings.value("Tab width").toInt() == 0)
                 ? DEFAULT_TAB_SPACE
                 : notepadSettings.value("Tab width").toInt()); // Loading tab space
-    setStyleSheet(THEME_NAMES[notepadSettings.value("Theme").toString()]);
+    setStyleSheet(themeManager[notepadSettings.value("Theme").toString()]);
     tabView->setElideMode(Qt::ElideRight);
 }
 
@@ -189,9 +189,13 @@ void Notepad::fileViewItemClicked(const QModelIndex &index)
 /// \param newName
 void Notepad::fileRenamed(const QString &path, const QString &oldName, const QString &newName)
 {
-    const QString oldFileName{path + "/" + oldName};
-    const QString newFileName{path + "/" + newName};
-    QFile::rename(oldFileName, newFileName);
+    const QString oldFileName{QString{path}.append("/").append(oldName)};
+    const QString newFileName{QString{path}.append("/").append(newName)};
+    if(!FileManager::rename(oldFileName, newFileName))
+    {
+        QMessageBox::warning(this,"File rename","File renaming failed");
+        return;
+    }
     tabView->setTabText(getIndex(oldFileName), newFileName);
 }
 
@@ -222,8 +226,7 @@ void Notepad::onNewFile()
 /// \param fileToCreate
 void Notepad::createFile(const QString &fileToCreate)
 {
-    QFile fToCreate{fileToCreate};
-    if ((!fToCreate.open(QIODevice::ReadWrite)))
+    if ((!FileManager::createFile(fileToCreate)))
     {
         QMessageBox::critical(this, "New File", "Cannot create the file");
         return;
@@ -260,8 +263,8 @@ void Notepad::openFolderDialog()
 /// \param filename
 void Notepad::onOpenFile(const QString &filename)
 {
-    QFile fileToOpen{filename};
-    if ((!fileToOpen.open(QIODevice::ReadOnly | QIODevice::Text)))
+    const auto fileContent{FileManager::readAll(filename)};
+    if (!fileContent.has_value())
     {
         QMessageBox::warning(this, "New File", "Cannot open the file");
         return;
@@ -270,9 +273,7 @@ void Notepad::onOpenFile(const QString &filename)
     auto tab = new QPlainTextEdit(this);
     tabView->addTab(tab, filename);
     tabView->setCurrentIndex(getIndex(filename));
-    QTextStream in{&fileToOpen};
-    const auto  fileContent{in.readAll()};
-    getCurrent()->setPlainText(fileContent);
+    getCurrent()->setPlainText(fileContent.value());
 }
 
 /// Opening a folder
@@ -307,14 +308,11 @@ void Notepad::onNewFileSave()
         QMessageBox::warning(this, "New File", "Enter a valid name");
         return;
     }
-    QFile fileToSave{filename};
-    if ((!fileToSave.open(QIODevice::ReadWrite)))
+    if (!FileManager::saveIntoFile(filename,getCurrent()->toPlainText()))
     {
         QMessageBox::critical(this, "Save", "Could not save");
         return;
     }
-    QTextStream out{&fileToSave};
-    out << getCurrent()->toPlainText();
     setWindowTitle("QNotePad");
     tabView->setTabText(tabView->currentIndex(), filename);
 }
@@ -322,14 +320,11 @@ void Notepad::onNewFileSave()
 // Saving an existing file.
 void Notepad::onExistingFileSave()
 {
-    QFile fileSaveName{fileName()};
-    if (!fileSaveName.open(QIODevice::ReadWrite | QFile::Truncate))
+    if (!FileManager::saveIntoFile(fileName(),getCurrent()->toPlainText()))
     {
         QMessageBox::critical(this, "Save", "Could not save");
         return;
     }
-    QTextStream out{&fileSaveName};
-    out << getCurrent()->toPlainText();
     setWindowTitle("QNotePad");
     isSaved = true;
 }
@@ -341,11 +336,8 @@ void Notepad::onAutoSave()
     {
         return;
     }
-    QFile fileSaveName{fileName()};
-    if (fileSaveName.open(QIODevice::ReadWrite | QFile::Truncate))
+    if (FileManager::saveIntoFile(fileName(),getCurrent()->toPlainText()))
     {
-        QTextStream out{&fileSaveName};
-        out << getCurrent()->toPlainText();
         isSaved = true;
         setWindowTitle("QNotePad");
     }
@@ -473,7 +465,7 @@ void Notepad::onFont()
 /// Settings
 void Notepad::onSettings()
 {
-    auto s = new Settings(this, THEME_NAMES.keys(),
+    auto s = new Settings(this, themeManager.themeNames(),
                           notepadSettings.value("Terminal").toString(),
                           notepadSettings.value("Tab width").toUInt());
     connect(s, &Settings::themeChanged, this, &Notepad::onApplyOtherTheme);
@@ -488,7 +480,7 @@ void Notepad::onSettings()
 void Notepad::onApplyOtherTheme(const QString &theme)
 {
     notepadSettings.setValue("Theme", theme);
-    setStyleSheet(THEME_NAMES[theme]);
+    setStyleSheet(themeManager[theme]);
 }
 
 /// Applying a user's theme
@@ -498,10 +490,15 @@ void Notepad::onApplyLocalTheme(const QString &themeFileName)
     QDir dir{};
     dir.mkpath(THEME_DIR);
     const auto fileThemeName{QFileInfo{themeFileName}.fileName()};
-    setStyleSheet(loadStyleFromFile(themeFileName));
-    QFile::copy(themeFileName, THEME_DIR + "/" + fileThemeName);
-    loadSavedThemes();
-    notepadSettings.setValue("Theme", THEME_NAMES[fileThemeName.split(".").front()]);
+    const auto theme {ThemeManager::loadStyleFromFile(themeFileName)};
+    themeManager.addTheme(themeFileName,theme);
+    setStyleSheet(theme);
+    if(!FileManager::copy(themeFileName, THEME_DIR + "/" + fileThemeName))
+    {
+        QMessageBox::warning(this,"Theme loading","Theme copy failed");
+    }
+    themeManager.loadSavedThemes();
+    notepadSettings.setValue("Theme", themeManager[fileThemeName.split(".").front()]);
 }
 
 /// Change the default app terminal
@@ -688,18 +685,6 @@ void Notepad::zoomMinus()
 QPlainTextEdit *Notepad::getCurrent() const
 {
     return isEmpty() ? nullptr : qobject_cast<QPlainTextEdit *>(tabView->currentWidget());
-}
-
-/// Load all the themes located in the local themes directory
-void Notepad::loadSavedThemes()
-{
-    QString      tmpThemeName;
-    QDirIterator themeDirIt{THEME_DIR};
-    while ((themeDirIt.hasNext()) && (QFileInfo(tmpThemeName = themeDirIt.next())).isFile())
-    {
-        THEME_NAMES.insert(QFileInfo{tmpThemeName}.fileName().split(".").front(),
-                           loadStyleFromFile(tmpThemeName));
-    }
 }
 
 /// Key event

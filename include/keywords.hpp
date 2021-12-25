@@ -4,7 +4,7 @@
 #include <QString>
 #include <QSet>
 
-const QSet<QString> keywordsList = {
+static const QSet<QString> keywordsList = {
         "<?php",
         "?>",
         "{%",
