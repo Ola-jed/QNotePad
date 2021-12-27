@@ -9,7 +9,7 @@
 class ThemeManager
 {
 private:
-    const QString THEME_DIR{QDir::homePath() + "/.qnotepad_themes"};
+    const QString THEME_DIR{".settings/themes"};
     const QSet<QString> DEFAULT_THEMES_NAMES{
             {"Adaptic"},
             {"Amoled"},

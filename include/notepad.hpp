@@ -8,6 +8,7 @@
 #include "popup.hpp"
 #include "filemanager.hpp"
 #include "thememanager.hpp"
+#include "fileextensionsloader.hpp"
 #include <QApplication>
 #include <QMainWindow>
 #include <QScreen>
@@ -59,6 +60,7 @@ protected:
 
 private:
     ThemeManager themeManager{};
+    FileExtensionsLoader fileExtensionsLoader{};
     constexpr static uint8_t DEFAULT_TAB_SPACE = 4;
     const QString THEME_DIR{QDir::homePath() + "/.qnotepad_themes"};
     bool isSaved{false};
@@ -94,7 +96,7 @@ private:
     QFileSystemModel *fileModel;
     QTreeView *fileView;
     QSplitter *editorSplitter;
-    QSettings notepadSettings;
+    QSettings notepadSettings{".settings/setting.ini", QSettings::IniFormat};
     // Methods.
     [[nodiscard]] QString fileName() const;
     [[nodiscard]] bool isEmpty() const;

@@ -37,7 +37,7 @@ void ThemeManager::addTheme(const QString &themeName, const QString &theme)
 /// \return The stylesheet of the theme
 QString ThemeManager::operator[](const QString &index)
 {
-    return themes[index].get();
+    return themes.contains(index) ? themes[index].get() : "";
 }
 
 /// Load the content of a stylesheet by the fileName
