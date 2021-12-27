@@ -11,9 +11,9 @@ private:
     const QString EXTENSIONS_GROUP = "Extensions";
     QSettings settings{".settings/setting.ini", QSettings::IniFormat};
     QHash<QString, QSet<QString>> fileExtensions;
-    void saveJsonToSettings();
 public:
     FileExtensionsLoader();
+    void saveJsonToSettings();
     [[nodiscard]] const QHash<QString, QSet<QString>>& extensions() const;
 };
 

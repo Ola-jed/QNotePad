@@ -35,6 +35,7 @@ void Notepad::makeConnections()
     connect(closeAll, &QAction::triggered, this, &Notepad::closeAllTabs);
     connect(colorText, &QAction::triggered, this, &Notepad::onColorChanged);
     connect(about, &QAction::triggered, this, &Notepad::onAbout);
+    connect(syncConfiguration, &QAction::triggered, this, &Notepad::onConfigurationSyncing);
     connect(colorBackground, &QAction::triggered, this, &Notepad::onBackgroundColorChanged);
     connect(zoomIn, &QAction::triggered, this, &Notepad::zoomPlus);
     connect(zoomOut, &QAction::triggered, this, &Notepad::zoomMinus);
@@ -79,6 +80,7 @@ void Notepad::buildComponentsAndMenu()
     settings = edit->addAction(QIcon(":assets/settings.ico"), "Settings");
     highlightSyntax = edit->addAction(QIcon(":assets/highlight.ico"), "Synthax highlighting");
     fontChange = edit->addAction(QIcon(":assets/font.ico"), "Font");
+    syncConfiguration = edit->addAction(QIcon(":assets/sync.ico"),"Sync configuration");
     highlightSyntax->setCheckable(true);
     highlightSyntax->setChecked(false);
     // Zoom menu
@@ -167,8 +169,7 @@ void Notepad::applyStyle()
     setTabSpace((notepadSettings.value("Tab width").toInt() == 0)
                 ? DEFAULT_TAB_SPACE
                 : notepadSettings.value("Tab width").toInt());
-    const auto themeSaved = notepadSettings.value("Theme", "").toString();
-    setStyleSheet(themeSaved.trimmed().isEmpty() ? "" : themeManager[themeSaved]);
+    setStyleSheet(themeManager[notepadSettings.value("Theme", "").toString()]);
     tabView->setElideMode(Qt::ElideRight);
 }
 
@@ -563,7 +564,7 @@ void Notepad::applyColoration(const QTextBlock &block)
 /// Check if the textBlock is a comment
 /// \param textBlock
 /// TODO : this is not well implemented
-bool Notepad::isComment(const QTextBlock &textBlock) const
+bool Notepad::isComment(const QTextBlock &textBlock)
 {
     const auto isOneLine{(textBlock.text().left(2) == "//")};
     const auto isHashtag{(textBlock.text().left(1) == "#")};
@@ -685,6 +686,14 @@ void Notepad::zoomMinus()
 QPlainTextEdit *Notepad::getCurrent() const
 {
     return isEmpty() ? nullptr : qobject_cast<QPlainTextEdit *>(tabView->currentWidget());
+}
+
+/// Sync the configuration with the settings in the json files
+void Notepad::onConfigurationSyncing()
+{
+    fileExtensionsLoader.saveJsonToSettings();
+    QMessageBox::information(this, "Configuration synced",
+                             "Configuration synced.Please restart the application");
 }
 
 /// Key event

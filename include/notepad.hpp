@@ -15,7 +15,6 @@
 #include <QStyle>
 #include <QIcon>
 #include <QDir>
-#include <QRegularExpression>
 #include <QMapIterator>
 #include <QDirIterator>
 #include <QProcess>
@@ -34,7 +33,6 @@
 #include <QFileSystemModel>
 #include <QTreeView>
 #include <QHeaderView>
-#include <QVariant>
 #include <QColor>
 #include <QTextDocument>
 #include <QTextBlock>
@@ -62,7 +60,7 @@ private:
     ThemeManager themeManager{};
     FileExtensionsLoader fileExtensionsLoader{};
     constexpr static uint8_t DEFAULT_TAB_SPACE = 4;
-    const QString THEME_DIR{QDir::homePath() + "/.qnotepad_themes"};
+    const QString THEME_DIR{".settings/themes"};
     bool isSaved{false};
     uint8_t tabSpace{4};
     QLabel *position;
@@ -85,6 +83,7 @@ private:
     QAction *highlightSyntax;
     QAction *fontChange;
     QAction *settings;
+    QAction *syncConfiguration;
     QAction *zoomIn;
     QAction *zoomOut;
     QAction *terminal;
@@ -112,7 +111,7 @@ private:
     void applyShortcuts();
     void createFile(const QString &fileToCreate);
     [[nodiscard]] QPlainTextEdit *getCurrent() const;
-    [[nodiscard]] bool isComment(const QTextBlock &textBlock) const;
+    [[nodiscard]] static bool isComment(const QTextBlock &textBlock);
     QStringList words;
     QString currentWord{};
     RecentFilesManager recentFilesManager;
@@ -138,6 +137,7 @@ private slots:
     void onTerminal();
     void onSettings();
     void onFont();
+    void onConfigurationSyncing();
     void updateTitle();
     void updateCursorPosition();
     void updateConnect();
