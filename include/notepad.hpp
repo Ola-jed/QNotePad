@@ -9,6 +9,7 @@
 #include "filemanager.hpp"
 #include "thememanager.hpp"
 #include "fileextensionsloader.hpp"
+#include "editor.hpp"
 #include <QApplication>
 #include <QMainWindow>
 #include <QScreen>
@@ -18,7 +19,6 @@
 #include <QMapIterator>
 #include <QDirIterator>
 #include <QProcess>
-#include <QPlainTextEdit>
 #include <QStatusBar>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -110,7 +110,7 @@ private:
     void makeConnections();
     void applyShortcuts();
     void createFile(const QString &fileToCreate);
-    [[nodiscard]] QPlainTextEdit *getCurrent() const;
+    [[nodiscard]] Editor *getCurrent() const;
     [[nodiscard]] static bool isComment(const QTextBlock &textBlock);
     QStringList words;
     QString currentWord{};

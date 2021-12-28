@@ -11,7 +11,7 @@ Notepad::Notepad(QWidget *parent) : QMainWindow(parent)
     applyShortcuts();
     tabView->setTabsClosable(true);
     tabView->setAcceptDrops(true);
-    tabView->addTab(new QPlainTextEdit(this), "New File");
+    tabView->addTab(new Editor(this), "New File");
     applyLayout();
     applyStyle();
     checkFileLanguage();
@@ -46,10 +46,10 @@ void Notepad::makeConnections()
     connect(tabView, &QTabWidget::currentChanged, this, &Notepad::onCheckLock);
     connect(tabView, &QTabWidget::currentChanged, this, &Notepad::checkFileLanguage);
     connect(lock, &QPushButton::clicked, this, &Notepad::onApplyLock);
-    connect(getCurrent(), &QPlainTextEdit::textChanged, this, &Notepad::onAutoSave);
-    connect(getCurrent(), &QPlainTextEdit::textChanged, this, &Notepad::onTextModified);
-    connect(getCurrent(), &QPlainTextEdit::textChanged, this, &Notepad::syntaxicHighlighting);
-    connect(getCurrent(), &QPlainTextEdit::cursorPositionChanged, this, &Notepad::updateCursorPosition);
+    connect(getCurrent(), &Editor::textChanged, this, &Notepad::onAutoSave);
+    connect(getCurrent(), &Editor::textChanged, this, &Notepad::onTextModified);
+    connect(getCurrent(), &Editor::textChanged, this, &Notepad::syntaxicHighlighting);
+    connect(getCurrent(), &Editor::cursorPositionChanged, this, &Notepad::updateCursorPosition);
     connect(fileView, &QTreeView::doubleClicked, this, &Notepad::fileViewItemClicked);
     connect(fileModel, &QFileSystemModel::fileRenamed, this, &Notepad::fileRenamed);
 }
@@ -232,7 +232,7 @@ void Notepad::createFile(const QString &fileToCreate)
         QMessageBox::critical(this, "New File", "Cannot create the file");
         return;
     }
-    auto fileContent = new QPlainTextEdit(this);
+    auto fileContent = new Editor(this);
     tabView->addTab(fileContent, fileToCreate);
     tabView->setCurrentIndex(getIndex(fileToCreate));
     tabView->setTabText(getIndex(fileToCreate), fileToCreate);
@@ -271,7 +271,7 @@ void Notepad::onOpenFile(const QString &filename)
         return;
     }
     recentFilesManager.addRecentFile(filename);
-    auto tab = new QPlainTextEdit(this);
+    auto tab = new Editor(this);
     tabView->addTab(tab, filename);
     tabView->setCurrentIndex(getIndex(filename));
     getCurrent()->setPlainText(fileContent.value());
@@ -360,12 +360,12 @@ void Notepad::onCloseFile(const int &index)
         auto tabItem{tabView->widget(index)};
         // If this is a new file
         if (tabView->tabText(index).isEmpty() &&
-            !(qobject_cast<QPlainTextEdit *>(tabItem)->toPlainText().trimmed().isEmpty()))
+            !(qobject_cast<Editor *>(tabItem)->toPlainText().trimmed().isEmpty()))
         {
             onNewFileSave();
         }
         else if ((!tabView->tabText(index).isEmpty()) &&
-                 !(qobject_cast<QPlainTextEdit *>(tabItem)->toPlainText().trimmed().isEmpty()) &&
+                 !(qobject_cast<Editor *>(tabItem)->toPlainText().trimmed().isEmpty()) &&
                  !isSaved)
         {
             const auto rep{QMessageBox::question(this, "Save", "Do you want to save ?")};
@@ -509,7 +509,7 @@ void Notepad::changeTerminal(const QString &terminalName)
     notepadSettings.setValue("Terminal", terminalName);
 }
 
-/// Set the tab space of the QPlainTextEdit
+/// Set the tab space of the Editor
 /// \param space
 void Notepad::setTabSpace(uint8_t space)
 {
@@ -606,10 +606,10 @@ void Notepad::updateCursorPosition()
 /// Update the slots connexion when the tab is changed
 void Notepad::updateConnect()
 {
-    connect(getCurrent(), &QPlainTextEdit::textChanged, this, &Notepad::syntaxicHighlighting);
-    connect(getCurrent(), &QPlainTextEdit::textChanged, this, &Notepad::onAutoSave);
-    connect(getCurrent(), &QPlainTextEdit::textChanged, this, &Notepad::onTextModified);
-    connect(getCurrent(), &QPlainTextEdit::cursorPositionChanged, this, &Notepad::updateCursorPosition);
+    connect(getCurrent(), &Editor::textChanged, this, &Notepad::syntaxicHighlighting);
+    connect(getCurrent(), &Editor::textChanged, this, &Notepad::onAutoSave);
+    connect(getCurrent(), &Editor::textChanged, this, &Notepad::onTextModified);
+    connect(getCurrent(), &Editor::cursorPositionChanged, this, &Notepad::updateCursorPosition);
     connect(fileView, &QTreeView::doubleClicked, this, &Notepad::fileViewItemClicked);
     connect(lock, &QPushButton::clicked, this, &Notepad::onCheckLock);
 }
@@ -656,7 +656,7 @@ int Notepad::getIndex(const QString &tabName) const
 /// To close all the tabs, we loop on the size and we close the tab at pos 1
 void Notepad::closeAllTabs()
 {
-    tabView->addTab(new QPlainTextEdit(this), "New File");
+    tabView->addTab(new Editor(this), "New File");
     auto const sizeTab{tabView->count() - 1};
     for (auto s = 0; s != sizeTab; s++)
     {
@@ -683,9 +683,9 @@ void Notepad::zoomMinus()
 }
 
 /// Get the current qplaintextedit widget
-QPlainTextEdit *Notepad::getCurrent() const
+Editor *Notepad::getCurrent() const
 {
-    return isEmpty() ? nullptr : qobject_cast<QPlainTextEdit *>(tabView->currentWidget());
+    return isEmpty() ? nullptr : qobject_cast<Editor *>(tabView->currentWidget());
 }
 
 /// Sync the configuration with the settings in the json files
