@@ -21,4 +21,4 @@ You can import the project if you use an ide.
 
 ### Example
 
-![Screenshot_20210801_190127](https://user-images.githubusercontent.com/66482155/127780915-d5742cc6-e54e-44c7-ad78-ff471f5ac958.png)
+![image](https://user-images.githubusercontent.com/66482155/147573002-a7936e8f-f381-4051-9b0b-dda2e4929a46.png)
