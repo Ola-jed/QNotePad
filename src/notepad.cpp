@@ -578,7 +578,8 @@ void Notepad::onTerminal()
 #if (defined (_WIN32) || defined (_WIN64))
     exec = QDir::homePath()+"\\AppData\\Local\\Microsoft\\WindowsApps\\wt.exe";
 #elif (defined (LINUX) || defined (__linux__))
-    exec = notepadSettings.value("Terminal").toString();
+    const auto terminalSetting = notepadSettings.value("Terminal").toString();
+    exec = terminalSetting.trimmed().isEmpty() ? "konsole" : terminalSetting;
 #endif
     const auto path = ((tabView->count() > 0) && (tabView->currentIndex() >= 0))
                       ? QFileInfo(fileName()).absoluteDir().absolutePath()
