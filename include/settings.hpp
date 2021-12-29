@@ -8,7 +8,6 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QComboBox>
-#include <QDebug>
 #include <QSpinBox>
 #include <QList>
 #include <QFileDialog>

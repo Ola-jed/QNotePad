@@ -40,6 +40,5 @@
         <file>assets/zoomin.ico</file>
         <file>assets/closeall.ico</file>
         <file>assets/recent.ico</file>
-        <file>lang_extensions.json</file>
     </qresource>
 </RCC>

@@ -38,9 +38,13 @@ const QHash<QString, QSet<QString>> &FileExtensionsLoader::extensions() const
 /// Save the data in the json file to the settings
 void FileExtensionsLoader::saveJsonToSettings()
 {
-    QFile f{":lang_extensions.json"};
-    f.open(QIODevice::ReadOnly | QIODevice::Text);
-    auto const jsonDocument = QJsonDocument::fromJson(f.readAll());
+    QFile extensionsConfigFile{"lang_extensions.json"};
+    if(!extensionsConfigFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        return;
+    }
+    auto const jsonDocument = QJsonDocument::fromJson(extensionsConfigFile.readAll());
+    extensionsConfigFile.close();
     auto const jsonArray = jsonDocument.array();
     settings.beginGroup(EXTENSIONS_GROUP);
     settings.remove("");

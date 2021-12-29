@@ -2,7 +2,6 @@
 #define QNOTEPAD_UTILS_HPP
 
 #include <QSet>
-#include <QVariant>
 using QStringSet = QSet<QString>;
 namespace utils
 {
